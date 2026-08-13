@@ -116,6 +116,36 @@ npm run build
 npm start
 ```
 
+## Deploy na Vercel
+
+O projeto é um Next.js padrão (App Router), então a Vercel detecta o framework
+automaticamente e não precisa de `vercel.json`. Só é preciso configurar duas coisas no
+painel do projeto antes do primeiro deploy:
+
+1. **Node.js Version**: em Project Settings → General → Node.js Version, selecione
+   **22.x**. O `@supabase/supabase-js` resolvido (`package-lock.json`) exige Node ≥ 22;
+   isso também está declarado em `package.json` (`engines.node`), mas a Vercel só aplica a
+   versão que estiver selecionada nessa configuração do projeto.
+2. **Environment Variables**: em Project Settings → Environment Variables, adicione (em
+   Production e, se for usar Preview deployments, também em Preview):
+
+   ```
+   SUPABASE_URL
+   SUPABASE_SERVICE_ROLE_KEY
+   ANTHROPIC_API_KEY
+   ANTHROPIC_MODEL   (opcional — default: claude-sonnet-4-5-20250929)
+   ```
+
+   Não existe nenhuma variável `NEXT_PUBLIC_*` — todo o acesso ao Supabase e à Anthropic
+   acontece dentro das rotas `/api/*` (servidor), então nada dessas chaves é exposto ao
+   navegador.
+
+Depois disso, qualquer `git push` para o branch conectado ao projeto na Vercel já faz o
+deploy. Sem essas variáveis configuradas, o build/deploy continua funcionando normalmente
+(as rotas `/api/*` são forçadas a rodar em runtime, nunca em build time) — o app carrega,
+só que as rotas retornam erro 500 em JSON e o front-end cai no fallback de dados de exemplo,
+exatamente como acontece em desenvolvimento local sem `.env.local`.
+
 ## O que ficou fora do escopo (de propósito)
 
 - **Autenticação**: o artifact original não tinha login — qualquer pessoa com a URL usava o

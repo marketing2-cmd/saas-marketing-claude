@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+// Dá mais margem que o timeout padrão de função da Vercel para a chamada à Anthropic.
+export const maxDuration = 30;
+
 const SYSTEM_PROMPT = `Você atua como Diretor de Marketing virtual de uma rede de varejo de materiais elétricos, hidráulicos, ferramentas, iluminação e utilidades (Contattos+). Dada uma demanda recebida pelo departamento de marketing, classifique-a.
 Responda APENAS com um JSON válido, sem markdown, sem texto fora do JSON, exatamente neste formato:
 {"categoria":"Rotina|Projeto|Campanha|Urgente|Backlog|Delegável|Descartar","prioridade":"Baixa|Média|Alta|Urgente","responsavel":"nome exato de alguém da lista de equipe ou string vazia","prazoDias":0,"impacto":"Baixo|Médio|Alto","justificativa":"uma frase curta explicando a decisão"}
