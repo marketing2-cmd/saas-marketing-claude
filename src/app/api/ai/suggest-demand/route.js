@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireApprovedUser } from "@/lib/supabase/authGuard";
 
 // Dá mais margem que o timeout padrão de função da Vercel para a chamada à Anthropic.
 export const maxDuration = 30;
@@ -9,6 +10,9 @@ Responda APENAS com um JSON válido, sem markdown, sem texto fora do JSON, exata
 "prazoDias" é um número inteiro de dias a partir de hoje para o prazo sugerido. "responsavel" deve ser escolhido apenas dentre os nomes fornecidos, ou vazio se nenhum for claramente adequado.`;
 
 export async function POST(request) {
+  const auth = await requireApprovedUser();
+  if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: "ANTHROPIC_API_KEY não configurada no servidor." }, { status: 500 });

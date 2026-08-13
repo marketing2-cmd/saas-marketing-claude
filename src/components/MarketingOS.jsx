@@ -1,14 +1,16 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import {
   Plus, X, Check, Trash2, MessageSquare, Calendar, Search,
   LayoutGrid, List as ListIcon, Zap, Package, Users, Wallet,
   GripVertical, AlertTriangle, Loader2, Inbox, Sparkles,
   ChevronLeft, ChevronRight, Mail, Phone, Building2, CalendarDays,
-  ArrowRight, UserPlus,
+  ArrowRight, UserPlus, LogOut,
 } from "lucide-react";
 import { loadEntity, useAutoSave, suggestDemandWithAI } from "@/lib/api-client";
+import { createClient } from "@/lib/supabase/client";
 
 /* ============================= CONSTANTS ============================= */
 
@@ -388,6 +390,14 @@ export default function MarketingOS() {
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [username, setUsername] = useState("");
   const [dragId, setDragId] = useState(null);
+  const router = useRouter();
+
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
 
   useEffect(() => {
     (async () => {
@@ -573,7 +583,10 @@ export default function MarketingOS() {
         </div>
         <div className="mkos-sidebar-foot">
           <input className="mkos-username" placeholder="Seu nome" value={username} onChange={(e) => setName(e.target.value)} title="Usado para identificar seus comentários" />
-          <div className="mkos-sync"><span style={{ width: 6, height: 6, borderRadius: 99, background: C.teal, display: "inline-block" }} /> sincronizado</div>
+          <div className="flex items-center justify-between">
+            <div className="mkos-sync"><span style={{ width: 6, height: 6, borderRadius: 99, background: C.teal, display: "inline-block" }} /> sincronizado</div>
+            <button className="mkos-logout-btn" onClick={handleLogout} title="Sair"><LogOut size={12} /> Sair</button>
+          </div>
         </div>
       </div>
 
@@ -1623,6 +1636,8 @@ function GlobalStyle() {
       .mkos-sidebar-foot { border-top: 1px solid ${C.borderSoft}; padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
       .mkos-username { border: 1px solid ${C.border}; background: ${C.surface}; border-radius: 7px; padding: 6px 9px; font-size: 12px; width: 100%; color: ${C.ink}; }
       .mkos-sync { font-size: 10.5px; color: ${C.inkFaint}; font-family: 'IBM Plex Mono', monospace; display: flex; align-items: center; gap: 4px; }
+      .mkos-logout-btn { display: flex; align-items: center; gap: 3px; background: transparent; border: none; color: ${C.inkFaint}; font-size: 10.5px; font-weight: 600; padding: 0; }
+      .mkos-logout-btn:hover { color: ${C.danger}; }
 
       .mkos-main { flex: 1; display: flex; flex-direction: column; padding: 18px 20px; min-width: 0; min-height: 0; }
       .mkos-scroll { flex: 1; overflow-y: auto; }

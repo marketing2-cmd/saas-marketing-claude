@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabaseServer";
 import { itemToRow, rowToItem } from "@/lib/case-map";
+import { requireApprovedUser } from "@/lib/supabase/authGuard";
 
 // Fábrica de handlers GET/PUT para uma tabela. O front-end mantém o array completo de
 // cada entidade em memória (igual ao componente original) e salva o array inteiro de
@@ -18,6 +19,9 @@ export function createEntityHandlers(table, { numericFields = [], dateFields = [
   }
 
   async function GET() {
+    const auth = await requireApprovedUser();
+    if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
     try {
       const supabase = getSupabaseServerClient();
       const { data, error } = await supabase.from(table).select("*").order(orderBy, { ascending: false });
@@ -29,6 +33,9 @@ export function createEntityHandlers(table, { numericFields = [], dateFields = [
   }
 
   async function PUT(request) {
+    const auth = await requireApprovedUser();
+    if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
     try {
       const body = await request.json();
       const items = Array.isArray(body.items) ? body.items : [];

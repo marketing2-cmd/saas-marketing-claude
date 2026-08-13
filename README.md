@@ -13,22 +13,70 @@ persistência**:
 | `window.storage.get/set(key, shared)`         | Rotas `/api/*` do Next.js, que leem/gravam no Postgres via Supabase |
 | `fetch("https://api.anthropic.com/...")` direto no navegador (sem auth) | Rota de servidor `/api/ai/suggest-demand`, que guarda a `ANTHROPIC_API_KEY` |
 | Nome do usuário salvo com `shared=false`      | `localStorage` (é uma preferência local ao navegador, não precisa ir para o banco) |
+| Sem login — qualquer um com a URL acessava    | Login com e-mail/senha (Supabase Auth) + aprovação manual de novos cadastros |
 
 ## Stack
 
 - **Next.js 14 (App Router)** — front-end (client component) + rotas de API no mesmo projeto
-- **Supabase (Postgres)** — banco de dados, acessado só pelo servidor com a `service role key`
+- **Supabase (Postgres + Auth)** — banco de dados e autenticação
+- **@supabase/ssr** — sessão de login sincronizada entre navegador, Server Components e middleware
+- **Resend** — envio do e-mail que avisa o admin sobre novos cadastros pendentes
 - **Tailwind CSS** — as classes utilitárias (`flex`, `gap-2`, `rounded`, etc.) já usadas no componente original
 - **lucide-react** — ícones, iguais aos do componente original
+
+## Autenticação e aprovação de cadastros
+
+Login com e-mail/senha. Todo cadastro novo nasce com status `pending` e não acessa o
+app até um admin aprovar — nem mesmo o próprio Supabase Auth libera acesso automático,
+o gate de aprovação é feito por este projeto, em cima da autenticação do Supabase.
+
+Fluxo:
+
+1. Alguém cria conta em `/signup` (e-mail + senha). O Supabase Auth manda um e-mail de
+   confirmação (padrão do projeto); depois de confirmar, a pessoa já consegue **entrar**,
+   mas fica travada na tela `/pending` até ser aprovada.
+2. Ao criar a conta, a rota `/api/auth/notify-signup` dispara um e-mail (via Resend) para
+   `marketing2@contattos.com` avisando do cadastro pendente, com um link para `/admin`.
+3. O admin entra, vai em `/admin`, e aprova ou rejeita. A aprovação libera o acesso na
+   hora (o `middleware.js` redireciona para o app assim que o `profile.status` virar
+   `approved`).
+4. `marketing2@contattos.com` é o e-mail "bootstrap": é aprovado e promovido a admin
+   automaticamente no cadastro (hardcoded no trigger `handle_new_user()` em
+   `supabase/schema.sql` — é o único jeito de existir um admin antes de qualquer aprovação
+   manual). Para trocar/adicionar outro admin depois, edite a tabela `profiles`
+   (`role = 'admin'`) direto no SQL Editor do Supabase.
+
+Onde cada peça mora:
+
+- `supabase/schema.sql` — tabela `profiles`, trigger `handle_new_user()` (cria o profile
+  `pending`/`member` a cada signup, exceto o e-mail admin), helper `private.is_admin()` e
+  as policies de RLS de `profiles`.
+- `middleware.js` — redireciona: sem sessão → `/login`; sessão sem aprovação → `/pending`;
+  `/admin` só para `role = 'admin'`; já aprovado tentando ir em `/login`/`/signup` → `/`.
+- `src/lib/supabase/{client,server}.js` — clientes com a *publishable key* (respeitam RLS),
+  usados só pelo fluxo de auth. Diferente de `src/lib/supabaseServer.js` (service role,
+  ignora RLS), que continua sendo o único jeito de ler/gravar `projects`/`campaigns`/etc.
+- `src/lib/supabase/authGuard.js` — `requireApprovedUser()`/`requireAdmin()`, chamados no
+  topo de toda rota `/api/*` que expõe dados (as 6 entidades + a rota de IA) e das rotas de
+  admin, para bloquear quem não está aprovado mesmo que descubra a URL da API direto.
+- `/login`, `/signup`, `/pending`, `/admin` — páginas novas; o resto do app (`/`) é o
+  `MarketingOS.jsx` original, só com um botão "Sair" adicionado na barra lateral.
 
 ## Estrutura do projeto
 
 ```
+middleware.js                   # gate de páginas: login/aprovação/admin (ver seção de auth)
 src/
   app/
     layout.jsx                 # layout raiz + import do Tailwind
     page.jsx                   # renderiza <MarketingOS />
     globals.css
+    login/page.jsx             # e-mail + senha
+    signup/page.jsx            # cria conta (fica pending) + dispara aviso ao admin
+    pending/page.jsx           # "aguardando aprovação", com botão de sair
+    admin/
+      page.jsx                  # lista profiles (Server Component)
+      ApprovalPanel.jsx          # botões Aprovar/Rejeitar (client component)
     api/
       projects/route.js        # GET (lista) / PUT (salva a lista inteira)
       campaigns/route.js
@@ -37,15 +85,22 @@ src/
       events/route.js
       team/route.js             # tabela team_members
       ai/suggest-demand/route.js # proxy para a Anthropic API (chave só no servidor)
+      admin/approve/route.js    # aprova cadastro (admin-only, service role)
+      admin/reject/route.js     # rejeita cadastro (admin-only, service role)
+      auth/notify-signup/route.js # envia o e-mail de aviso via Resend
   components/
     MarketingOS.jsx             # componente original, com a camada de storage trocada
   lib/
     supabaseServer.js           # cliente Supabase (service role, só no servidor)
+    supabase/
+      client.js                 # cliente para componentes "use client" (publishable key)
+      server.js                 # cliente para Server Components/Route Handlers (cookies)
+      authGuard.js               # requireApprovedUser() / requireAdmin()
     case-map.js                 # camelCase (JS) <-> snake_case (Postgres)
     entity-route.js             # fábrica de handlers GET/PUT reaproveitada pelas 6 rotas
     api-client.js                # substitui loadShared/saveShared/useAutoSave do artifact
 supabase/
-  schema.sql                    # DDL das 6 tabelas
+  schema.sql                    # DDL das 6 tabelas de dados + profiles/auth
   seed.sql                      # dados de exemplo equivalentes aos seedProjects()/etc. originais
 ```
 
@@ -84,30 +139,52 @@ são usados no front-end como **fallback de rede/erro** (ex.: Supabase fora do a
 
 ## Configuração
 
-1. Crie um projeto em [supabase.com](https://supabase.com).
-2. Rode `supabase/schema.sql` no SQL Editor do projeto (cria as 6 tabelas).
+1. Crie um projeto em [supabase.com](https://supabase.com) (ou use um já existente).
+2. Rode `supabase/schema.sql` no SQL Editor do projeto — cria as 6 tabelas de dados, a
+   tabela `profiles` e o trigger que aprova automaticamente `marketing2@contattos.com`
+   como admin. **Se quiser usar outro e-mail como admin**, troque esse e-mail no arquivo
+   antes de rodar (procure por `marketing2@contattos.com` em `handle_new_user()`).
 3. Opcional: rode `supabase/seed.sql` para começar com os mesmos exemplos do artifact original.
-4. Copie `.env.example` para `.env.local` e preencha:
+4. Crie uma conta gratuita em [resend.com](https://resend.com) e gere uma API key —
+   é o serviço que envia o e-mail avisando o admin de novos cadastros.
+5. Copie `.env.example` para `.env.local` e preencha:
 
    ```
+   NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...   # Project Settings → API Keys
+
    SUPABASE_URL=https://xxxx.supabase.co
-   SUPABASE_SERVICE_ROLE_KEY=... # Project Settings → API → service_role (NUNCA a anon key)
+   SUPABASE_SERVICE_ROLE_KEY=...   # Project Settings → API → service_role (NUNCA a anon key)
+
    ANTHROPIC_API_KEY=sk-ant-...
    ANTHROPIC_MODEL=claude-sonnet-4-5-20250929
+
+   RESEND_API_KEY=re_...
+   RESEND_FROM_EMAIL=Marketing OS <onboarding@resend.dev>
    ```
 
-   A `service_role key` só é usada nas rotas `/api/*` (servidor) e nunca é exposta ao
-   navegador — por isso as tabelas têm Row Level Security habilitado sem nenhuma policy: a
-   chave anônima do Supabase não consegue ler nem escrever nelas, só o servidor consegue.
+   A `service_role key` e a `ANTHROPIC_API_KEY`/`RESEND_API_KEY` só são usadas nas rotas
+   `/api/*` (servidor) e nunca são expostas ao navegador. As duas `NEXT_PUBLIC_*` são
+   client-safe (o Supabase as chama de "publishable key", equivalente à antiga `anon key`)
+   — é assim que o navegador faz login e lê o próprio `profile`, sempre limitado pelas
+   policies de RLS.
 
-5. Instale as dependências e rode em desenvolvimento:
+6. Instale as dependências e rode em desenvolvimento:
 
    ```bash
    npm install
    npm run dev
    ```
 
-6. Acesse `http://localhost:3000`.
+7. Acesse `http://localhost:3000`, clique em "Solicitar cadastro" e cadastre-se com
+   `marketing2@contattos.com` primeiro — é o e-mail que se torna admin automaticamente e
+   consegue aprovar todo o resto pelo painel em `/admin`.
+
+**Nota sobre o remetente do Resend**: sem verificar um domínio próprio no Resend, o
+endereço de sandbox `onboarding@resend.dev` só entrega e-mails para o endereço cadastrado
+na sua própria conta Resend. Se o aviso não chegar, veja os logs da rota
+`/api/auth/notify-signup` (ou o dashboard do Resend) — o cadastro em si não é afetado,
+só o e-mail de aviso.
 
 ## Build de produção
 
@@ -130,28 +207,34 @@ painel do projeto antes do primeiro deploy:
    Production e, se for usar Preview deployments, também em Preview):
 
    ```
+   NEXT_PUBLIC_SUPABASE_URL
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
    SUPABASE_URL
    SUPABASE_SERVICE_ROLE_KEY
    ANTHROPIC_API_KEY
    ANTHROPIC_MODEL   (opcional — default: claude-sonnet-4-5-20250929)
+   RESEND_API_KEY
+   RESEND_FROM_EMAIL   (opcional — default: onboarding@resend.dev)
    ```
 
-   Não existe nenhuma variável `NEXT_PUBLIC_*` — todo o acesso ao Supabase e à Anthropic
-   acontece dentro das rotas `/api/*` (servidor), então nada dessas chaves é exposto ao
-   navegador.
+   As duas `NEXT_PUBLIC_*` viram parte do bundle do navegador (login, middleware) — são a
+   publishable key, seguras para isso. As demais só existem no servidor.
 
 Depois disso, qualquer `git push` para o branch conectado ao projeto na Vercel já faz o
-deploy. Sem essas variáveis configuradas, o build/deploy continua funcionando normalmente
-(as rotas `/api/*` são forçadas a rodar em runtime, nunca em build time) — o app carrega,
-só que as rotas retornam erro 500 em JSON e o front-end cai no fallback de dados de exemplo,
-exatamente como acontece em desenvolvimento local sem `.env.local`.
+deploy. Sem `SUPABASE_SERVICE_ROLE_KEY`/`ANTHROPIC_API_KEY`/`RESEND_API_KEY` configuradas, o
+build/deploy continua funcionando normalmente (as rotas `/api/*` são forçadas a rodar em
+runtime, nunca em build time) — mas sem as `NEXT_PUBLIC_*` corretas o login não funciona,
+já que o middleware precisa delas para toda navegação de página.
 
 ## O que ficou fora do escopo (de propósito)
 
-- **Autenticação**: o artifact original não tinha login — qualquer pessoa com a URL usava o
-  mesmo espaço de dados. Mantive esse comportamento (sem auth) para não mudar a experiência;
-  adicionar autenticação do Supabase é o próximo passo natural se o app for exposto
-  publicamente.
+- **Reset de senha / "esqueci minha senha"**: o Supabase Auth já suporta isso
+  (`resetPasswordForEmail`), só não montei a tela — é um próximo passo natural, sem
+  precisar mudar nada na modelagem de `profiles`.
+- **Múltiplos admins com convite**: hoje só existe um admin "bootstrap"
+  (`marketing2@contattos.com`, hardcoded no trigger). Promover outra pessoa a admin é uma
+  linha de SQL (`update profiles set role = 'admin' where email = '...'`), mas não fiz uma
+  tela para isso — a superfície de quem pode virar admin fica menor assim.
 - **Multiusuário em tempo real**: como no original, cada aba salva a lista inteira da
   entidade a cada mudança (debounced). Para colaboração simultânea entre várias pessoas
   editando ao mesmo tempo, o ideal seria migrar para operações por item (CRUD granular) ou

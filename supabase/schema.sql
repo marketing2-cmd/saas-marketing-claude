@@ -125,3 +125,92 @@ alter table demands enable row level security;
 alter table suppliers enable row level security;
 alter table events enable row level security;
 alter table team_members enable row level security;
+
+-- ============================================================================
+-- AUTENTICAÇÃO E APROVAÇÃO DE CADASTROS
+-- ============================================================================
+--
+-- Login com e-mail/senha via Supabase Auth. Todo novo cadastro nasce com
+-- status 'pending' e só ganha acesso ao app quando um admin aprova
+-- (ver /api/admin/approve). O e-mail abaixo é aprovado e promovido a admin
+-- automaticamente no primeiro cadastro — é o "bootstrap" da aprovação, já
+-- que sem um admin aprovado ninguém consegue aprovar mais ninguém.
+
+create schema if not exists private;
+
+create table if not exists public.profiles (
+  id uuid primary key references auth.users (id) on delete cascade,
+  email text not null,
+  status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
+  role text not null default 'member' check (role in ('member', 'admin')),
+  created_at timestamptz not null default now(),
+  approved_at timestamptz,
+  approved_by uuid references auth.users (id)
+);
+
+create index if not exists idx_profiles_status on public.profiles (status);
+
+alter table public.profiles enable row level security;
+
+-- Helper de RLS: roda como SECURITY DEFINER (bypassa RLS ao consultar profiles,
+-- evitando recursão) e só responde sobre o próprio usuário autenticado — nunca
+-- recebe parâmetros de fora, então não há como usá-lo para checar outra pessoa.
+-- Fica no schema "private" (não exposto pela Data API) e sem GRANT para anon,
+-- então não pode ser chamado via RPC — só é alcançável de dentro de uma policy.
+create or replace function private.is_admin()
+returns boolean
+language sql
+security definer
+set search_path = ''
+stable
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = (select auth.uid()) and role = 'admin'
+  );
+$$;
+
+revoke all on function private.is_admin() from public, anon;
+grant execute on function private.is_admin() to authenticated;
+
+create policy "profiles_select_own" on public.profiles
+  for select to authenticated
+  using ((select auth.uid()) = id);
+
+create policy "profiles_select_admin" on public.profiles
+  for select to authenticated
+  using ((select private.is_admin()));
+
+-- Sem policy de insert/update para authenticated: a linha em profiles nasce
+-- só pelo trigger abaixo (SECURITY DEFINER) e só é alterada (aprovar/rejeitar)
+-- pelas rotas /api/admin/* do servidor, com a service role key.
+
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  insert into public.profiles (id, email, status, role, approved_at)
+  values (
+    new.id,
+    new.email,
+    case when new.email = 'marketing2@contattos.com' then 'approved' else 'pending' end,
+    case when new.email = 'marketing2@contattos.com' then 'admin' else 'member' end,
+    case when new.email = 'marketing2@contattos.com' then now() else null end
+  );
+  return new;
+end;
+$$;
+
+-- Função de trigger: só é invocável pelo próprio disparo do INSERT em
+-- auth.users (o motor do Postgres não passa pelo GRANT de EXECUTE do papel
+-- que fez o INSERT para isso), então revogar EXECUTE de todo mundo é seguro
+-- e fecha a única forma de alguém chamá-la diretamente como RPC.
+revoke all on function public.handle_new_user() from public, anon, authenticated;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
