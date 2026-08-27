@@ -167,10 +167,6 @@
     font-size:1.3rem; font-weight:800; color: var(--vermelho-esc);
   }
 
-  .cliente-card{
-    background: linear-gradient(135deg, #fff7ee, #fff);
-    border: 1.5px solid var(--laranja);
-  }
   .required::after{ content:" *"; color:var(--vermelho); }
 
   footer{
@@ -179,7 +175,59 @@
   }
   footer strong{ color:var(--vermelho-esc); }
 
-  #orcamento-id{ font-size:0.8rem; color:#a4897a; margin-top:2px; }
+  .gerar-wrap{ text-align:center; margin: 6px 0 22px; }
+
+  /* ---------- DOCUMENTO GERADO (orçamento para baixar/enviar) ---------- */
+  #documento-view{ display:none; }
+  .doc-card{
+    background:#fff;
+    border:1px solid var(--borda);
+    border-radius:14px;
+    box-shadow: var(--sombra);
+    padding: 30px 32px;
+    margin-bottom: 18px;
+  }
+  .doc-topo{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:16px; border-bottom: 3px solid var(--laranja); padding-bottom:16px; margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+  .doc-topo .doc-titulo h2{ margin:0 0 4px; font-size:1.3rem; color:var(--vermelho-esc); }
+  .doc-topo .doc-titulo p{ margin:0; font-size:0.85rem; color:#8a7468; }
+  .doc-meta{ text-align:right; font-size:0.85rem; color:#6b564a; }
+  .doc-meta strong{ color:var(--vermelho-esc); }
+
+  .doc-secao{ margin-bottom:20px; }
+  .doc-secao h3{
+    font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;
+    color:#a4897a; margin:0 0 8px;
+  }
+  .doc-secao p{ margin:2px 0; font-size:0.95rem; }
+
+  table.doc-tabela{ width:100%; border-collapse:collapse; }
+  table.doc-tabela thead th{
+    text-align:left; font-size:0.75rem; text-transform:uppercase; color:#a4897a;
+    padding:6px 6px; border-bottom:2px solid var(--borda);
+  }
+  table.doc-tabela td{ padding:9px 6px; border-bottom:1px solid #f4e7da; font-size:0.95rem; }
+  table.doc-tabela td.qtd{ text-align:center; width:10%; }
+  table.doc-tabela td.preco, table.doc-tabela td.sub{ text-align:right; width:20%; white-space:nowrap; }
+  table.doc-tabela td.sub{ font-weight:700; color:var(--vermelho-esc); }
+
+  .doc-totais{ margin-top:8px; max-width:320px; margin-left:auto; }
+  .doc-totais .linha{ display:flex; justify-content:space-between; padding:5px 0; font-size:0.92rem; }
+  .doc-totais .linha.total{
+    border-top:2px solid var(--laranja); margin-top:6px; padding-top:10px;
+    font-size:1.25rem; font-weight:800; color:var(--vermelho-esc);
+  }
+
+  .doc-rodape{
+    margin-top: 26px; padding-top: 18px; border-top:1px dashed var(--borda);
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  .doc-rodape .apoio{ display:flex; align-items:center; gap:8px; font-size:0.8rem; color:#a4897a; }
+  .doc-rodape .apoio svg{ height:20px; width:auto; }
+  .doc-rodape .validade{ font-size:0.8rem; color:#a4897a; }
 
   @media (max-width: 640px){
     .grid2{ grid-template-columns: 1fr; }
@@ -197,10 +245,11 @@
   @media print{
     body{ background:#fff; padding:0; }
     header{ box-shadow:none; }
-    .card{ box-shadow:none; border:1px solid #ddd; break-inside:avoid; }
+    .card, .doc-card{ box-shadow:none; border:1px solid #ddd; break-inside:avoid; }
     .no-print{ display:none !important; }
     input, select{ border:none; background:transparent; padding:2px 0; }
     .btn-del{ display:none; }
+    #editor-view{ display:none !important; }
   }
 </style>
 </head>
@@ -228,8 +277,10 @@
   </div>
 </header>
 
+<div id="editor-view">
+
 <h1>Calculadora de Orçamento — Serviços Elétricos</h1>
-<p class="subtitulo">Preencha os dados abaixo, adicione os serviços realizados e gere o orçamento para enviar ao seu cliente.</p>
+<p class="subtitulo">Preencha os dados abaixo, adicione os serviços realizados e gere o orçamento para baixar e enviar ao seu cliente.</p>
 
 <main>
 
@@ -314,33 +365,84 @@
     </div>
   </section>
 
-  <!-- DADOS DO CLIENTE (FINAL) -->
-  <section class="card cliente-card">
-    <h2><span class="num">4</span> Dados do cliente</h2>
-    <p class="hint">Preencha o nome e e-mail do cliente para finalizar o orçamento.</p>
-    <div class="grid2">
-      <div class="field">
-        <label for="cli-nome" class="required">Nome do cliente</label>
-        <input type="text" id="cli-nome" placeholder="Nome completo" required>
-      </div>
-      <div class="field">
-        <label for="cli-email" class="required">E-mail do cliente</label>
-        <input type="email" id="cli-email" placeholder="cliente@email.com" required>
-      </div>
-    </div>
-    <div id="orcamento-id"></div>
-
-    <div class="btn-row no-print" style="margin-top:10px;">
-      <button class="btn btn-primary" id="gerar-btn" type="button">Gerar e imprimir orçamento (PDF)</button>
+  <div class="gerar-wrap no-print">
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn btn-primary" id="gerar-btn" type="button">Gerar orçamento para baixar</button>
       <button class="btn btn-outline" id="limpar-btn" type="button">Limpar tudo</button>
     </div>
-  </section>
+  </div>
 
 </main>
 
 <footer>
   Desenvolvido por <strong>Contattos+</strong> — ferramenta gratuita para orçamentos de serviços elétricos.
 </footer>
+
+</div><!-- /editor-view -->
+
+<!-- ---------- DOCUMENTO GERADO: pronto para o eletricista baixar e enviar ao cliente ---------- -->
+<div id="documento-view">
+  <main>
+    <div class="doc-card">
+      <div class="doc-topo">
+        <div class="doc-titulo">
+          <h2>Orçamento de Serviços Elétricos</h2>
+          <p id="doc-prof-nome">Profissional</p>
+          <p id="doc-prof-tel"></p>
+        </div>
+        <div class="doc-meta">
+          <p><strong id="doc-id"></strong></p>
+          <p id="doc-data"></p>
+        </div>
+      </div>
+
+      <div class="doc-secao">
+        <h3>Serviços orçados</h3>
+        <table class="doc-tabela">
+          <thead>
+            <tr>
+              <th>Serviço / Item</th>
+              <th style="text-align:center;">Qtd.</th>
+              <th style="text-align:right;">Preço unit.</th>
+              <th style="text-align:right;">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="doc-itens-body"></tbody>
+        </table>
+
+        <div class="doc-totais">
+          <div class="linha"><span>Subtotal dos itens</span><span id="doc-subtotal-itens"></span></div>
+          <div class="linha" id="doc-linha-visita" style="display:none;"><span>Taxa de visita técnica</span><span id="doc-visita"></span></div>
+          <div class="linha" id="doc-linha-deslocamento" style="display:none;"><span>Deslocamento / frete</span><span id="doc-deslocamento"></span></div>
+          <div class="linha" id="doc-linha-desconto" style="display:none;"><span>Desconto</span><span id="doc-desconto"></span></div>
+          <div class="linha total"><span>TOTAL</span><span id="doc-total"></span></div>
+        </div>
+      </div>
+
+      <div class="doc-secao" id="doc-obs-wrap" style="display:none;">
+        <h3>Observações</h3>
+        <p id="doc-observacoes"></p>
+      </div>
+
+      <div class="doc-rodape">
+        <div class="validade" id="doc-validade"></div>
+        <div class="apoio">
+          <span>Apoio:</span>
+          <svg viewBox="0 0 300 60" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Contattos+">
+            <text x="0" y="42" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-style="italic" font-size="40" textLength="255" lengthAdjust="spacingAndGlyphs" fill="url(#grad)">CONTATTOS</text>
+            <polygon points="95,2 85,30 100,30 75,58 88,32 72,32" fill="#e8262a" stroke="#fff" stroke-width="1.5"/>
+            <text x="262" y="34" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="26" fill="#e8262a">+</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row no-print" style="justify-content:center; margin-bottom:30px;">
+      <button class="btn btn-primary" id="baixar-btn" type="button">Baixar em PDF</button>
+      <button class="btn btn-outline" id="editar-btn" type="button">Editar orçamento</button>
+    </div>
+  </main>
+</div>
 
 <script>
 (function(){
@@ -481,40 +583,127 @@
     document.getElementById(id).addEventListener("input", recalcular);
   });
 
+  var editorView = document.getElementById("editor-view");
+  var documentoView = document.getElementById("documento-view");
+
+  function coletarItens(){
+    var itens = [];
+    itensBody.querySelectorAll("tr").forEach(function(tr){
+      var inputText = tr.querySelector("input[type=text]");
+      var inputsNum = tr.querySelectorAll("input[type=number]");
+      var desc = inputText.value.trim();
+      var q = parseFloat(inputsNum[0].value) || 0;
+      var p = parseFloat(inputsNum[1].value) || 0;
+      if (desc && q > 0) {
+        itens.push({ desc: desc, qtd: q, preco: p });
+      }
+    });
+    return itens;
+  }
+
   document.getElementById("gerar-btn").addEventListener("click", function(){
-    var nome = document.getElementById("cli-nome").value.trim();
-    var email = document.getElementById("cli-email").value.trim();
-    var emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-    if (!nome || !emailValido) {
-      alert("Preencha o nome e um e-mail válido do cliente antes de gerar o orçamento.");
-      document.getElementById("cli-nome").focus();
+    var profNome = document.getElementById("prof-nome").value.trim();
+    if (!profNome) {
+      alert("Informe o nome do eletricista ou da empresa antes de gerar o orçamento.");
+      document.getElementById("prof-nome").focus();
       return;
     }
 
-    if (itensBody.querySelectorAll("tr").length === 0) {
-      alert("Adicione pelo menos um serviço ao orçamento.");
+    var itens = coletarItens();
+    if (itens.length === 0) {
+      alert("Adicione pelo menos um serviço com descrição, quantidade e preço antes de gerar o orçamento.");
       return;
     }
+
+    var profTel = document.getElementById("prof-tel").value.trim();
+    var visita = parseFloat(document.getElementById("visita").value) || 0;
+    var deslocamento = parseFloat(document.getElementById("deslocamento").value) || 0;
+    var desconto = parseFloat(document.getElementById("desconto").value) || 0;
+    var validade = parseInt(document.getElementById("validade").value, 10) || 15;
+    var observacoes = document.getElementById("observacoes").value.trim();
+
+    var subtotalItens = itens.reduce(function(acc, it){ return acc + it.qtd * it.preco; }, 0);
+    var total = Math.max(0, subtotalItens + visita + deslocamento - desconto);
 
     var hoje = new Date();
     var idOrc = "ORC-" + hoje.getFullYear() + String(hoje.getMonth()+1).padStart(2,"0") + String(hoje.getDate()).padStart(2,"0") + "-" + Math.floor(Math.random()*900+100);
-    document.getElementById("orcamento-id").textContent =
-      "Orçamento nº " + idOrc + " — gerado em " + hoje.toLocaleDateString("pt-BR");
 
+    document.getElementById("doc-prof-nome").textContent = profNome;
+    document.getElementById("doc-prof-tel").textContent = profTel ? ("Contato: " + profTel) : "";
+    document.getElementById("doc-id").textContent = "Orçamento nº " + idOrc;
+    document.getElementById("doc-data").textContent = "Emitido em " + hoje.toLocaleDateString("pt-BR");
+
+    var docBody = document.getElementById("doc-itens-body");
+    docBody.innerHTML = "";
+    itens.forEach(function(it){
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td>" + escapeHtml(it.desc) + "</td>" +
+        "<td class='qtd'>" + it.qtd + "</td>" +
+        "<td class='preco'>" + formatBRL(it.preco) + "</td>" +
+        "<td class='sub'>" + formatBRL(it.qtd * it.preco) + "</td>";
+      docBody.appendChild(tr);
+    });
+
+    document.getElementById("doc-subtotal-itens").textContent = formatBRL(subtotalItens);
+    document.getElementById("doc-total").textContent = formatBRL(total);
+
+    toggleLinha("doc-linha-visita", "doc-visita", visita);
+    toggleLinha("doc-linha-deslocamento", "doc-deslocamento", deslocamento);
+    toggleLinha("doc-linha-desconto", "doc-desconto", desconto, true);
+
+    var obsWrap = document.getElementById("doc-obs-wrap");
+    if (observacoes) {
+      obsWrap.style.display = "";
+      document.getElementById("doc-observacoes").textContent = observacoes;
+    } else {
+      obsWrap.style.display = "none";
+    }
+
+    document.getElementById("doc-validade").textContent = "Orçamento válido por " + validade + " dia" + (validade === 1 ? "" : "s") + ".";
+
+    editorView.style.display = "none";
+    documentoView.style.display = "block";
+    window.scrollTo(0, 0);
+  });
+
+  function toggleLinha(linhaId, valorId, valor, negativo){
+    var linha = document.getElementById(linhaId);
+    if (valor > 0) {
+      linha.style.display = "flex";
+      document.getElementById(valorId).textContent = (negativo ? "- " : "") + formatBRL(valor);
+    } else {
+      linha.style.display = "none";
+    }
+  }
+
+  function escapeHtml(str){
+    var div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  document.getElementById("baixar-btn").addEventListener("click", function(){
     window.print();
+  });
+
+  document.getElementById("editar-btn").addEventListener("click", function(){
+    documentoView.style.display = "none";
+    editorView.style.display = "block";
+    window.scrollTo(0, 0);
   });
 
   document.getElementById("limpar-btn").addEventListener("click", function(){
     if (!confirm("Isso vai apagar todos os itens e dados preenchidos. Deseja continuar?")) return;
     itensBody.innerHTML = "";
+    document.getElementById("prof-nome").value = "";
+    document.getElementById("prof-tel").value = "";
     document.getElementById("visita").value = 0;
     document.getElementById("deslocamento").value = 0;
     document.getElementById("desconto").value = 0;
     document.getElementById("observacoes").value = "";
-    document.getElementById("cli-nome").value = "";
-    document.getElementById("cli-email").value = "";
-    document.getElementById("orcamento-id").textContent = "";
+    document.getElementById("validade").value = 15;
+    addItemRow("", 1, 0);
     recalcular();
   });
 
