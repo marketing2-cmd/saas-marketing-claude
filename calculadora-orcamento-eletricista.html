@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Orçamento — Eletricista</title>
+<style>
+  :root{
+    --laranja: #f7941d;
+    --laranja-esc: #e05a1b;
+    --vermelho: #e8262a;
+    --vermelho-esc: #b91c1c;
+    --tinta: #241a15;
+    --texto: #3a2e28;
+    --bg: #fdf6f0;
+    --card: #ffffff;
+    --borda: #f0ddc8;
+    --sombra: 0 10px 30px rgba(178, 60, 20, 0.10);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    background: linear-gradient(180deg, #fff8f1 0%, var(--bg) 100%);
+    color: var(--texto);
+    padding-bottom: 60px;
+  }
+  header{
+    background: linear-gradient(120deg, var(--vermelho-esc) 0%, var(--vermelho) 35%, var(--laranja) 100%);
+    padding: 28px 20px 34px;
+    color:#fff;
+    box-shadow: var(--sombra);
+  }
+  .header-inner{
+    max-width: 900px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .logo{ display:flex; align-items:center; gap:10px; }
+  .logo svg{ height:44px; width:auto; display:block; }
+  .logo-text{ font-weight:800; font-size:1.05rem; letter-spacing:0.5px; }
+  .logo-text small{ display:block; font-weight:500; font-size:0.7rem; opacity:0.85; letter-spacing:1px; }
+  h1{
+    max-width:900px;
+    margin: 18px auto 0;
+    padding: 0 20px;
+    font-size: 1.6rem;
+    color: var(--vermelho-esc);
+  }
+  .subtitulo{
+    max-width:900px;
+    margin: 4px auto 0;
+    padding: 0 20px;
+    font-size: 0.95rem;
+    opacity:0.9;
+  }
+  main{
+    max-width: 900px;
+    margin: -18px auto 0;
+    padding: 0 20px;
+  }
+  .card{
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    box-shadow: var(--sombra);
+    padding: 22px 22px 26px;
+    margin-bottom: 22px;
+  }
+  .card h2{
+    margin: 0 0 4px;
+    font-size: 1.05rem;
+    color: var(--vermelho-esc);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .card h2 .num{
+    background: var(--laranja);
+    color:#fff;
+    width:24px;height:24px;
+    border-radius:50%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.8rem;
+    flex:none;
+  }
+  .card .hint{ font-size:0.82rem; color:#8a7468; margin: 0 0 16px; }
+
+  .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+  .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  .field label{ font-size:0.82rem; font-weight:600; color:#6b564a; }
+  input[type=text], input[type=email], input[type=tel], input[type=number], select{
+    border: 1.5px solid var(--borda);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--tinta);
+    background:#fffdfb;
+    outline:none;
+    transition: border-color .15s, box-shadow .15s;
+    width:100%;
+  }
+  input:focus, select:focus{
+    border-color: var(--laranja);
+    box-shadow: 0 0 0 3px rgba(247,148,29,0.18);
+  }
+
+  table{ width:100%; border-collapse: collapse; margin-top:6px; }
+  thead th{
+    text-align:left;
+    font-size:0.75rem;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    color:#a4897a;
+    padding: 6px 6px;
+    border-bottom: 2px solid var(--borda);
+  }
+  tbody td{ padding:8px 6px; border-bottom:1px solid #f4e7da; vertical-align:middle; }
+  tbody tr:last-child td{ border-bottom:none; }
+  td.col-desc{ width:40%; }
+  td.col-qtd{ width:12%; }
+  td.col-preco{ width:18%; }
+  td.col-sub{ width:20%; font-weight:700; color:var(--vermelho-esc); white-space:nowrap; }
+  td.col-del{ width:5%; text-align:center; }
+
+  .btn-del{
+    background:none; border:none; color:#c96a5b; font-size:1.2rem; cursor:pointer;
+    line-height:1; padding:4px 8px; border-radius:6px;
+  }
+  .btn-del:hover{ background:#fdeceb; }
+
+  .presets{ display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:flex-end;}
+  .presets .field{ margin-bottom:0; flex:1; min-width:220px; }
+
+  .btn{
+    border:none; border-radius:9px; padding:11px 20px; font-size:0.95rem; font-weight:700;
+    cursor:pointer; transition: transform .08s, filter .15s; font-family:inherit;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn-primary{
+    background: linear-gradient(120deg, var(--laranja-esc), var(--laranja));
+    color:#fff;
+  }
+  .btn-primary:hover{ filter:brightness(1.05); }
+  .btn-outline{
+    background:#fff; color: var(--vermelho-esc); border:1.5px solid var(--vermelho);
+  }
+  .btn-outline:hover{ background:#fff5f3; }
+  .btn-block{ width:100%; }
+  .btn-row{ display:flex; gap:12px; flex-wrap:wrap; }
+
+  .totais{ margin-top:10px; }
+  .totais .linha{
+    display:flex; justify-content:space-between; padding:7px 0; font-size:0.95rem;
+    border-bottom:1px dashed var(--borda);
+  }
+  .totais .linha input{ max-width:150px; text-align:right; }
+  .totais .linha.total{
+    border-bottom:none; margin-top:6px; padding-top:14px; border-top:2px solid var(--laranja);
+    font-size:1.3rem; font-weight:800; color: var(--vermelho-esc);
+  }
+
+  .cliente-card{
+    background: linear-gradient(135deg, #fff7ee, #fff);
+    border: 1.5px solid var(--laranja);
+  }
+  .required::after{ content:" *"; color:var(--vermelho); }
+
+  footer{
+    max-width:900px; margin: 10px auto 0; padding: 0 20px;
+    text-align:center; color:#a4897a; font-size:0.82rem;
+  }
+  footer strong{ color:var(--vermelho-esc); }
+
+  #orcamento-id{ font-size:0.8rem; color:#a4897a; margin-top:2px; }
+
+  @media (max-width: 640px){
+    .grid2{ grid-template-columns: 1fr; }
+    thead th:nth-child(2), thead th:nth-child(3){ display:none; }
+    td.col-qtd, td.col-preco{ display:block; width:auto; }
+    table, tbody, tr, td{ display:block; width:100%; }
+    tbody tr{ border-bottom:2px solid var(--borda); padding-bottom:10px; margin-bottom:10px; }
+    td.col-desc::before{ content:"Serviço/Item"; display:block; font-size:0.7rem; color:#a4897a; }
+    td.col-qtd::before{ content:"Qtd."; display:block; font-size:0.7rem; color:#a4897a; }
+    td.col-preco::before{ content:"Preço unit. (R$)"; display:block; font-size:0.7rem; color:#a4897a; }
+    td.col-sub::before{ content:"Subtotal: "; font-size:0.7rem; color:#a4897a; font-weight:400; }
+    td.col-del{ text-align:left; }
+  }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    header{ box-shadow:none; }
+    .card{ box-shadow:none; border:1px solid #ddd; break-inside:avoid; }
+    .no-print{ display:none !important; }
+    input, select{ border:none; background:transparent; padding:2px 0; }
+    .btn-del{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo" aria-label="Contattos+">
+      <svg viewBox="0 0 300 60" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+        <defs>
+          <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#f7941d"/>
+            <stop offset="100%" stop-color="#e8262a"/>
+          </linearGradient>
+        </defs>
+        <text x="0" y="42" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-style="italic" font-size="40" textLength="255" lengthAdjust="spacingAndGlyphs" fill="url(#grad)">CONTATTOS</text>
+        <polygon points="95,2 85,30 100,30 75,58 88,32 72,32" fill="#e8262a" stroke="#fff" stroke-width="1.5"/>
+        <text x="262" y="34" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="26" fill="#e8262a">+</text>
+      </svg>
+    </div>
+    <div class="logo-text" style="text-align:right;">
+      Ferramenta para profissionais
+      <small>ORÇAMENTO ONLINE</small>
+    </div>
+  </div>
+</header>
+
+<h1>Calculadora de Orçamento — Serviços Elétricos</h1>
+<p class="subtitulo">Preencha os dados abaixo, adicione os serviços realizados e gere o orçamento para enviar ao seu cliente.</p>
+
+<main>
+
+  <!-- DADOS DO PROFISSIONAL -->
+  <section class="card">
+    <h2><span class="num">1</span> Dados do eletricista / empresa</h2>
+    <p class="hint">Essas informações aparecem no topo do orçamento impresso.</p>
+    <div class="grid2">
+      <div class="field">
+        <label for="prof-nome">Nome do eletricista ou empresa</label>
+        <input type="text" id="prof-nome" placeholder="Ex: João Silva Elétrica">
+      </div>
+      <div class="field">
+        <label for="prof-tel">Telefone / WhatsApp</label>
+        <input type="tel" id="prof-tel" placeholder="(00) 00000-0000">
+      </div>
+    </div>
+  </section>
+
+  <!-- ITENS DO ORÇAMENTO -->
+  <section class="card">
+    <h2><span class="num">2</span> Serviços e materiais</h2>
+    <p class="hint">Escolha um serviço comum na lista ou digite manualmente, informe a quantidade e o preço unitário.</p>
+
+    <div class="presets no-print">
+      <div class="field">
+        <label for="preset-select">Adicionar serviço comum</label>
+        <select id="preset-select">
+          <option value="">Selecione um serviço...</option>
+        </select>
+      </div>
+      <button class="btn btn-outline" id="add-preset-btn" type="button">+ Adicionar</button>
+      <button class="btn btn-outline" id="add-blank-btn" type="button">+ Item em branco</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="col-desc">Serviço / Item</th>
+          <th class="col-qtd">Qtd.</th>
+          <th class="col-preco">Preço unit. (R$)</th>
+          <th class="col-sub">Subtotal</th>
+          <th class="col-del no-print"></th>
+        </tr>
+      </thead>
+      <tbody id="itens-body"></tbody>
+    </table>
+  </section>
+
+  <!-- CUSTOS ADICIONAIS E TOTAIS -->
+  <section class="card">
+    <h2><span class="num">3</span> Custos adicionais e total</h2>
+    <div class="totais">
+      <div class="linha">
+        <label for="visita">Taxa de visita técnica (R$)</label>
+        <input type="number" id="visita" min="0" step="0.01" value="0">
+      </div>
+      <div class="linha">
+        <label for="deslocamento">Deslocamento / frete de material (R$)</label>
+        <input type="number" id="deslocamento" min="0" step="0.01" value="0">
+      </div>
+      <div class="linha">
+        <label for="desconto">Desconto (R$)</label>
+        <input type="number" id="desconto" min="0" step="0.01" value="0">
+      </div>
+      <div class="linha">
+        <span>Subtotal dos itens</span>
+        <strong id="subtotal-itens">R$ 0,00</strong>
+      </div>
+      <div class="linha total">
+        <span>TOTAL DO ORÇAMENTO</span>
+        <span id="total-geral">R$ 0,00</span>
+      </div>
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label for="validade">Orçamento válido por (dias)</label>
+      <input type="number" id="validade" min="1" value="15" style="max-width:120px;">
+    </div>
+    <div class="field">
+      <label for="observacoes">Observações</label>
+      <input type="text" id="observacoes" placeholder="Ex: pagamento em até 3x, garantia de 90 dias nos serviços">
+    </div>
+  </section>
+
+  <!-- DADOS DO CLIENTE (FINAL) -->
+  <section class="card cliente-card">
+    <h2><span class="num">4</span> Dados do cliente</h2>
+    <p class="hint">Preencha o nome e e-mail do cliente para finalizar o orçamento.</p>
+    <div class="grid2">
+      <div class="field">
+        <label for="cli-nome" class="required">Nome do cliente</label>
+        <input type="text" id="cli-nome" placeholder="Nome completo" required>
+      </div>
+      <div class="field">
+        <label for="cli-email" class="required">E-mail do cliente</label>
+        <input type="email" id="cli-email" placeholder="cliente@email.com" required>
+      </div>
+    </div>
+    <div id="orcamento-id"></div>
+
+    <div class="btn-row no-print" style="margin-top:10px;">
+      <button class="btn btn-primary" id="gerar-btn" type="button">Gerar e imprimir orçamento (PDF)</button>
+      <button class="btn btn-outline" id="limpar-btn" type="button">Limpar tudo</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Desenvolvido por <strong>Contattos+</strong> — ferramenta gratuita para orçamentos de serviços elétricos.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var PRESETS = [
+    { nome: "Ponto de luz (instalação)", preco: 80 },
+    { nome: "Ponto de tomada (instalação)", preco: 90 },
+    { nome: "Troca de disjuntor", preco: 60 },
+    { nome: "Instalação de quadro de distribuição", preco: 450 },
+    { nome: "Instalação de chuveiro elétrico", preco: 120 },
+    { nome: "Instalação de ventilador de teto", preco: 100 },
+    { nome: "Instalação de luminária", preco: 70 },
+    { nome: "Troca de fiação (por ponto)", preco: 110 },
+    { nome: "Instalação de interruptor", preco: 60 },
+    { nome: "Aterramento", preco: 350 },
+    { nome: "Padrão de entrada de energia", preco: 900 },
+    { nome: "Instalação de ar-condicionado (elétrica)", preco: 250 },
+    { nome: "Visita técnica / diagnóstico", preco: 80 },
+    { nome: "Hora técnica avulsa", preco: 90 }
+  ];
+
+  var itensBody = document.getElementById("itens-body");
+  var presetSelect = document.getElementById("preset-select");
+
+  PRESETS.forEach(function(p, i){
+    var opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = p.nome + " — " + formatBRL(p.preco);
+    presetSelect.appendChild(opt);
+  });
+
+  function formatBRL(valor){
+    var n = Number(valor) || 0;
+    return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  }
+
+  function addItemRow(descricao, qtd, preco){
+    var tr = document.createElement("tr");
+
+    var tdDesc = document.createElement("td");
+    tdDesc.className = "col-desc";
+    var inputDesc = document.createElement("input");
+    inputDesc.type = "text";
+    inputDesc.value = descricao || "";
+    inputDesc.placeholder = "Descrição do serviço";
+    tdDesc.appendChild(inputDesc);
+
+    var tdQtd = document.createElement("td");
+    tdQtd.className = "col-qtd";
+    var inputQtd = document.createElement("input");
+    inputQtd.type = "number";
+    inputQtd.min = "0";
+    inputQtd.step = "1";
+    inputQtd.value = qtd != null ? qtd : 1;
+    tdQtd.appendChild(inputQtd);
+
+    var tdPreco = document.createElement("td");
+    tdPreco.className = "col-preco";
+    var inputPreco = document.createElement("input");
+    inputPreco.type = "number";
+    inputPreco.min = "0";
+    inputPreco.step = "0.01";
+    inputPreco.value = preco != null ? preco : 0;
+    tdPreco.appendChild(inputPreco);
+
+    var tdSub = document.createElement("td");
+    tdSub.className = "col-sub";
+    tdSub.textContent = formatBRL((qtd != null ? qtd : 1) * (preco != null ? preco : 0));
+
+    var tdDel = document.createElement("td");
+    tdDel.className = "col-del no-print";
+    var btnDel = document.createElement("button");
+    btnDel.type = "button";
+    btnDel.className = "btn-del";
+    btnDel.innerHTML = "&times;";
+    btnDel.title = "Remover item";
+    btnDel.addEventListener("click", function(){
+      tr.remove();
+      recalcular();
+    });
+    tdDel.appendChild(btnDel);
+
+    function atualizarSubtotal(){
+      var q = parseFloat(inputQtd.value) || 0;
+      var p = parseFloat(inputPreco.value) || 0;
+      tdSub.textContent = formatBRL(q * p);
+      recalcular();
+    }
+    inputQtd.addEventListener("input", atualizarSubtotal);
+    inputPreco.addEventListener("input", atualizarSubtotal);
+    inputDesc.addEventListener("input", recalcular);
+
+    tr.appendChild(tdDesc);
+    tr.appendChild(tdQtd);
+    tr.appendChild(tdPreco);
+    tr.appendChild(tdSub);
+    tr.appendChild(tdDel);
+
+    itensBody.appendChild(tr);
+  }
+
+  function recalcular(){
+    var subtotalItens = 0;
+    itensBody.querySelectorAll("tr").forEach(function(tr){
+      var inputs = tr.querySelectorAll("input[type=number]");
+      var q = parseFloat(inputs[0].value) || 0;
+      var p = parseFloat(inputs[1].value) || 0;
+      subtotalItens += q * p;
+    });
+
+    var visita = parseFloat(document.getElementById("visita").value) || 0;
+    var deslocamento = parseFloat(document.getElementById("deslocamento").value) || 0;
+    var desconto = parseFloat(document.getElementById("desconto").value) || 0;
+
+    var total = subtotalItens + visita + deslocamento - desconto;
+    if (total < 0) total = 0;
+
+    document.getElementById("subtotal-itens").textContent = formatBRL(subtotalItens);
+    document.getElementById("total-geral").textContent = formatBRL(total);
+  }
+
+  document.getElementById("add-preset-btn").addEventListener("click", function(){
+    var idx = presetSelect.value;
+    if (idx === "") { return; }
+    var p = PRESETS[idx];
+    addItemRow(p.nome, 1, p.preco);
+    recalcular();
+    presetSelect.value = "";
+  });
+
+  document.getElementById("add-blank-btn").addEventListener("click", function(){
+    addItemRow("", 1, 0);
+    recalcular();
+  });
+
+  ["visita", "deslocamento", "desconto"].forEach(function(id){
+    document.getElementById(id).addEventListener("input", recalcular);
+  });
+
+  document.getElementById("gerar-btn").addEventListener("click", function(){
+    var nome = document.getElementById("cli-nome").value.trim();
+    var email = document.getElementById("cli-email").value.trim();
+    var emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    if (!nome || !emailValido) {
+      alert("Preencha o nome e um e-mail válido do cliente antes de gerar o orçamento.");
+      document.getElementById("cli-nome").focus();
+      return;
+    }
+
+    if (itensBody.querySelectorAll("tr").length === 0) {
+      alert("Adicione pelo menos um serviço ao orçamento.");
+      return;
+    }
+
+    var hoje = new Date();
+    var idOrc = "ORC-" + hoje.getFullYear() + String(hoje.getMonth()+1).padStart(2,"0") + String(hoje.getDate()).padStart(2,"0") + "-" + Math.floor(Math.random()*900+100);
+    document.getElementById("orcamento-id").textContent =
+      "Orçamento nº " + idOrc + " — gerado em " + hoje.toLocaleDateString("pt-BR");
+
+    window.print();
+  });
+
+  document.getElementById("limpar-btn").addEventListener("click", function(){
+    if (!confirm("Isso vai apagar todos os itens e dados preenchidos. Deseja continuar?")) return;
+    itensBody.innerHTML = "";
+    document.getElementById("visita").value = 0;
+    document.getElementById("deslocamento").value = 0;
+    document.getElementById("desconto").value = 0;
+    document.getElementById("observacoes").value = "";
+    document.getElementById("cli-nome").value = "";
+    document.getElementById("cli-email").value = "";
+    document.getElementById("orcamento-id").textContent = "";
+    recalcular();
+  });
+
+  // linha inicial de exemplo
+  addItemRow("", 1, 0);
+  recalcular();
+})();
+</script>
+
+</body>
+</html>
