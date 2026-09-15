@@ -44,7 +44,7 @@ export default function ApprovalPanel({ initialProfiles }) {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div className="flex gap-4">
-          <Link href="/" className="text-sm font-semibold text-[#0038FF]">
+          <Link href="/" className="text-sm font-semibold text-brand-red">
             ← Voltar ao app
           </Link>
           <Link href="/admin/sorteio" className="text-sm font-semibold text-[#8A8DA0]">
@@ -78,7 +78,7 @@ export default function ApprovalPanel({ initialProfiles }) {
                 <button
                   disabled={busyId === p.id}
                   onClick={() => act(p.id, "approve")}
-                  className="rounded-md bg-[#0038FF] px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-60"
+                  className="rounded-md bg-gradient-to-r from-brand-amber via-brand-orange to-brand-red px-3 py-1.5 text-sm font-bold text-white shadow-sm disabled:opacity-60"
                 >
                   Aprovar
                 </button>
@@ -104,7 +104,7 @@ export default function ApprovalPanel({ initialProfiles }) {
             <div key={p.id} className="flex items-center justify-between rounded-md border border-[#EAECEF] bg-white p-4">
               <div className="font-semibold text-[#0A0E1A]">
                 {p.email}
-                {p.role === "admin" && <span className="ml-1 text-xs font-normal text-[#0038FF]">(admin)</span>}
+                {p.role === "admin" && <span className="ml-1 text-xs font-normal text-brand-red">(admin)</span>}
               </div>
               <span className="text-sm font-semibold" style={{ color: STATUS_COLOR[p.status] }}>
                 {STATUS_LABEL[p.status]}

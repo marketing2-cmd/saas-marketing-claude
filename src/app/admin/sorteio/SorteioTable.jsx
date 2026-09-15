@@ -60,7 +60,7 @@ export default function SorteioTable({ initialEntries }) {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div className="flex gap-4">
-          <Link href="/admin" className="text-sm font-semibold text-[#0038FF]">
+          <Link href="/admin" className="text-sm font-semibold text-brand-red">
             ← Aprovação de cadastros
           </Link>
           <Link href="/" className="text-sm font-semibold text-[#8A8DA0]">
@@ -77,12 +77,12 @@ export default function SorteioTable({ initialEntries }) {
           placeholder="Buscar por nome, CPF, e-mail ou número..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full max-w-sm rounded-md border border-[#DDE0E6] px-3 py-2 text-sm outline-none focus:border-[#0038FF]"
+          className="w-full max-w-sm rounded-md border border-[#DDE0E6] px-3 py-2 text-sm outline-none focus:border-brand-red"
         />
         <button
           onClick={exportCSV}
           disabled={entries.length === 0}
-          className="whitespace-nowrap rounded-md border border-[#DDE0E6] bg-white px-3 py-2 text-sm font-semibold text-[#0A0E1A] disabled:opacity-60"
+          className="whitespace-nowrap rounded-md bg-gradient-to-r from-brand-amber via-brand-orange to-brand-red px-3 py-2 text-sm font-bold text-white shadow-sm disabled:opacity-60"
         >
           Exportar CSV
         </button>
@@ -107,7 +107,7 @@ export default function SorteioTable({ initialEntries }) {
           <tbody>
             {entries.map((entry) => (
               <tr key={entry.id} className="border-b border-[#EAECEF] last:border-0">
-                <td className="px-4 py-3 font-bold text-[#0038FF]">{entry.raffle_number}</td>
+                <td className="px-4 py-3 font-bold text-brand-red">{entry.raffle_number}</td>
                 <td className="px-4 py-3">{entry.name}</td>
                 <td className="px-4 py-3">{entry.phone}</td>
                 <td className="px-4 py-3">{entry.cpf}</td>
