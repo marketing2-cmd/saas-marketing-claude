@@ -43,9 +43,14 @@ export default function ApprovalPanel({ initialProfiles }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <Link href="/" className="text-sm font-semibold text-[#0038FF]">
-          ← Voltar ao app
-        </Link>
+        <div className="flex gap-4">
+          <Link href="/" className="text-sm font-semibold text-[#0038FF]">
+            ← Voltar ao app
+          </Link>
+          <Link href="/admin/sorteio" className="text-sm font-semibold text-[#8A8DA0]">
+            Participantes do sorteio
+          </Link>
+        </div>
         <button onClick={handleLogout} className="text-sm font-semibold text-[#8A8DA0]">
           Sair
         </button>

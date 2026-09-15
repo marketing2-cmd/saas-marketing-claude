@@ -214,3 +214,31 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- ============================================================================
+-- SORTEIO — cadastro de participantes
+-- ============================================================================
+--
+-- Página pública em /sorteio: o cliente informa nome, celular, CPF, e-mail,
+-- número da nota fiscal e data da compra; a rota /api/sorteio valida os dados,
+-- gera um número da sorte aleatório e único e devolve na hora para o cliente.
+-- Sem policies de RLS (igual às tabelas de dados no topo deste arquivo): só a
+-- service role key (usada pela rota /api/sorteio) lê/grava aqui — o admin vê a
+-- lista em /admin/sorteio.
+
+create table if not exists raffle_entries (
+  id text primary key,
+  name text not null,
+  phone text not null,
+  cpf text not null,
+  email text not null,
+  receipt_number text not null,
+  purchase_date date not null,
+  raffle_number text not null unique,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_raffle_entries_created_at on raffle_entries (created_at);
+create index if not exists idx_raffle_entries_cpf on raffle_entries (cpf);
+
+alter table raffle_entries enable row level security;

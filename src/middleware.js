@@ -3,10 +3,20 @@ import { NextResponse } from "next/server";
 
 const PUBLIC_PATHS = ["/login", "/signup"];
 
+// Página do sorteio: qualquer cliente acessa sem login (não é parte do
+// Marketing OS em si, é o formulário público de inscrição), então fica de
+// fora do gate de autenticação inteiro — nada de redirecionar para /login
+// nem para /pending.
+const OPEN_PATHS = ["/sorteio"];
+
 // Roda em toda navegação de página (não em /api — cada rota de API faz sua
 // própria checagem via src/lib/supabase/authGuard.js, que responde com JSON
 // em vez de redirecionar para uma página HTML).
 export async function middleware(request) {
+  if (OPEN_PATHS.includes(request.nextUrl.pathname)) {
+    return NextResponse.next({ request });
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
