@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import ContattosLogo from "@/components/ContattosLogo";
 import ApprovalPanel from "./ApprovalPanel";
 
 export default async function AdminPage() {
@@ -11,6 +12,7 @@ export default async function AdminPage() {
   return (
     <div className="min-h-screen bg-[#F5F6F3] p-6 md:p-10">
       <div className="mx-auto max-w-3xl">
+        <ContattosLogo size="sm" className="mb-4" />
         <h1 className="mb-1 text-xl font-bold text-[#0A0E1A]">Aprovação de cadastros</h1>
         <p className="mb-6 text-sm text-[#8A8DA0]">Marketing OS — Contattos+</p>
         <ApprovalPanel initialProfiles={profiles || []} />

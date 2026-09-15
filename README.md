@@ -226,6 +226,29 @@ build/deploy continua funcionando normalmente (as rotas `/api/*` são forçadas 
 runtime, nunca em build time) — mas sem as `NEXT_PUBLIC_*` corretas o login não funciona,
 já que o middleware precisa delas para toda navegação de página.
 
+## Sorteio (cadastro de participantes)
+
+Duas páginas novas, fora do fluxo de login do Marketing OS:
+
+- **`/sorteio`** — pública, sem necessidade de login. O cliente preenche nome,
+  celular, CPF, e-mail, número da nota fiscal e data da compra. A rota
+  `POST /api/sorteio` valida os dados (CPF validado pelo algoritmo oficial dos
+  dígitos verificadores, em `src/lib/cpf.js`), grava o registro em
+  `raffle_entries` com um número da sorte aleatório de 6 dígitos (gerando outro
+  em caso de colisão, já que a coluna é `unique`) e devolve esse número na
+  hora — é o que aparece na tela para o cliente guardar.
+- **`/admin/sorteio`** — só para admin (mesma regra de `/admin` no
+  `middleware.js`). Lista todos os participantes (nome, celular, CPF, e-mail,
+  nota fiscal, data da compra, número sorteado e data do cadastro), com busca e
+  exportação para CSV. Tem um link a partir de `/admin`.
+
+Como as outras tabelas de dados, `raffle_entries` tem RLS habilitado sem
+nenhuma policy — só é lida/gravada pela `SUPABASE_SERVICE_ROLE_KEY`, usada
+pela rota `/api/sorteio` (que faz sua própria validação de admin no `GET` via
+`requireAdmin()`, já que a página pública de cadastro é o único jeito de
+`POST` sem estar logado). Veja a seção "SORTEIO" em `supabase/schema.sql`
+para o DDL.
+
 ## O que ficou fora do escopo (de propósito)
 
 - **Reset de senha / "esqueci minha senha"**: o Supabase Auth já suporta isso
