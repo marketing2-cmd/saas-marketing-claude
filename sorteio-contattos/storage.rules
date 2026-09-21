@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Fotos das notas fiscais enviadas pelos participantes do sorteio.
+    // Qualquer visitante pode enviar (é o próprio formulário público),
+    // mas só um admin autenticado pode ler de volta — evita que alguém
+    // adivinhe/liste a URL de nota fiscal de outra pessoa.
+    match /notas-fiscais/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.resource.size < 8 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if false;
+    }
+  }
+}

@@ -1,0 +1,71 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Um admin é cadastrado manualmente pelo dono do projeto: cria o usuário
+    // em Authentication > Users e depois cria um documento em
+    // admins/{uid_do_usuario} (o conteúdo do documento não importa).
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Contador usado para gerar números da sorte sequenciais e únicos.
+    // Documento único: counters/sorteio, criado manualmente uma vez com
+    // { lastNumber: 1000 }.
+    match /counters/{counterId} {
+      allow get: if counterId == 'sorteio';
+      allow list: if false;
+      allow create: if false;
+      allow delete: if false;
+      allow update: if counterId == 'sorteio'
+        && request.resource.data.keys().hasOnly(['lastNumber'])
+        && request.resource.data.lastNumber is int
+        && request.resource.data.lastNumber > resource.data.lastNumber
+        && request.resource.data.lastNumber <= resource.data.lastNumber + 200;
+    }
+
+    // Cadastros do sorteio. Qualquer visitante pode criar o próprio
+    // cadastro (é o formulário público), desde que os dados enviados
+    // sejam válidos. Ninguém além do admin pode ler, alterar ou apagar —
+    // isso impede que alguém liste ou raspe os dados de outros
+    // participantes (CPF, e-mail, celular) direto do navegador.
+    match /inscricoes/{id} {
+      allow create: if
+        request.resource.data.keys().hasAll(
+          ['nome', 'celular', 'cpf', 'email', 'valor', 'numeros', 'notaFiscalUrl', 'createdAt', 'status']
+        )
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() > 0
+        && request.resource.data.nome.size() < 200
+        && request.resource.data.celular is string
+        && request.resource.data.celular.size() > 0
+        && request.resource.data.cpf is string
+        && request.resource.data.cpf.size() > 0
+        && request.resource.data.email is string
+        && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && request.resource.data.valor is number
+        && request.resource.data.valor >= 250
+        && request.resource.data.numeros is list
+        && request.resource.data.numeros.size() > 0
+        && request.resource.data.numeros.size() == int(request.resource.data.valor / 250)
+        && request.resource.data.notaFiscalUrl is string
+        && request.resource.data.notaFiscalUrl.size() > 0
+        && request.resource.data.status == 'pendente'
+        && request.resource.data.createdAt == request.time;
+
+      allow read, delete: if isAdmin();
+
+      // Admin só pode alterar o campo de status (aprovar/desclassificar).
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['pendente', 'aprovado', 'desclassificado'];
+    }
+  }
+}
