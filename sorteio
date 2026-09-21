@@ -1,0 +1,7 @@
+cat > .env << 'EOF'
+VITE_FIREBASE_API_KEY=AIzaSyBg•••••••••••••••••••••••••••••••
+VITE_FIREBASE_AUTH_DOMAIN=paginadosorteiosinuca.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=paginadosorteiosinuca
+VITE_FIREBASE_MESSAGING_SENDER_ID=448997829823
+VITE_FIREBASE_APP_ID=1:448997829823:web:84289931d2c1364615aa0a
+EOF
