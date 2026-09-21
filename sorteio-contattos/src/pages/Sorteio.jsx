@@ -143,7 +143,11 @@ export default function Sorteio() {
       setResultado({ ...form, numeros, valorFormatado: formatCurrencyBRL(valorNum) });
     } catch (err) {
       console.error(err);
-      setSubmitError('Não conseguimos concluir seu cadastro agora. Tente novamente em instantes.');
+      setSubmitError(
+        err?.message?.includes('grande demais')
+          ? err.message
+          : 'Não conseguimos concluir seu cadastro agora. Tente novamente em instantes.'
+      );
     } finally {
       setSubmitting(false);
     }

@@ -123,6 +123,7 @@ function Dashboard({ user }) {
   const [busca, setBusca] = useState('');
   const [filtroStatus, setFiltroStatus] = useState('todos');
   const [vencedor, setVencedor] = useState(null);
+  const [fotoAberta, setFotoAberta] = useState(null);
 
   useEffect(() => {
     const q = query(collection(db, 'inscricoes'), orderBy('createdAt', 'desc'));
@@ -179,7 +180,7 @@ function Dashboard({ user }) {
 
   function exportarCsv() {
     const linhas = [
-      ['Nome', 'Celular', 'CPF', 'E-mail', 'Valor', 'Números', 'Status', 'Nota fiscal', 'Data'],
+      ['Nome', 'Celular', 'CPF', 'E-mail', 'Valor', 'Números', 'Status', 'Data'],
       ...(inscricoes || []).map((i) => [
         i.nome,
         i.celular,
@@ -188,7 +189,6 @@ function Dashboard({ user }) {
         i.valor,
         (i.numeros || []).join(' '),
         STATUS_LABEL[i.status] || i.status,
-        i.notaFiscalUrl,
         i.createdAt?.toDate ? formatDateTimeBR(i.createdAt.toDate()) : '',
       ]),
     ];
@@ -304,8 +304,13 @@ function Dashboard({ user }) {
                       </div>
                     </td>
                     <td style={{ padding: '12px 14px' }}>
-                      {i.notaFiscalUrl ? (
-                        <a href={i.notaFiscalUrl} target="_blank" rel="noreferrer">Ver foto</a>
+                      {i.notaFiscalFoto ? (
+                        <img
+                          src={i.notaFiscalFoto}
+                          alt="Nota fiscal"
+                          onClick={() => setFotoAberta(i.notaFiscalFoto)}
+                          style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 6, cursor: 'pointer', border: '1px solid #eee8de' }}
+                        />
                       ) : (
                         '—'
                       )}
@@ -346,6 +351,25 @@ function Dashboard({ user }) {
           </table>
         </div>
       </div>
+
+      {fotoAberta && (
+        <div
+          onClick={() => setFotoAberta(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(20,20,20,0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+            zIndex: 1000,
+            cursor: 'zoom-out',
+          }}
+        >
+          <img src={fotoAberta} alt="Nota fiscal" style={{ maxWidth: '100%', maxHeight: '90vh', borderRadius: 8 }} />
+        </div>
+      )}
     </div>
   );
 }
