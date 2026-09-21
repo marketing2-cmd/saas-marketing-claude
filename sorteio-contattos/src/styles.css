@@ -1,0 +1,86 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #F7F4EE;
+}
+
+a {
+  color: #D32027;
+}
+
+a:hover {
+  color: #A8181D;
+}
+
+input::placeholder {
+  color: #9a9490;
+}
+
+button {
+  font-family: inherit;
+}
+
+@keyframes floatSlow {
+  0% { transform: translateY(0) rotate(-6deg); }
+  50% { transform: translateY(-16px) rotate(-2deg); }
+  100% { transform: translateY(0) rotate(-6deg); }
+}
+
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes badgePop {
+  0% { transform: scale(0.7); opacity: 0; }
+  65% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.6) translateY(12px); opacity: 0; }
+  65% { transform: scale(1.06); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 130, 31, 0.35); }
+  50% { box-shadow: 0 0 0 16px rgba(245, 130, 31, 0); }
+}
+
+@keyframes stripeDrift {
+  0% { transform: translateX(-30px) rotate(-8deg); }
+  50% { transform: translateX(10px) rotate(-8deg); }
+  100% { transform: translateX(-30px) rotate(-8deg); }
+}
+
+@keyframes glowBreathe {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.08); }
+}
+
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(211, 32, 39, 0.5); }
+  50% { box-shadow: 0 0 0 10px rgba(211, 32, 39, 0); }
+}
+
+.cta-button:hover {
+  background: #A8181D !important;
+  transform: translateY(-2px);
+}
+
+.cta-button:active {
+  transform: translateY(0);
+}
+
+.step-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+}
+
+.form-input:focus {
+  border-color: #F5821F !important;
+}
