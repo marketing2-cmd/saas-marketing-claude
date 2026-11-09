@@ -5,6 +5,12 @@ const nextConfig = {
   async rewrites() {
     return [{ source: "/verbas", destination: "/verbas.html" }];
   },
+  // No endereço próprio do Verbas, a raiz abre direto o módulo.
+  async redirects() {
+    return [
+      { source: "/", has: [{ type: "host", value: "verbas-contattos.vercel.app" }], destination: "/verbas", permanent: false },
+    ];
+  },
 };
 
 export default nextConfig;
