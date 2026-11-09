@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/supabase/authGuard";
-import { getSupabaseServerClient } from "@/lib/supabaseServer";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +12,9 @@ export async function POST(request) {
   if (!userId) return NextResponse.json({ error: "userId é obrigatório." }, { status: 400 });
 
   try {
-    const supabase = getSupabaseServerClient();
+    // Sessão do próprio admin: a policy "profiles_update_admin" (supabase/verbas.sql)
+    // libera o update só para role = admin, sem precisar da service role key.
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("profiles")
       .update({ status: "approved", approved_at: new Date().toISOString(), approved_by: auth.user.sub })

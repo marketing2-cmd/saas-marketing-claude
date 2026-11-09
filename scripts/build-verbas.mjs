@@ -16,7 +16,7 @@ const shim = readFileSync(new URL("scripts/verbas-shim.js", root), "utf8");
 
 const swaps = [
   [
-    "Para a pessoa abrir o sistema, compartilhe o link do artefato com ela: <b>Colaborador</b> para Comercial, Compras e Financeiro; <b>Leitor</b> para a Diretoria (só visualiza).",
+    "Para a pessoa abrir o sistema, compartilhe o link do artefato com ela: <b>Colaborador</b> para Compras e Financeiro; <b>Leitor</b> para a Diretoria (só visualiza).",
     "Para entrar, a pessoa cria a conta no Marketing OS e você aprova em <a href=\"/admin\">Administração</a>. Depois, defina a área dela aqui. A área <b>Diretoria</b> só visualiza.",
   ],
   [

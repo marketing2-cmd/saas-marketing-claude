@@ -275,7 +275,60 @@ details.more > div{padding:0 16px 16px;display:flex;flex-direction:column;gap:10
 .people img{width:28px;height:28px;border-radius:50%}
 .people .nm{font-weight:600;margin-right:auto;min-width:0;overflow-wrap:anywhere}
 
+/* barra superior: trilha, busca global e alertas */
+.crumbs{font-size:.74rem;color:var(--muted);margin-bottom:2px;letter-spacing:.02em}
+.crumbs span{margin:0 5px;opacity:.55}
+.tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.search{position:relative;display:flex;align-items:center}
+.search > svg{position:absolute;left:10px;color:var(--muted);pointer-events:none}
+.search input{padding-left:34px;width:300px;border-radius:9px;height:38px}
+.gres{position:absolute;top:calc(100% + 6px);right:0;width:360px;max-width:calc(100vw - 32px);background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 16px 40px rgba(20,12,8,.16);padding:6px;z-index:50;display:flex;flex-direction:column;max-height:420px;overflow-y:auto}
+.gres[hidden]{display:none}
+.gres .k{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:8px 10px 4px;font-weight:700}
+.gres button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:8px 10px;border-radius:8px;border:0;background:none;cursor:pointer;width:100%}
+.gres button:hover,.gres button:focus-visible{background:var(--sunk)}
+.gres b{font-size:.88rem}
+.gres small{color:var(--muted);font-size:.76rem}
+.gres .none{padding:12px 10px;color:var(--muted);font-size:.86rem}
+.iconbtn{position:relative;width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;color:var(--ink);box-shadow:var(--shadow)}
+.iconbtn:hover{border-color:var(--muted)}
+.iconbtn .dotn{position:absolute;top:-6px;right:-6px;background:var(--bolt);color:#fff;font-size:.64rem;font-weight:700;border-radius:999px;padding:1px 6px;border:2px solid var(--bg)}
+.nav .badge.soft{background:#3d322c;color:var(--side-hi)}
+.kpi .bar{margin-top:6px;height:4px}
+.kpi .bar i{background:var(--accent)}
+/* funil */
+.fun-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:24px;align-items:stretch}
+.fun-gap{background:var(--amber-soft);border:1px solid var(--amber-strong);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.fun-gap .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--amber)}
+.fun-gap .big{font-family:var(--f-display);font-style:italic;font-weight:800;font-size:2.5rem;line-height:1}
+.fun-gap ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:.86rem}
+.fun-gap li{display:flex;justify-content:space-between;gap:10px;color:var(--muted)}
+.fun-gap li b{color:var(--ink);font-weight:600}
+.fun-bars{display:flex;flex-direction:column;justify-content:center;gap:14px}
+.fb{display:grid;grid-template-columns:minmax(150px,210px) minmax(0,1fr) 44px;gap:14px;align-items:center}
+.fb-l{display:flex;flex-direction:column;min-width:0}
+.fb-l span{font-size:.78rem;color:var(--muted);font-weight:600}
+.fb-l b{font-family:var(--f-display);font-size:1.3rem;font-weight:700;line-height:1.1}
+.fb-t{height:14px;background:var(--sunk);border-radius:7px;overflow:hidden}
+.fb-t i{display:block;height:100%;border-radius:7px}
+.fb-t i.s0{background:var(--muted)} .fb-t i.s1{background:var(--amber-strong)} .fb-t i.s2{background:var(--accent)} .fb-t i.s3{background:var(--ok)}
+.fb small{font-size:.8rem;color:var(--muted);text-align:right;font-weight:600}
+/* lista, segmentos, resumos */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;padding:2px;background:var(--surface);box-shadow:var(--shadow)}
+.seg button{border:0;background:none;padding:6px 12px;border-radius:7px;font-weight:600;font-size:.84rem;color:var(--muted);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.seg button.on{background:var(--ink);color:var(--surface)}
+.seg svg.i{width:15px;height:15px}
+th.sort{cursor:pointer;user-select:none}
+th.sort:hover{color:var(--ink)}
+td .sub{font-size:.78rem;color:var(--muted);white-space:normal}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.stat b{font-family:var(--f-display);font-size:1.7rem;font-weight:700;line-height:1.1}
+.stat span{font-size:.8rem;color:var(--muted)}
+.rel-wrap{background:var(--sunk);border-radius:var(--r);padding:16px}
 @media (max-width:1100px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:900px){.tools{width:100%}.search{flex:1}.search input{width:100%}.fun-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.fb{grid-template-columns:minmax(0,1fr) 40px}.fb-l{grid-column:1/-1}}
 @media (max-width:900px){
   .app{grid-template-columns:minmax(0,1fr)}
   .side{display:none}
@@ -489,6 +542,9 @@ details.more > div{padding:0 16px 16px;display:flex;flex-direction:column;gap:10
 /* ===================== constantes ===================== */
 const ANO = 2027;
 const AREAS = {marketing:"Marketing", comercial:"Comercial", compras:"Compras", financeiro:"Financeiro", diretoria:"Diretoria"};
+/* Marketing negocia as verbas e cria campanhas e relatórios; Compras negocia o pagamento nos pedidos; Financeiro confirma o recebimento. */
+const AREAS_ATIVAS = ["marketing","compras","financeiro","diretoria"];
+const AREAS_FLUXO = ["marketing","compras","financeiro"];
 const TIPOS = {fixa:"Fixa e assinada", executada:"Executada pelo fornecedor", condicionada:"Condicionada a meta", bonificacao:"Bonificação em mercadoria"};
 const TIPO_DESC = {
   fixa:"Valor garantido em acordo assinado.",
@@ -509,10 +565,10 @@ const TIPOS_ACAO = ["Tráfego pago","Painel","Blitz","Material no PDV","Pontos e
 const PAGO = {verba:"Verba do fornecedor", fornecedor:"Fornecedor paga direto", interno:"Verba interna"};
 const STATUS_C = {planejada:["Planejada","info"], andamento:["Em andamento","warn"], concluida:["Concluída","ok"], cancelada:["Cancelada",""]};
 const COLS = [
-  {k:"negociada", n:"Negociada", a:"Comercial ou Compras"},
-  {k:"formalizada", n:"Formalizada", a:"Comercial"},
+  {k:"negociada", n:"Negociada", a:"Marketing"},
+  {k:"formalizada", n:"Formalizada", a:"Marketing"},
   {k:"apuracao", n:"Em apuração", a:"Compras"},
-  {k:"confirmada", n:"Confirmada", a:"Comercial"},
+  {k:"confirmada", n:"Confirmada", a:"Marketing · Compras negocia o pagamento"},
   {k:"recebida", n:"Recebida", a:"Financeiro"},
   {k:"executada", n:"Executada", a:"Marketing"},
   {k:"comprovada", n:"Comprovada", a:"Marketing"},
@@ -520,10 +576,10 @@ const COLS = [
 const COLN = Object.fromEntries(COLS.map(c=>[c.k,c.n]));
 const ORDEM = {negociada:1, formalizada:2, apuracao:3, confirmada:4, recebida:5};
 const PODE = {
-  criar:["marketing","comercial","compras"], editar:["marketing","comercial","compras"],
-  formalizar:["marketing","comercial"], apuracao:["marketing","compras"], realizado:["marketing","compras","comercial"],
-  confirmar:["marketing","comercial"], receber:["marketing","financeiro"], executar:["marketing"], comprovar:["marketing"],
-  perder:["marketing","comercial","compras"], corrigir:["marketing"], config:["marketing"],
+  criar:["marketing"], editar:["marketing"],
+  formalizar:["marketing"], apuracao:["marketing","compras"], realizado:["marketing","compras"],
+  confirmar:["marketing"], receber:["marketing","financeiro"], executar:["marketing"], comprovar:["marketing"],
+  perder:["marketing"], corrigir:["marketing"], config:["marketing"],
   repasse:["marketing","compras"], nota:["marketing","financeiro"], campanha:["marketing"]};
 const MESES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
 const IC = {
@@ -537,7 +593,13 @@ const IC = {
   promessa:'<path d="M4 12h16M12 4v16"/>',
   check:'<path d="M5 12l5 5 9-10"/>',
   entrada:'<path d="M12 4v12M6 10l6 6 6-6M4 20h16"/>',
-  uso:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/>'};
+  uso:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/>',
+  relatorios:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',
+  busca:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
+  sino:'<path d="M6 9a6 6 0 0 1 12 0c0 6 3 8 3 8H3s3-2 3-8"/><path d="M10 21h4"/>',
+  baixar:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  lista:'<path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+  quadro:'<path d="M3 4h5v16H3zM10 4h5v10h-5zM17 4h4v13h-4z"/>'};
 const ico=(k,cls="i")=>`<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>`;
 
 /* ===================== estado ===================== */
@@ -545,7 +607,7 @@ const S = {
   db:null, user:null, uid:null, me:null, isOwner:false, canWrite:null, noDb:false,
   fornecedores:[], ciclos:[], verbas:[], campanhas:[], equipe:{}, pedidos:{}, feed:[], prof:{},
   ok:{}, slow:false, view:"painel",
-  fil:{forn:"", ciclo:"", tipo:"", area:""}, col:"negociada", fornBusca:"", fornFaixa:"", campFil:"",
+  fil:{forn:"", ciclo:"", tipo:"", area:""}, col:"negociada", fornBusca:"", fornFaixa:"", campFil:"", vview:"quadro", sort:{k:"prev",dir:"asc"},
   modal:null, dirty:false, histV:[], histUnsub:null, ownerSelfDone:false, acaoEdit:null
 };
 
@@ -631,17 +693,19 @@ function statusCampanha(v){
 function pendencias(v){
   const out=[]; if(v.etapa==="perdida") return out;
   const e=v.etapa, f=forn(v.fornecedorId)||{};
-  if(e==="negociada") out.push({area:"comercial", t:"Anexar o acordo e formalizar"});
-  if(f.distribuidor && !v.repasse && ORDEM[e]<=2) out.push({area:"compras", t:"Registrar o repasse negociado com o fabricante"});
-  if(e==="formalizada"){ if(temMeta(v)) out.push({area:"compras", t:"Iniciar a apuração da meta"}); else out.push({area:"comercial", t:"Confirmar a liberação da verba"}); }
+  if(e==="negociada") out.push({area:"marketing", t:"Anexar o acordo e formalizar"});
+  if(e==="formalizada"){ if(temMeta(v)) out.push({area:"compras", t:"Iniciar a apuração da meta"}); else out.push({area:"marketing", t:"Confirmar a liberação da verba"}); }
   else if(e==="apuracao"){
     const ult=(v.realizados||[]).map(r=>r.mes).sort().pop()||"";
     const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-1);const mp=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
     if(ult<mp) out.push({area:"compras", t:"Lançar o realizado de "+mesBR(mp)});
-    if(+v.meta>0 && realizado(v)>=v.meta) out.push({area:"comercial", t:"Meta batida: confirmar a verba"});
-    else if(v.apuracaoFim && v.apuracaoFim<hoje()) out.push({area:"comercial", t:"Apuração encerrada: confirmar ou marcar como perdida"});
+    if(+v.meta>0 && realizado(v)>=v.meta) out.push({area:"marketing", t:"Meta batida: confirmar a verba"});
+    else if(v.apuracaoFim && v.apuracaoFim<hoje()) out.push({area:"marketing", t:"Apuração encerrada: confirmar ou marcar como perdida"});
   }
-  else if(e==="confirmada") out.push({area:"financeiro", t:v.tipo==="bonificacao"&&!notaBonif(v)?"Registrar a nota de bonificação":"Registrar a entrada da verba"});
+  else if(e==="confirmada"){
+    if(!v.repasse) out.push({area:"compras", t:"Negociar o pagamento no pedido"});
+    out.push({area:"financeiro", t:v.tipo==="bonificacao"&&!notaBonif(v)?"Confirmar o recebimento da nota de bonificação":"Confirmar o recebimento"});
+  }
   if(!v.executadaEm && permitida(v)) out.push({area:"marketing", t:"Usar a verba em uma campanha"});
   if(v.executadaEm && !v.comprovadaEm) out.push({area:"marketing", t:"Enviar o relatório de contrapartida"});
   return out}
@@ -741,36 +805,46 @@ async function ownerSelf(){
   S.ownerSelfDone=true;
   try{await S.db.doc("equipe/"+S.uid).set({area:"marketing",desde:new Date().toISOString()});}catch(e){}
 }
-const VIEWS={painel:["Painel","Visão geral das verbas de "+ANO],verbas:["Verbas","Fluxo de cada verba, da negociação à comprovação"],campanhas:["Campanhas","Ciclos de sell-out, ações nas 3 camadas e uso das verbas"],fornecedores:["Fornecedores","Compras 2026, faixa e verbas por fornecedor"],config:["Configurar","Equipe, ciclos e atividade"]};
+const VIEWS={relatorios:["Relatórios","Relatórios de contrapartida para os fornecedores"],painel:["Painel","Visão geral das verbas de "+ANO],verbas:["Verbas","Fluxo de cada verba, da negociação à comprovação"],campanhas:["Campanhas","Ciclos de sell-out, ações nas 3 camadas e uso das verbas"],fornecedores:["Fornecedores","Compras 2026, faixa e verbas por fornecedor"],config:["Configurar","Equipe, ciclos e atividade"]};
 function route(){const h=(location.hash||"").replace("#","");S.view=VIEWS[h]?h:"painel";}
 
 /* ===================== renderização ===================== */
 function renderAll(){renderHeader();renderMain();if(S.modal&&!S.dirty)renderModal();}
-function navItems(){
+function navGroups(){
   const ar=area();
-  let it=[["painel","Painel"],["verbas","Verbas"],["campanhas","Campanhas"],["fornecedores","Fornecedores"]];
-  if(ar==="diretoria") it=[["painel","Painel"]];
-  if(ar==="marketing") it.push(["config","Configurar"]);
-  return it}
+  if(ar==="diretoria") return [["Visão geral",[["painel","Painel"]]]];
+  const g=[["Visão geral",[["painel","Painel"]]],["Operação",[["verbas","Verbas"],["campanhas","Campanhas"],["relatorios","Relatórios"]]],["Cadastros",[["fornecedores","Fornecedores"]]]];
+  if(ar==="marketing") g[2][1].push(["config","Configurar"]);
+  return g}
+function navItems(){return navGroups().flatMap(g=>g[1])}
+const NAV_CURTO={fornecedores:"Fornec.",config:"Config.",relatorios:"Relatórios"};
+function relPendentes(){return S.verbas.filter(v=>v.etapa!=="perdida"&&v.executadaEm&&!v.comprovadaEm).length}
 function renderHeader(){
   const ar=area();
   if(ar==="diretoria"&&S.view!=="painel")S.view="painel";
   if(S.view==="config"&&ar&&ar!=="marketing")S.view="painel";
   const nAl=alertas().length;
-  const badge=k=>k==="painel"&&nAl?`<span class="badge">${nAl}</span>`:"";
+  const ar0=area();
+  const nPend=ar0&&ar0!=="diretoria"?S.verbas.reduce((n,v)=>n+pendencias(v).filter(p=>p.area===ar0).length,0):0;
+  const nRel=relPendentes();
+  const badge=k=>k==="painel"&&nAl?`<span class="badge">${nAl}</span>`:k==="verbas"&&nPend?`<span class="badge soft">${nPend}</span>`:k==="relatorios"&&nRel?`<span class="badge soft">${nRel}</span>`:"";
   const it=navItems();
   $("#side").innerHTML=`<div class="logo"><span class="brandlogo" role="img" aria-label="Contattos+"></span><div><b>Verbas</b> <small>· verba cooperada ${ANO}</small></div></div>
-    <nav class="nav"><div class="cap">Gestão</div>${it.map(([k,n])=>`<a href="#${k}" class="${S.view===k?"on":""}">${ico(k)}<span>${n}</span>${badge(k)}</a>`).join("")}<div class="cap">Apps</div><a href="/">${ico("painel")}<span>Marketing OS</span></a></nav>
+    <nav class="nav">${navGroups().map(([cap,its])=>`<div class="cap">${cap}</div>${its.map(([k,n])=>`<a href="#${k}" class="${S.view===k?"on":""}">${ico(k)}<span>${n}</span>${badge(k)}</a>`).join("")}`).join("")}<div class="cap">Apps</div><a href="/">${ico("painel")}<span>Marketing OS</span></a></nav>
     ${S.me&&S.uid?`<div class="side-foot"><img alt="" src="${esc(S.me.avatarUrl)}"><div><b>${esc(S.me.name||"Você")}</b><small>${esc(ar?AREAS[ar]:"Sem área")}</small></div></div>`:""}`;
-  $("#bnav").innerHTML=it.map(([k,n])=>`<a href="#${k}" class="${S.view===k?"on":""}">${ico(k)}<span>${n}</span>${badge(k)}</a>`).join("");
+  $("#bnav").innerHTML=it.map(([k,n])=>`<a href="#${k}" class="${S.view===k?"on":""}">${ico(k)}<span>${NAV_CURTO[k]||n}</span>${badge(k)}</a>`).join("");
   const [t,sub]=VIEWS[S.view];
   let act="";
   if(S.view==="verbas"&&pode("criar")) act=`<button class="btn pri" data-act="novaVerba">+ Nova verba</button>`;
   if(S.view==="campanhas"&&pode("campanha")) act=`<button class="btn pri" data-act="novaCamp">+ Nova campanha</button>`;
   if(S.view==="fornecedores"&&pode("config")) act=`<button class="btn pri" data-act="novoForn">+ Novo fornecedor</button>`;
   if(S.view==="painel"&&pode("criar")) act=`<button class="btn" data-act="novaVerba">+ Nova verba</button>`;
+  const ae=document.activeElement;
+  if(ae&&ae.id==="gsearch") return; /* não redesenha a barra enquanto a pessoa digita na busca */
   $("#topbar").innerHTML=`<div class="mbrand"><span class="brandlogo" role="img" aria-label="Contattos+"></span><b>Verbas</b>${S.me&&S.uid?`<img alt="" src="${esc(S.me.avatarUrl)}">`:""}</div>
-    <div class="ttl"><h1>${t}</h1><small>${sub}</small></div>${act}`;
+    <div class="ttl"><div class="crumbs">Contattos+<span>/</span>Verbas<span>/</span>${t}</div><h1>${t}</h1><small>${sub}</small></div>
+    <div class="tools">${ar!=="diretoria"?`<div class="search">${ico("busca")}<input id="gsearch" type="search" placeholder="Buscar fornecedor, verba ou campanha" autocomplete="off" aria-label="Buscar" value="${esc(S.gq||"")}"><div class="gres" id="gres" hidden></div></div>`:""}
+    <button class="iconbtn" data-act="goAlertas" aria-label="Ver alertas">${ico("sino")}${nAl?`<span class="dotn">${nAl}</span>`:""}</button>${act}</div>`;
 }
 function renderMain(){
   const m=$("#main"); let h=bannerHtml();
@@ -779,6 +853,7 @@ function renderMain(){
   else if(S.view==="campanhas") h+=campanhasHtml();
   else if(S.view==="fornecedores") h+=fornecedoresHtml();
   else if(S.view==="config") h+=configHtml();
+  else if(S.view==="relatorios") h+=relatoriosHtml();
   m.innerHTML=h;
 }
 function bannerHtml(){
@@ -789,7 +864,7 @@ function bannerHtml(){
     const ped=S.pedidos[S.uid];
     if(S.canWrite===false) h+=`<div class="banner">Você está no modo de visualização.</div>`;
     else if(ped) h+=`<div class="banner">Você pediu acesso como <b>${esc(AREAS[ped.area])}</b>. Aguarde a gestora de marketing confirmar.</div>`;
-    else h+=`<form class="banner" id="fPedido"><b>Qual é a sua área?</b><select id="pedArea" required><option value="">Escolha…</option>${["comercial","compras","financeiro","marketing","diretoria"].map(a=>`<option value="${a}">${AREAS[a]}</option>`).join("")}</select><button class="btn pri sm">Pedir acesso</button><span class="muted small">A gestora de marketing confirma o seu acesso.</span></form>`;
+    else h+=`<form class="banner" id="fPedido"><b>Qual é a sua área?</b><select id="pedArea" required><option value="">Escolha…</option>${AREAS_ATIVAS.map(a=>`<option value="${a}">${AREAS[a]}</option>`).join("")}</select><button class="btn pri sm">Pedir acesso</button><span class="muted small">A gestora de marketing confirma o seu acesso.</span></form>`;
   } else if(S.canWrite===false && area()!=="diretoria") h+=`<div class="banner">Você está no modo de visualização: pode ver tudo, mas não alterar.</div>`;
   return h}
 
@@ -810,19 +885,18 @@ function painelHtml(){
   const naoUsado=receb.reduce((s,v)=>s+Math.max(0,(+v.valorRecebido||0)-usado(v)),0);
   const al=alertas(), ar=area();
   let h=`<div class="kpis">
-    ${kpi("promessa","Prometido",prometido,vs.length+" verba"+(vs.length===1?"":"s"))}
-    ${kpi("check","Confirmado",confirmado,pct(confirmado,prometido)+"% do prometido")}
-    ${kpi("entrada","Recebido",recebido,pct(recebido,prometido)+"% do prometido")}
-    ${kpi("uso","Usado pelo Marketing",usadoT,nAcoes+(nAcoes===1?" ação paga":" ações pagas")+" com verba")}
+    ${kpi("promessa","Prometido",prometido,vs.length+" verba"+(vs.length===1?"":"s"),prometido?100:0)}
+    ${kpi("check","Confirmado",confirmado,pct(confirmado,prometido)+"% do prometido",pct(confirmado,prometido))}
+    ${kpi("entrada","Recebido",recebido,pct(recebido,prometido)+"% do prometido",pct(recebido,prometido))}
+    ${kpi("uso","Usado pelo Marketing",usadoT,nAcoes+(nAcoes===1?" ação paga":" ações pagas")+" com verba",pct(usadoT,prometido))}
   </div>
-  <section class="gap" aria-label="Diferença entre prometido e recebido">
-    <div><div class="lbl">Prometido − recebido em ${ANO}</div><div class="big">${brl(prometido-recebido)}</div></div>
-    <ul>
-      <li>Perdido<b>${brl(perdido)}</b></li>
-      <li>Confirmado, falta entrar<b>${brl(aReceber)}</b></li>
-      <li>Em negociação ou apuração<b>${brl(emAndamento)}</b></li>
-      <li>Recebido e ainda não usado<b>${brl(naoUsado)}</b></li>
-    </ul>
+  <section class="panel" aria-label="Funil da verba">
+    <div class="panel-h"><h2>Funil da verba ${ANO}</h2><span class="muted small">Do prometido pelo fornecedor ao usado em campanha</span></div>
+    <div class="fun-grid">
+      <div class="fun-gap"><span class="lbl">Prometido − recebido</span><span class="big">${brl(prometido-recebido)}</span>
+        <ul><li>Perdido<b>${brl(perdido)}</b></li><li>Confirmado, falta entrar<b>${brl(aReceber)}</b></li><li>Em negociação ou apuração<b>${brl(emAndamento)}</b></li><li>Recebido e ainda não usado<b>${brl(naoUsado)}</b></li></ul></div>
+      <div class="fun-bars">${[["Prometido",prometido],["Confirmado",confirmado],["Recebido",recebido],["Usado em campanha",usadoT]].map(([n,val],i)=>`<div class="fb"><div class="fb-l"><span>${n}</span><b>${brl(val)}</b></div><div class="fb-t"><i class="s${i}" style="width:${prometido?Math.min(100,val/prometido*100):0}%"></i></div><small>${pct(val,prometido)}%</small></div>`).join("")}</div>
+    </div>
   </section>
   <div class="grid2">
     <section class="panel">
@@ -830,24 +904,24 @@ function painelHtml(){
       <div class="chart">${chartHtml(vs)}</div>
     </section>
     <section class="panel">
-      <div class="panel-h"><h2>Alertas</h2><span class="pill ${al.some(a=>a.sev==="crit")?"crit":al.length?"warn":"ok"}">${al.length}</span></div>
+      <div class="panel-h" id="alertas"><h2>Alertas</h2><span class="pill ${al.some(a=>a.sev==="crit")?"crit":al.length?"warn":"ok"}">${al.length}</span></div>
       ${al.length?`<ul class="alist">${al.map(a=>`<li><button class="alert ${a.sev}" data-act="abrir" data-id="${a.v.id}"><span class="ai">${ico("alerta")}</span><div><b>${esc(a.titulo)} · ${esc(fornNome(a.v.fornecedorId))}</b><span>${esc(a.texto)}</span></div></button></li>`).join("")}</ul>`
         :`<div class="empty">Nenhum alerta. Meta em risco, verba atrasada, campanha antes da hora, uso acima da verba e relatório pendente aparecem aqui.</div>`}
     </section>
   </div>`;
   if(ar && ar!=="diretoria"){
     const minhas=[];
-    for(const v of S.verbas) for(const p of pendencias(v)) if(p.area===ar||(ar==="compras"&&p.area==="comercial"&&v.etapa==="negociada")) minhas.push({tipo:"v",id:v.id,t:p.t,s:fornNome(v.fornecedorId)+(v.titulo?" · "+v.titulo:"")+" · "+brl(v.valorPrometido)});
+    for(const v of S.verbas) for(const p of pendencias(v)) if(p.area===ar) minhas.push({tipo:"v",id:v.id,t:p.t,s:fornNome(v.fornecedorId)+(v.titulo?" · "+v.titulo:"")+" · "+brl(v.valorPrometido)});
     if(ar==="marketing") for(const p of pendCampanhas()) minhas.push({tipo:"c",id:p.c.id,t:p.t,s:p.c.nome+(p.a?" · "+p.a.tipo+" em "+dBR(p.a.data):"")});
     h+=`<section class="panel"><div class="panel-h"><h2>Suas pendências</h2><span class="pill info">${esc(AREAS[ar])}</span><span class="pill">${minhas.length}</span></div>
       ${minhas.length?`<ul class="alist">${minhas.map(m=>`<li><button class="alert info" data-act="${m.tipo==="c"?"abrirCamp":"abrir"}" data-id="${m.id}"><span class="ai">${ico("tarefa")}</span><div><b>${esc(m.t)}</b><span>${esc(m.s)}</span></div></button></li>`).join("")}</ul>`
         :`<div class="empty">Nada pendente para ${esc(AREAS[ar])} agora.</div>`}</section>`;
   }
   if(!S.verbas.length && S.ok.verbas){
-    h+=`<div class="empty">Nenhuma verba cadastrada ainda. ${pode("criar")?`<br><br><button class="btn pri" data-act="novaVerba">Cadastrar a primeira verba</button>`:"Comercial e Compras cadastram as verbas negociadas."}</div>`;
+    h+=`<div class="empty">Nenhuma verba cadastrada ainda. ${pode("criar")?`<br><br><button class="btn pri" data-act="novaVerba">Cadastrar a primeira verba</button>`:"O Marketing cadastra as verbas negociadas."}</div>`;
   }
   return h}
-function kpi(ic,l,v,s){return `<div class="kpi"><div class="h"><span class="ic">${ico(ic)}</span>${l}</div><b>${brl(v)}</b><small>${esc(s)}</small></div>`}
+function kpi(ic,l,v,s,p){return `<div class="kpi"><div class="h"><span class="ic">${ico(ic)}</span>${l}</div><b>${brl(v)}</b><small>${esc(s)}</small>${p!=null?`<div class="bar"><i style="width:${Math.min(100,p)}%"></i></div>`:""}</div>`}
 function niceMax(m){if(m<=0)return 1;const p=10**Math.floor(Math.log10(m)),f=m/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p}
 function chartHtml(vs){
   const prev=Array(12).fill(0), rec=Array(12).fill(0);
@@ -879,12 +953,14 @@ function quadroHtml(){
   const vs=filtrar(), f=S.fil;
   const fornUsados=[...new Set(S.verbas.map(v=>v.fornecedorId))].map(forn).filter(Boolean).sort((a,b)=>a.nome.localeCompare(b.nome));
   let h=`<div class="filters">
+    <div class="seg" role="group" aria-label="Visualização"><button data-act="vview" data-k="quadro" class="${S.vview==="quadro"?"on":""}">${ico("quadro")}Quadro</button><button data-act="vview" data-k="lista" class="${S.vview==="lista"?"on":""}">${ico("lista")}Lista</button></div>
     <select data-fil="forn" aria-label="Fornecedor"><option value="">Todos os fornecedores</option>${fornUsados.map(x=>`<option value="${x.id}" ${f.forn===x.id?"selected":""}>${esc(x.nome)}</option>`).join("")}</select>
     <select data-fil="ciclo" aria-label="Ciclo"><option value="">Todos os ciclos</option>${S.ciclos.map(c=>`<option value="${c.id}" ${f.ciclo===c.id?"selected":""}>${esc(cicloNome(c.id))}</option>`).join("")}<option value="_" ${f.ciclo==="_"?"selected":""}>Sem ciclo</option></select>
     <select data-fil="tipo" aria-label="Tipo"><option value="">Todos os tipos</option>${Object.entries(TIPOS).map(([k,n])=>`<option value="${k}" ${f.tipo===k?"selected":""}>${n}</option>`).join("")}</select>
-    <select data-fil="area" aria-label="Área com pendência"><option value="">Pendência de qualquer área</option>${["comercial","compras","financeiro","marketing"].map(a=>`<option value="${a}" ${f.area===a?"selected":""}>Pendente com ${AREAS[a]}</option>`).join("")}</select>
+    <select data-fil="area" aria-label="Área com pendência"><option value="">Pendência de qualquer área</option>${AREAS_FLUXO.map(a=>`<option value="${a}" ${f.area===a?"selected":""}>Pendente com ${AREAS[a]}</option>`).join("")}</select>
     ${(f.forn||f.ciclo||f.tipo||f.area)?`<button class="btn ghost sm" data-act="limparFil">Limpar filtros</button>`:""}
   </div>`;
+  if(S.vview==="lista") return h+listaHtml(vs);
   const by={}; COLS.forEach(c=>by[c.k]=[]); vs.forEach(v=>by[coluna(v)].push(v));
   Object.values(by).forEach(l=>l.sort((a,b)=>String(a.previsaoEntrada||a.dataCampanha||"9").localeCompare(String(b.previsaoEntrada||b.dataCampanha||"9"))));
   h+=`<div class="colchips" role="tablist">${COLS.map(c=>`<button data-act="col" data-k="${c.k}" class="${S.col===c.k?"on":""}">${c.n} <span>${by[c.k].length}</span></button>`).join("")}</div>`;
@@ -899,13 +975,119 @@ function cardHtml(v){
   const u=usado(v),d=disponivel(v);
   if(u>0){const p=Math.min(100,d>0?u/d*100:100);bar+=`<div class="bar ${u>d?"crit":"ok"}"><i style="width:${p}%"></i></div><div class="sub">Usado ${brlK(u)} de ${brlK(d)}</div>`;}
   const falta=(v.executadaEm&&v.etapa!=="recebida"&&v.etapa!=="perdida")?`<span class="pill warn">Verba ainda não entrou</span>`:"";
-  const ctrl=(v.repasse?`<span class="pill">Repasse ✓</span>`:"")+((v.notas||[]).length?`<span class="pill">Nota ✓</span>`:"");
+  const ctrl=(v.repasse?`<span class="pill">Pagamento ✓</span>`:"")+((v.notas||[]).length?`<span class="pill">Nota ✓</span>`:"");
   return `<button class="card" data-act="abrir" data-id="${v.id}">
     <div class="card-top"><b>${esc(fornNome(v.fornecedorId))}</b><span class="v">${brlK(v.valorPrometido)}</span></div>
     <div class="sub">${v.titulo?esc(v.titulo)+" · ":""}${esc(TIPOS[v.tipo]||"")}${v.cicloId?" · "+esc(cicloNome(v.cicloId)):""}</div>
     ${bar}
     <div class="chips"><span class="pill dot ${st.c}">${esc(st.t)}</span>${falta}${ctrl}${n?`<span class="pill crit">${n} alerta${n>1?"s":""}</span>`:""}${v.etapa==="perdida"&&v.motivoPerda?`<span class="pill">${esc(MOTIVOS[v.motivoPerda])}</span>`:""}</div>
   </button>`}
+
+function listaHtml(vs){
+  const {k,dir}=S.sort;
+  const val={forn:v=>fornNome(v.fornecedorId).toLowerCase(),prom:v=>+v.valorPrometido||0,receb:v=>v.etapa==="recebida"?+v.valorRecebido||0:0,usado:v=>usado(v),prev:v=>v.previsaoEntrada||"9999",etapa:v=>COLS.findIndex(c=>c.k===coluna(v))};
+  const rows=[...vs].sort((a,b)=>{const x=val[k](a),y=val[k](b);return (x<y?-1:x>y?1:0)*(dir==="desc"?-1:1)});
+  if(!rows.length) return `<div class="empty">Nenhuma verba com estes filtros.</div>`;
+  const al=alertas();
+  const th=(key,l,cls="")=>`<th class="sort ${cls}" data-act="sort" data-k="${key}" aria-sort="${k===key?(dir==="asc"?"ascending":"descending"):"none"}">${l}${k===key?(dir==="asc"?" ↑":" ↓"):""}</th>`;
+  return `<div class="tablewrap"><table><thead><tr>${th("forn","Fornecedor")}<th>Tipo</th>${th("etapa","Etapa")}${th("prom","Prometido","r")}${th("receb","Recebido","r")}${th("usado","Usado","r")}${th("prev","Previsão")}<th>Próxima ação</th></tr></thead><tbody>${rows.map(v=>{
+    const col=coluna(v),i=COLS.findIndex(c=>c.k===col),p=pendencias(v)[0],n=al.filter(a=>a.v.id===v.id).length;
+    return `<tr class="click" data-act="abrir" data-id="${v.id}"><td><b>${esc(fornNome(v.fornecedorId))}</b>${n?` <span class="pill crit">${n} alerta${n>1?"s":""}</span>`:""}<div class="sub">${esc(v.titulo||"")}${v.cicloId?(v.titulo?" · ":"")+esc(cicloNome(v.cicloId)):""}</div></td>
+      <td>${esc(TIPOS[v.tipo]||"")}</td><td><span class="pill dot ${col==="perdida"?"crit":col==="comprovada"?"ok":col==="recebida"||col==="executada"?"info":""}">${col==="perdida"?"Perdida":(i+1)+"/7 · "+COLN[col]}</span></td>
+      <td class="r">${brl(v.valorPrometido)}</td><td class="r">${v.etapa==="recebida"?brl(v.valorRecebido):"—"}</td><td class="r">${usado(v)?brl(usado(v)):"—"}</td><td>${dBR(v.previsaoEntrada)}</td>
+      <td>${p?`<div class="sub"><b>${esc(AREAS[p.area])}</b> · ${esc(p.t)}</div>`:`<span class="sub">—</span>`}</td></tr>`}).join("")}</tbody></table></div>`}
+
+/* ---------- relatórios de contrapartida ---------- */
+const REPORT_CSS=`.report{background:#fff;color:#1d1714;border-radius:12px;border:1px solid #e8e1db;padding:32px;font-family:"Barlow",system-ui,sans-serif;font-size:14px;line-height:1.5;max-width:820px;margin:0 auto;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.report .rh{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:3px solid #ee6a23;padding-bottom:16px;margin-bottom:18px;flex-wrap:wrap}
+.report .rh .brandlogo{width:150px;height:54px}
+.report .rt{text-align:right}
+.report h1{font-family:"Barlow Condensed",sans-serif;font-style:italic;font-weight:800;text-transform:uppercase;font-size:26px;line-height:1.1;margin:0 0 4px;color:#1d1714}
+.report .rsub{color:#6b6058;font-size:13px}
+.report .rk{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:0 0 6px}
+.report .rk div{background:#f6f4f2;border-radius:8px;padding:10px 12px}
+.report .rk span{display:block;font-size:12px;color:#6b6058}
+.report .rk b{font-family:"Barlow Condensed",sans-serif;font-size:22px}
+.report h2{font-family:"Barlow Condensed",sans-serif;font-size:17px;text-transform:uppercase;letter-spacing:.04em;color:#d9561a;margin:20px 0 8px}
+.report table{width:100%;border-collapse:collapse;font-size:13px}
+.report th,.report td{text-align:left;padding:6px 8px;border-bottom:1px solid #e8e1db;white-space:normal;background:transparent;color:#1d1714}
+.report th{font-size:11px;text-transform:uppercase;color:#6b6058;letter-spacing:.04em}
+.report td.r,.report th.r{text-align:right}
+.report ul{margin:0;padding-left:18px}
+.report p{margin:0 0 8px}
+.report a{color:#d9561a}
+.report .muted{color:#6b6058}
+.report .foot{margin-top:24px;padding-top:10px;border-top:1px solid #e8e1db;font-size:11px;color:#6b6058;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.report .up{color:#0c8f63;font-weight:700}.report .down{color:#c2362b;font-weight:700}
+@media (max-width:560px){.report{padding:18px}.report .rt{text-align:left}}`;
+function relatorioDados(v){
+  const cs=S.campanhas.filter(c=>(c.verbaIds||[]).includes(v.id));
+  const acoes=[];for(const c of cs)for(const a of (c.acoes||[]))if(a.status==="feita")acoes.push({c,a});
+  acoes.sort((x,y)=>String(x.a.data||"").localeCompare(String(y.a.data||"")));
+  const ini=cs.map(c=>c.inicio).filter(Boolean).sort()[0]||v.dataCampanha||"", fim=cs.map(c=>c.fim).filter(Boolean).sort().pop()||v.executadaEm||"";
+  return {cs,acoes,ini,fim}}
+function relatorioHtml(v){
+  const f=forn(v.fornecedorId)||{}, {cs,acoes,ini,fim}=relatorioDados(v), ci=ciclo(v.cicloId);
+  let h=`<div class="report"><div class="rh"><span class="brandlogo" role="img" aria-label="Contattos+"></span><div class="rt"><h1>Relatório de contrapartida</h1><div><b>${esc(f.nome||"")}</b>${v.titulo?" · "+esc(v.titulo):""}</div><div class="rsub">${ini?dBR(ini)+" a "+dBR(fim):""}${ci?" · "+esc(cicloNome(ci.id))+" "+ci.ano:""}</div></div></div>`;
+  h+=`<div class="rk"><div><span>Verba da parceria</span><b>${brl(esperado(v))}</b></div><div><span>Investido em ações</span><b>${brl(usado(v))}</b></div><div><span>Ações realizadas</span><b>${acoes.length}</b></div><div><span>Camadas atendidas</span><b>${new Set(acoes.map(x=>x.a.camada)).size} de 3</b></div></div>`;
+  if(v.relatorioTexto) h+=`<h2>Resumo</h2>${v.relatorioTexto.split(/\n{2,}/).map(t=>`<p>${esc(t).replace(/\n/g,"<br>")}</p>`).join("")}`;
+  h+=`<h2>Contrapartidas combinadas</h2>${(v.contrapartidas||[]).length?`<ul>${v.contrapartidas.map(c=>`<li>${esc(c.texto)}</li>`).join("")}</ul>`:`<p class="muted">Nenhuma contrapartida registrada.</p>`}`;
+  h+=`<h2>Ações realizadas</h2>${acoes.length?`<table><thead><tr><th>Data</th><th>Camada</th><th>Ação</th><th>Alcance</th></tr></thead><tbody>${acoes.map(({a})=>`<tr><td>${dBR(a.data)}</td><td>${esc(CAMADAS[a.camada]||"")}</td><td>${esc(a.tipo)}${a.descricao?" · "+esc(a.descricao):""}</td><td>${esc(a.alcance||"—")}</td></tr>`).join("")}</tbody></table>`:`<p class="muted">Nenhuma ação marcada como feita nas campanhas ligadas a esta verba.</p>`}`;
+  const res=cs.filter(c=>c.resultados&&(+c.resultados.vendasCiclo||+c.resultados.media3m));
+  if(res.length) h+=`<h2>Resultado de vendas da linha</h2><table><thead><tr><th>Campanha</th><th class="r">Vendas no ciclo</th><th class="r">Média 3 meses anteriores</th><th class="r">Variação</th></tr></thead><tbody>${res.map(c=>{const r=c.resultados,vp=+r.media3m>0?((+r.vendasCiclo/ +r.media3m)-1)*100:null;return `<tr><td>${esc(c.nome)}</td><td class="r">${brl(r.vendasCiclo)}</td><td class="r">${brl(r.media3m)}</td><td class="r ${vp==null?"":vp>=0?"up":"down"}">${vp==null?"—":(vp>=0?"+":"")+vp.toFixed(1).replace(".",",")+"%"}</td></tr>`}).join("")}</tbody></table>`;
+  const fotos=[...cs.flatMap(c=>c.fotos||[]),...acoes.filter(x=>x.a.link).map(x=>({titulo:x.a.tipo+(x.a.descricao?" · "+x.a.descricao:""),url:x.a.link}))];
+  if(fotos.length) h+=`<h2>Fotos e materiais</h2><ul>${fotos.map(l=>`<li><a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener">${esc(l.titulo||l.url)}</a></li>`).join("")}</ul>`;
+  h+=`<div class="foot"><span>Contattos+ · Materiais elétricos · São José do Rio Preto (SP)</span><span>Gerado em ${dBR(hoje())}</span></div></div>`;
+  return h}
+function relatorioView(v){
+  const head=`<div class="t"><div class="muted small">Relatório de contrapartida</div><h2>${esc(fornNome(v.fornecedorId))}${v.titulo?` <span class="muted" style="font-weight:600">· ${esc(v.titulo)}</span>`:""}</h2></div><button class="btn sm pri" data-act="baixarRel" data-id="${v.id}">${ico("baixar")}Baixar</button>`;
+  let b="";
+  if(v.comprovadaEm) b+=`<div class="rule ok"><b>Enviado ao fornecedor em ${dBR(v.comprovadaEm)}</b>${v.relatorioLink?`<a href="${esc(safeUrl(v.relatorioLink))}" target="_blank" rel="noopener">Abrir o arquivo enviado</a>`:""}</div>`;
+  if(pode("comprovar")){
+    b+=`<section class="sec"><div class="sec-h"><h3>Texto de abertura</h3><span class="muted small">Aparece no topo do relatório, em "Resumo"</span></div><form id="fRelTxt" data-id="${v.id}"><textarea name="txt" rows="5" placeholder="Ex.: Agradecemos a parceria no Ciclo 1. Com a campanha, a linha cresceu sobre a média dos três meses anteriores...">${esc(v.relatorioTexto||"")}</textarea><div class="row" style="margin-top:8px"><button class="btn sm">Salvar texto</button><span class="muted small">Depois de baixar, abra o arquivo e use Imprimir → Salvar como PDF.</span></div></form></section>`;
+    if(!v.comprovadaEm&&v.executadaEm) b+=`<form class="step" data-step><h3>Marcar como enviado ao fornecedor</h3><div class="fg"><label class="f"><span>Data de envio</span><input type="date" name="data" value="${hoje()}"></label><label class="f"><span>Link do arquivo enviado (opcional)</span><input type="url" name="link" placeholder="https://"></label></div><div><button class="btn pri" data-step-act="comprovar" data-id="${v.id}">Marcar como enviado</button></div></form>`;
+  }
+  b+=`<div class="rel-wrap">${relatorioHtml(v)}</div>`;
+  return [head,b]}
+function baixarRelatorio(v){
+  const el=$(".report"), lg=$(".report .brandlogo");
+  if(!el) return;
+  const logo=lg?getComputedStyle(lg).backgroundImage:"none";
+  const titulo="Relatório de contrapartida · "+fornNome(v.fornecedorId);
+  const doc=`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(titulo)}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Barlow+Condensed:ital,wght@0,700;1,800&display=swap"><style>body{margin:0;padding:24px;background:#f6f4f2}${REPORT_CSS}.report .brandlogo{display:block;background:${logo} no-repeat left center/contain}@media print{body{padding:0;background:#fff}.report{border:0;box-shadow:none;max-width:none}}</style></head><body>${el.outerHTML}</body></html>`;
+  const slug=fornNome(v.fornecedorId).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  try{
+    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([doc],{type:"text/html"}));a.download=`relatorio-contrapartida-${slug}-${hoje()}.html`;
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+    toast("Relatório baixado. Abra o arquivo e use Imprimir → Salvar como PDF para enviar ao fornecedor.");
+  }catch(e){toast("Não foi possível baixar o arquivo neste navegador.",true)}
+}
+function relatoriosHtml(){
+  const t=hoje();
+  const rows=S.verbas.filter(v=>v.etapa!=="perdida"&&(v.executadaEm||usado(v)>0));
+  const atras=v=>!v.comprovadaEm&&v.executadaEm&&dias(v.executadaEm,t)>15;
+  const nEnv=rows.filter(v=>v.comprovadaEm).length, nAtr=rows.filter(atras).length;
+  let h=`<div class="summary"><div class="stat"><b>${rows.length-nEnv}</b><span>Relatórios pendentes</span></div><div class="stat"><b style="color:${nAtr?"var(--crit)":"inherit"}">${nAtr}</b><span>Atrasados (mais de 15 dias)</span></div><div class="stat"><b>${nEnv}</b><span>Enviados aos fornecedores</span></div></div>`;
+  if(!rows.length) return h+`<div class="empty">Os relatórios aparecem aqui quando uma verba é usada em campanha.<br>Cada relatório reúne as contrapartidas, as ações feitas nas 3 camadas, o alcance, as fotos e o resultado de vendas da linha.</div>`;
+  rows.sort((a,b)=>((a.comprovadaEm?1:0)-(b.comprovadaEm?1:0))||String(a.executadaEm||"9").localeCompare(String(b.executadaEm||"9")));
+  h+=`<div class="tablewrap"><table><thead><tr><th>Fornecedor</th><th>Campanhas</th><th>Executada em</th><th class="r">Investido</th><th class="r">Ações feitas</th><th>Situação</th></tr></thead><tbody>${rows.map(v=>{
+    const {cs,acoes}=relatorioDados(v);
+    const [c,tx]=v.comprovadaEm?["ok","Enviado em "+dBR(v.comprovadaEm)]:atras(v)?["crit","Atrasado · "+dias(v.executadaEm,t)+" dias"]:["warn",v.executadaEm?"Pendente · "+dias(v.executadaEm,t)+" dias":"Campanha em andamento"];
+    return `<tr class="click" data-act="abrirRel" data-id="${v.id}"><td><b>${esc(fornNome(v.fornecedorId))}</b>${v.titulo?`<div class="sub">${esc(v.titulo)}</div>`:""}</td><td style="white-space:normal">${esc(cs.map(x=>x.nome).join(", ")||"—")}</td><td>${dBR(v.executadaEm)}</td><td class="r">${brl(usado(v))}</td><td class="r">${acoes.length}</td><td><span class="pill dot ${c}">${esc(tx)}</span></td></tr>`}).join("")}</tbody></table></div>`;
+  return h}
+function buscaGlobal(q){
+  const box=$("#gres");if(!box)return;
+  q=String(q||"").trim().toLowerCase();S.gq=q;
+  if(!q){box.hidden=true;box.innerHTML="";return;}
+  const fs=S.fornecedores.filter(f=>f.nome.toLowerCase().includes(q)).slice(0,4);
+  const vs=S.verbas.filter(v=>(fornNome(v.fornecedorId)+" "+(v.titulo||"")).toLowerCase().includes(q)).slice(0,5);
+  const cs=S.campanhas.filter(c=>c.nome.toLowerCase().includes(q)).slice(0,4);
+  let h="";
+  if(vs.length) h+=`<div class="k">Verbas</div>`+vs.map(v=>`<button data-act="abrir" data-id="${v.id}"><b>${esc(fornNome(v.fornecedorId))}${v.titulo?" · "+esc(v.titulo):""}</b><small>${esc(COLN[coluna(v)])} · ${brl(v.valorPrometido)}</small></button>`).join("");
+  if(cs.length) h+=`<div class="k">Campanhas</div>`+cs.map(c=>`<button data-act="abrirCamp" data-id="${c.id}"><b>${esc(c.nome)}</b><small>${dBR(c.inicio)} a ${dBR(c.fim)}</small></button>`).join("");
+  if(fs.length) h+=`<div class="k">Fornecedores</div>`+fs.map(f=>`<button data-act="buscaForn" data-k="${esc(f.nome)}"><b>${esc(f.nome)}</b><small>Faixa ${esc(f.faixa||"—")} · compras 2026 ${brl(f.compras2026)}</small></button>`).join("");
+  box.innerHTML=h||`<div class="none">Nada encontrado para "${esc(q)}".</div>`;box.hidden=false;
+}
 
 /* ---------- campanhas ---------- */
 function campanhasHtml(){
@@ -958,7 +1140,7 @@ function fornecedoresHtml(){
 function configHtml(){
   if(area()!=="marketing") return `<div class="empty">Só Marketing configura o sistema.</div>`;
   const eq=Object.entries(S.equipe), ped=Object.entries(S.pedidos);
-  const areaSel=(id,val)=>`<select data-act-change="areaMembro" data-id="${id}" aria-label="Área">${Object.entries(AREAS).map(([k,n])=>`<option value="${k}" ${val===k?"selected":""}>${n}</option>`).join("")}</select>`;
+  const areaSel=(id,val)=>`<select data-act-change="areaMembro" data-id="${id}" aria-label="Área">${[...new Set([...AREAS_ATIVAS,val])].map(k=>[k,AREAS[k]]).map(([k,n])=>`<option value="${k}" ${val===k?"selected":""}>${n}</option>`).join("")}</select>`;
   let h=`<section class="panel"><div class="panel-h"><h2>Equipe</h2><span class="muted small">A área define o que cada pessoa pode fazer em cada verba.</span></div>`;
   if(ped.length) h+=`<h3>Pedidos de acesso</h3><ul class="people">${ped.map(([id,p])=>`<li><img alt="" src="${esc(avatar(id))}"><span class="nm">${esc(nome(id))} <span class="muted small">pediu ${esc(AREAS[p.area]||"")}</span></span><button class="btn pri sm" data-act="aprovar" data-id="${id}">Confirmar como ${esc(AREAS[p.area]||"")}</button><button class="btn sm" data-act="recusar" data-id="${id}">Recusar</button></li>`).join("")}</ul>`;
   h+=`<ul class="people">${eq.length?eq.map(([id,e])=>`<li><img alt="" src="${esc(avatar(id))}"><span class="nm">${esc(nome(id))}${id===S.uid?" (você)":""}</span>${areaSel(id,e.area)}${id!==S.uid?`<button class="btn ghost sm" data-act="removerMembro" data-id="${id}">Remover</button>`:""}</li>`).join(""):`<li class="muted">Ninguém cadastrado ainda.</li>`}</ul>
@@ -995,6 +1177,7 @@ function renderModal(){
   else if(m.tipo==="campForm"){wide=true;[head,body]=campForm(m.id?camp(m.id):null,m.ciclo);}
   else if(m.tipo==="forn") [head,body]=fornForm(m.id?forn(m.id):null);
   else if(m.tipo==="ciclo") [head,body]=cicloForm(ciclo(m.id));
+  else if(m.tipo==="relatorio"){wide=true;const v=verba(m.id);if(!v){head=`<div class="t"><h2>Verba não encontrada</h2></div>`;body=`<div class="empty">Esta verba foi excluída.</div>`;}else [head,body]=relatorioView(v);}
   const keepScroll=$(".drawer")?$(".drawer").scrollTop:0;
   $("#modal").innerHTML=`<div class="overlay" data-act="fecharFora"><div class="drawer${wide?" wide":""}" role="dialog" aria-modal="true"><div class="dr-h">${head}<button class="btn ghost" data-act="fechar" aria-label="Fechar">✕</button></div><div class="dr-b">${body}</div></div></div>`;
   document.body.style.overflow="hidden";
@@ -1007,7 +1190,7 @@ function dd(l,v){return `<div><dt>${esc(l)}</dt><dd>${esc(v)}</dd></div>`}
 function verbaView(v){
   const f=forn(v.fornecedorId)||{}, col=coluna(v), st=statusCampanha(v);
   const idx=COLS.findIndex(c=>c.k===col);
-  const head=`<div class="t"><div class="muted small">${esc(TIPOS[v.tipo]||"")}${v.cicloId?" · "+esc(cicloNome(v.cicloId)):""}</div><h2>${esc(f.nome||"Fornecedor removido")}${v.titulo?` <span class="muted" style="font-weight:600">· ${esc(v.titulo)}</span>`:""}</h2></div>${pode("editar")&&v.etapa!=="perdida"?`<button class="btn sm" data-act="editVerba" data-id="${v.id}">Editar</button>`:""}`;
+  const head=`<div class="t"><div class="muted small">${esc(TIPOS[v.tipo]||"")}${v.cicloId?" · "+esc(cicloNome(v.cicloId)):""}</div><h2>${esc(f.nome||"Fornecedor removido")}${v.titulo?` <span class="muted" style="font-weight:600">· ${esc(v.titulo)}</span>`:""}</h2></div>${v.executadaEm?`<button class="btn sm" data-act="abrirRel" data-id="${v.id}">${ico("relatorios")}Relatório</button>`:""}${pode("editar")&&v.etapa!=="perdida"?`<button class="btn sm" data-act="editVerba" data-id="${v.id}">Editar</button>`:""}`;
   let b="";
   b+= v.etapa==="perdida"
     ? `<div class="rule crit"><b>Verba perdida: ${esc(MOTIVOS[v.motivoPerda]||"")}</b><span class="small">${esc(v.motivoDetalhe||"")} ${v.perdidaEm?"· em "+dBR(v.perdidaEm):""}</span></div>`
@@ -1017,7 +1200,7 @@ function verbaView(v){
   if(f.distribuidor) b+=`<div class="banner small">${esc(f.nome)} é distribuidor: a verba vem do repasse dos fabricantes.</div>`;
   const u=usado(v), d=disponivel(v), nn=(v.notas||[]).length;
   b+=`<div class="checks">
-    <div class="ck ${v.repasse?"on":""}"><span class="d">${v.repasse?ico("check"):""}</span><div><b>Repasse negociado</b><small>${v.repasse?dBR(v.repasse.data)+" · "+esc(nome(v.repasse.por)):"Compras"}</small></div></div>
+    <div class="ck ${v.repasse?"on":""}"><span class="d">${v.repasse?ico("check"):""}</span><div><b>Pagamento negociado</b><small>${v.repasse?(v.repasse.pedido?"Pedido "+esc(v.repasse.pedido)+" · ":"")+dBR(v.repasse.data):"Compras"}</small></div></div>
     <div class="ck ${nn?"on":""}"><span class="d">${nn?ico("check"):""}</span><div><b>Nota recebida</b><small>${nn?(nn+(nn>1?" notas":" nota")):"Financeiro"}</small></div></div>
     <div class="ck ${v.etapa==="recebida"?"on":""}"><span class="d">${v.etapa==="recebida"?ico("check"):""}</span><div><b>Valor recebido</b><small>${v.etapa==="recebida"?brl(v.valorRecebido)+" em "+dBR(v.dataEntrada):"Financeiro"}</small></div></div>
     <div class="ck ${u>0?"on":""}"><span class="d">${u>0?ico("check"):""}</span><div><b>Usado pelo Marketing</b><small>${u>0?brl(u)+" de "+brl(d):"Marketing"}</small></div></div>
@@ -1036,15 +1219,17 @@ function verbaView(v){
     </section>`;
   }
   const rp=v.repasse||{};
-  b+=`<section class="sec"><div class="sec-h"><h3>Repasse e notas</h3></div>
-    ${v.repasse?`<ul class="mini"><li><b>Repasse negociado</b><span class="muted">${dBR(rp.data)}${rp.fabricante?" · origem: "+esc(rp.fabricante):""}${rp.obs?" · "+esc(rp.obs):""} · por ${esc(nome(rp.por))}</span><span class="v">${rp.valor?brl(rp.valor):""}</span></li></ul>`:`<span class="muted small">Compras ainda não registrou o repasse negociado.</span>`}
+  b+=`<section class="sec"><div class="sec-h"><h3>Pagamento e notas</h3></div>
+    ${v.repasse?`<ul class="mini"><li><b>Pagamento negociado${rp.pedido?" · pedido "+esc(rp.pedido):""}</b><span class="muted">${dBR(rp.data)}${rp.forma?" · "+esc(FORMAS[rp.forma]||""):""}${rp.fabricante?" · origem: "+esc(rp.fabricante):""}${rp.obs?" · "+esc(rp.obs):""} · por ${esc(nome(rp.por))}</span><span class="v">${rp.valor?brl(rp.valor):""}</span></li></ul>`:`<span class="muted small">Compras ainda não negociou o pagamento no pedido.</span>`}
     ${nn?`<ul class="mini">${v.notas.map(n=>`<li><b>${esc(NOTAS[n.tipo]||"Nota")}${n.numero?" nº "+esc(n.numero):""}</b><span class="muted">${dBR(n.data)} · por ${esc(nome(n.por))}${n.link?` · <a href="${esc(safeUrl(n.link))}" target="_blank" rel="noopener">ver nota</a>`:""}</span><span class="v">${n.valor?brl(n.valor):""}</span></li>`).join("")}</ul>`:`<span class="muted small">Nenhuma nota registrada pelo Financeiro.</span>`}
-    ${v.etapa!=="perdida"&&pode("repasse")?`<details class="more"><summary>${v.repasse?"Atualizar":"Registrar"} repasse negociado (Compras)</summary><div><form data-step class="fg">
+    ${v.etapa!=="perdida"&&pode("repasse")?`<details class="more"><summary>${v.repasse?"Atualizar":"Registrar"} pagamento negociado no pedido (Compras)</summary><div><form data-step class="fg">
+      <label class="f"><span>Nº do pedido</span><input type="text" name="pedido" value="${esc(rp.pedido||"")}" placeholder="Pedido de compra"></label>
+      <label class="f"><span>Como o fornecedor paga</span><select name="forma">${Object.entries(FORMAS).map(([k,n])=>`<option value="${k}" ${(rp.forma||v.formaRecebimento)===k?"selected":""}>${n}</option>`).join("")}</select></label>
+      <label class="f"><span>Valor (R$)</span><input type="text" inputmode="decimal" name="valor" value="${inMoney(rp.valor||esperado(v))}"></label>
       <label class="f"><span>Data da negociação</span><input type="date" name="data" value="${esc(rp.data||hoje())}" required></label>
-      <label class="f"><span>Valor repassado (R$)</span><input type="text" inputmode="decimal" name="valor" value="${inMoney(rp.valor||v.valorPrometido)}"></label>
-      <label class="f"><span>${f.distribuidor?"Fabricante de origem":"Origem do repasse"}</span><input type="text" name="fab" value="${esc(rp.fabricante||"")}" placeholder="${f.distribuidor?"Fabricante que repassa via "+esc(f.nome):"Ex.: verba de trade do fornecedor"}"></label>
-      <label class="f wide"><span>Observação</span><input type="text" name="obs" value="${esc(rp.obs||"")}" placeholder="Condições combinadas"></label>
-      <div class="wide"><button class="btn pri" data-step-act="repasse" data-id="${v.id}">Salvar repasse</button></div></form></div></details>`:""}
+      ${f.distribuidor?`<label class="f"><span>Fabricante de origem</span><input type="text" name="fab" value="${esc(rp.fabricante||"")}" placeholder="Fabricante que repassa via ${esc(f.nome)}"></label>`:""}
+      <label class="f wide"><span>Condições combinadas</span><input type="text" name="obs" value="${esc(rp.obs||"")}" placeholder="Ex.: desconto de 5% nos pedidos de março, até R$ 30 mil"></label>
+      <div class="wide"><button class="btn pri" data-step-act="repasse" data-id="${v.id}">Salvar pagamento negociado</button></div></form></div></details>`:""}
     ${v.etapa!=="perdida"&&pode("nota")?`<details class="more"><summary>Registrar nota recebida (Financeiro)</summary><div><form data-step class="fg">
       <label class="f"><span>Tipo de nota</span><select name="tipo">${Object.entries(NOTAS).map(([k,n])=>`<option value="${k}" ${(v.tipo==="bonificacao"&&k==="bonificacao")?"selected":""}>${n}</option>`).join("")}</select></label>
       <label class="f"><span>Número da nota</span><input type="text" name="numero" required></label>
@@ -1065,7 +1250,7 @@ function verbaView(v){
     ${dd("Data da campanha",dBR(v.dataCampanha))}${dd("Executada em",dBR(v.executadaEm))}${dd("Relatório enviado em",dBR(v.comprovadaEm))}</dl>
     ${v.relatorioLink?`<a href="${esc(safeUrl(v.relatorioLink))}" target="_blank" rel="noopener">Abrir relatório de contrapartida</a>`:""}</section>`;
   const resp=v.responsaveis||{};
-  b+=`<section class="sec"><h3>Responsáveis</h3><dl class="dl">${["comercial","compras","financeiro","marketing"].map(a=>dd(AREAS[a],resp[a]?nome(resp[a]):"—")).join("")}</dl></section>`;
+  b+=`<section class="sec"><h3>Responsáveis</h3><dl class="dl">${AREAS_FLUXO.map(a=>dd(AREAS[a],resp[a]?nome(resp[a]):"—")).join("")}</dl></section>`;
   b+=`<section class="sec"><h3>Contrapartidas prometidas ao fornecedor</h3>${(v.contrapartidas||[]).length?`<ul style="margin:0;padding-left:18px">${v.contrapartidas.map(c=>`<li>${esc(c.texto)}</li>`).join("")}</ul>`:`<span class="muted small">Nenhuma contrapartida registrada.</span>`}</section>`;
   b+=`<section class="sec"><h3>Acordo</h3>${(v.links||[]).length?`<ul class="links">${v.links.map(l=>`<li><a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener">${esc(l.titulo||l.url)}</a></li>`).join("")}</ul>`:`<span class="muted small">Nenhum link do acordo anexado.</span>`}</section>`;
   b+=maisAcoes(v);
@@ -1078,7 +1263,7 @@ function passosHtml(v){
   const box=(titulo,quem,ok,conteudo)=>`<form class="step" data-step><h3>${titulo}</h3><div class="muted who">Responsável: ${quem}</div>${ok?conteudo:`<div class="muted small">Aguardando ${quem}.</div>`}</form>`;
   if(e==="negociada"){
     const sem=!(v.links||[]).length;
-    h+=box("Formalizar o acordo","Comercial",pode("formalizar"),
+    h+=box("Formalizar o acordo","Marketing",pode("formalizar"),
       sem?`<div class="small">Anexe o link do acordo por escrito (e-mail, PDF no Drive, contrato) para formalizar.</div><div><button type="button" class="btn" data-act="editVerba" data-id="${v.id}">Anexar link do acordo</button></div>`
          :`<div class="small">O acordo por escrito já está anexado.</div><div><button class="btn pri" data-step-act="formalizar" data-id="${v.id}">Marcar como formalizada</button></div>`);
   }
@@ -1094,9 +1279,9 @@ function passosHtml(v){
     h+=confirmBox(v,"Confirmar a meta batida",liberado(v));
   }
   if(e==="confirmada"){
-    h+=box(v.tipo==="bonificacao"?"Registrar a nota de bonificação e a entrada":"Registrar a entrada da verba","Financeiro",pode("receber"),
+    h+=box(v.tipo==="bonificacao"?"Confirmar o recebimento da nota de bonificação":"Confirmar o recebimento","Financeiro",pode("receber"),
       `<div class="fg"><label class="f"><span>Data real de entrada</span><input type="date" name="data" value="${hoje()}" required></label><label class="f"><span>Valor recebido (R$)</span><input type="text" inputmode="decimal" name="valor" value="${inMoney(esperado(v))}" required></label>
-      <label class="f"><span>Forma de recebimento</span><select name="forma" required>${Object.entries(FORMAS).map(([k,n])=>`<option value="${k}" ${v.formaRecebimento===k?"selected":""}>${n}</option>`).join("")}</select></label>
+      <label class="f"><span>Forma de recebimento</span><select name="forma" required>${Object.entries(FORMAS).map(([k,n])=>`<option value="${k}" ${((v.repasse&&v.repasse.forma)||v.formaRecebimento)===k?"selected":""}>${n}</option>`).join("")}</select></label>
       <label class="f"><span>Número da nota ${v.tipo==="bonificacao"?"de bonificação":"(se houver)"}</span><input type="text" name="numero"></label></div>
       <div><button class="btn pri" data-step-act="receber" data-id="${v.id}">Confirmar recebimento</button></div>`);
   }
@@ -1115,10 +1300,10 @@ function passosHtml(v){
   }
   return h}
 function confirmBox(v,titulo,sug){
-  return `<form class="step" data-step><h3>${titulo}</h3><div class="muted who">Responsável: Comercial</div>${pode("confirmar")?`
+  return `<form class="step" data-step><h3>${titulo}</h3><div class="muted who">Responsável: Marketing</div>${pode("confirmar")?`
     <div class="fg"><label class="f"><span>Valor confirmado (R$)</span><input type="text" inputmode="decimal" name="valor" value="${inMoney(sug)}" required><small>${temMeta(v)?"Sugestão pelo realizado e degraus: "+brl(liberado(v)):"Valor prometido: "+brl(v.valorPrometido)}</small></label>
     <label class="f"><span>Previsão de entrada</span><input type="date" name="prev" value="${esc(v.previsaoEntrada||"")}" required></label></div>
-    <div><button class="btn pri" data-step-act="confirmar" data-id="${v.id}">Confirmar verba</button></div>`:`<div class="muted small">Aguardando Comercial.</div>`}</form>`}
+    <div><button class="btn pri" data-step-act="confirmar" data-id="${v.id}">Confirmar verba</button></div>`:`<div class="muted small">Aguardando Marketing.</div>`}</form>`}
 function maisAcoes(v){
   let h="";
   if(v.etapa!=="perdida"&&v.etapa!=="recebida"&&pode("perder")) h+=`<details class="more"><summary>Marcar como perdida</summary><div><form data-step class="fg">
@@ -1164,7 +1349,7 @@ function verbaForm(v){
     <label class="f"><span>Data da campanha</span><input type="date" name="dataCampanha" value="${esc(v.dataCampanha||"")}"><small>Preenche com o início do ciclo, se vazio.</small></label>
   </div>
   <div id="adiantBox"></div></section>
-  <section class="sec"><h3>Responsáveis</h3><div class="fg">${["comercial","compras","financeiro","marketing"].map(respSel).join("")}</div></section>
+  <section class="sec"><h3>Responsáveis</h3><div class="fg">${AREAS_FLUXO.map(respSel).join("")}</div></section>
   <section class="sec"><h3>Contrapartidas prometidas ao fornecedor</h3><div class="rows" id="rowsCp">${(v.contrapartidas||[]).map(cpRow).join("")}</div><div><button type="button" class="btn sm" data-act="addRow" data-k="cp">+ Contrapartida</button></div></section>
   <section class="sec"><h3>Acordo por escrito (links)</h3><div class="rows" id="rowsLk">${(v.links||[]).map(lkRow).join("")}</div><div><button type="button" class="btn sm" data-act="addRow" data-k="lk">+ Link</button></div><small class="muted">Link do e-mail, do PDF no Drive ou do contrato assinado.</small></section>
   <div class="err" id="fErr" role="alert"></div>
@@ -1204,7 +1389,7 @@ async function salvarVerbaForm(f){
     meta:num(f.meta.value), apuracaoInicio:f.apuracaoInicio.value, apuracaoFim:f.apuracaoFim.value, regraTexto:f.regraTexto.value.trim(),
     degraus:lerRows("rowsDeg",o=>(num(o.pct)>0?{pct:num(o.pct),libera:num(o.libera)}:null)),
     formaRecebimento:f.formaRecebimento.value, previsaoEntrada:f.previsaoEntrada.value, dataCampanha:f.dataCampanha.value,
-    responsaveis:Object.fromEntries(["comercial","compras","financeiro","marketing"].map(a=>[a,f["resp_"+a].value])),
+    responsaveis:Object.fromEntries(AREAS_FLUXO.map(a=>[a,f["resp_"+a].value])),
     contrapartidas:lerRows("rowsCp",o=>o.texto?{texto:o.texto,entregue:!!((old&&old.contrapartidas||[]).find(c=>c.texto===o.texto)||{}).entregue}:null),
     links:lerRows("rowsLk",o=>o.url?{titulo:o.titulo,url:safeUrl(o.url)}:null)
   };
@@ -1262,8 +1447,8 @@ async function passo(act,id,form){
       if(numero){patch.notas=[...(v.notas||[]),{tipo:v.tipo==="bonificacao"?"bonificacao":forma==="boleto"?"credito":"outra",numero,data,valor:val,link:"",por:S.uid||"",em:new Date().toISOString()}];det.push("Nota nº "+numero);}
       await salvarVerba(id,patch,"registrou a entrada",det);}
     else if(act==="repasse"){const data=g("data");if(!data)return falha("Informe a data da negociação.");
-      const r={data,valor:num(g("valor")),fabricante:g("fab"),obs:g("obs"),por:S.uid||"",em:new Date().toISOString()};
-      await salvarVerba(id,{repasse:r},v.repasse?"atualizou o repasse negociado":"registrou o repasse negociado",[`${dBR(data)}${r.valor?" · "+brl(r.valor):""}${r.fabricante?" · origem: "+r.fabricante:""}`]);}
+      const r={data,pedido:g("pedido"),forma:g("forma"),valor:num(g("valor")),fabricante:g("fab"),obs:g("obs"),por:S.uid||"",em:new Date().toISOString()};
+      await salvarVerba(id,{repasse:r},v.repasse?"atualizou o pagamento negociado no pedido":"negociou o pagamento no pedido",[`${r.pedido?"Pedido "+r.pedido+" · ":""}${FORMAS[r.forma]||""}${r.valor?" · "+brl(r.valor):""} · ${dBR(data)}${r.fabricante?" · origem: "+r.fabricante:""}`]);}
     else if(act==="nota"){const numero=g("numero"),data=g("data"),tipo=g("tipo");if(!numero||!data)return falha("Informe o número e a data da nota.");
       const n={tipo,numero,data,valor:num(g("valor")),link:safeUrl(g("link")),por:S.uid||"",em:new Date().toISOString()};
       const det=[`${NOTAS[tipo]} nº ${numero} · ${dBR(data)}${n.valor?" · "+brl(n.valor):""}`];
@@ -1506,7 +1691,14 @@ document.addEventListener("click",async e=>{
   if(a==="fecharFora"){if(e.target===t&&!S.dirty)fecharModal();return;}
   if(t.tagName==="A"||t.tagName==="TR")e.preventDefault();
   const m=S.modal;
+  if(t.closest("#gres")){const gs=$("#gsearch");if(gs)gs.value="";S.gq="";const gr=$("#gres");if(gr)gr.hidden=true;}
   if(a==="abrir")abrirModal({tipo:"verba",id});
+  else if(a==="abrirRel")abrirModal({tipo:"relatorio",id});
+  else if(a==="baixarRel"){const v=verba(id);if(v)baixarRelatorio(v);}
+  else if(a==="vview"){S.vview=t.dataset.k;renderMain();}
+  else if(a==="sort"){const k=t.dataset.k;S.sort=S.sort.k===k?{k,dir:S.sort.dir==="asc"?"desc":"asc"}:{k,dir:(k==="prom"||k==="receb"||k==="usado")?"desc":"asc"};renderMain();}
+  else if(a==="buscaForn"){S.fornBusca=t.dataset.k;S.fornFaixa="";if(location.hash==="#fornecedores")renderMain();else location.hash="#fornecedores";}
+  else if(a==="goAlertas"){if(S.view!=="painel"){location.hash="#painel";setTimeout(()=>{const el=$("#alertas");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});},60);}else{const el=$("#alertas");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});}}
   else if(a==="abrirCamp")abrirModal({tipo:"camp",id});
   else if(a==="fechar")fecharModal();
   else if(a==="novaVerba")abrirModal({tipo:"verbaForm"});
@@ -1559,6 +1751,7 @@ document.addEventListener("input",e=>{
   const t=e.target;
   if(t.id==="fornBusca"){S.fornBusca=t.value;const pos=t.selectionStart;renderMain();const n=$("#fornBusca");n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}return;}
   if(t.id==="buscaPessoa"){buscarPessoa(t.value);return;}
+  if(t.id==="gsearch"){buscaGlobal(t.value);return;}
   if(t.closest("#modal")){S.dirty=true;const f=t.form;if(f&&f.id==="fVerba"&&["valorPrometido","parteFixa","parteVariavel","meta"].includes(t.name))atualizaForm(f);if(f&&f.id==="fForn"&&t.name==="compras")$("#fxCalc").textContent=faixaDe(num(t.value));}
 });
 document.addEventListener("submit",async e=>{
@@ -1571,15 +1764,20 @@ document.addEventListener("submit",async e=>{
   else if(f.id==="fResult"){const c=camp(f.dataset.id);const r={vendasCiclo:num(f.vendasCiclo.value),media3m:num(f.media3m.value),obs:f.obs.value.trim()};
     const fotos=lerRows("rowsFt",o=>o.url?{titulo:o.titulo,url:safeUrl(o.url)}:null);
     try{await salvarCamp(c.id,{resultados:r,fotos},"lançou resultados",[`Vendas no ciclo ${brl(r.vendasCiclo)} · média anterior ${brl(r.media3m)} · ${fotos.length} link(s)`]);S.dirty=false;toast("Resultados salvos");S.modal.keep=true;renderModal();}catch(err){toast(errMsg(err),true)}}
+  else if(f.id==="fRelTxt"){const v=verba(f.dataset.id);const txt=f.txt.value.trim();if(!v)return;if((v.relatorioTexto||"")===txt){toast("Nada foi alterado");return;}
+    try{await salvarVerba(v.id,{relatorioTexto:txt},"editou o texto do relatório de contrapartida",[]);S.dirty=false;toast("Texto salvo");S.modal.keep=true;renderModal();}catch(err){toast(errMsg(err),true)}}
   else if(f.id==="fPedido"){const ar=$("#pedArea").value;if(!ar)return;try{await S.db.doc("pedidos/"+S.uid).set({area:ar,em:new Date().toISOString()});toast("Pedido enviado");}catch(err){toast(errMsg(err),true)}}
 });
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.modal&&!S.dirty)fecharModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){const gr=$("#gres");if(gr&&!gr.hidden){gr.hidden=true;return;}if(S.modal&&!S.dirty)fecharModal();}});
+document.addEventListener("focusout",e=>{if(e.target.id==="gsearch")setTimeout(()=>{const gr=$("#gres");if(gr&&!gr.contains(document.activeElement))gr.hidden=true;},180);});
+document.addEventListener("focusin",e=>{if(e.target.id==="gsearch"&&e.target.value)buscaGlobal(e.target.value);});
+(()=>{const st=document.createElement("style");st.textContent=REPORT_CSS;document.head.appendChild(st);})();
 async function buscarPessoa(q){
   const box=$("#buscaRes");if(!box)return;
   if(!S.user||!q.trim()){box.innerHTML="";return;}
   const hits=await S.user.search(q);
   if($("#buscaPessoa").value!==q)return;
-  box.innerHTML=hits.length?hits.map(p=>`<li><img alt="" src="${esc(p.avatarUrl)}"><span class="nm">${esc(p.name)}${S.equipe[p.id]?` <span class="muted small">já está como ${esc(AREAS[S.equipe[p.id].area])}</span>`:""}</span><select aria-label="Área">${Object.entries(AREAS).map(([k,n])=>`<option value="${k}">${n}</option>`).join("")}</select><button class="btn pri sm" data-act="addPessoa" data-id="${esc(p.id)}">Adicionar</button></li>`).join(""):`<li class="muted">Ninguém encontrado. A pessoa precisa criar a conta e ser aprovada em Administração.</li>`;
+  box.innerHTML=hits.length?hits.map(p=>`<li><img alt="" src="${esc(p.avatarUrl)}"><span class="nm">${esc(p.name)}${S.equipe[p.id]?` <span class="muted small">já está como ${esc(AREAS[S.equipe[p.id].area])}</span>`:""}</span><select aria-label="Área">${AREAS_ATIVAS.map(k=>`<option value="${k}">${AREAS[k]}</option>`).join("")}</select><button class="btn pri sm" data-act="addPessoa" data-id="${esc(p.id)}">Adicionar</button></li>`).join(""):`<li class="muted">Ninguém encontrado. A pessoa precisa criar a conta e ser aprovada em Administração.</li>`;
   hits.forEach(p=>{S.prof[p.id]=p;});
 }
 

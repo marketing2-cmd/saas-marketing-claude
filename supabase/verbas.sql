@@ -141,3 +141,13 @@ insert into public.verbas_docs (collection, id, data, updated_by) values
 ('ciclos','2027-5','{"numero":5,"ano":2027,"inicio":"2027-09-01","fim":"2027-10-31","ancoras":[],"tema":""}',null),
 ('ciclos','2027-6','{"numero":6,"ano":2027,"inicio":"2027-11-01","fim":"2027-12-31","ancoras":[],"tema":""}',null)
 on conflict (collection, id) do nothing;
+
+-- ============================================================================
+-- Aprovação de cadastros (/admin) sem service role key: o admin aprova/rejeita
+-- usando a própria sessão. Só quem tem role = 'admin' passa por esta policy.
+-- ============================================================================
+drop policy if exists "profiles_update_admin" on public.profiles;
+create policy "profiles_update_admin" on public.profiles
+  for update to authenticated
+  using ((select private.is_admin()))
+  with check ((select private.is_admin()));
