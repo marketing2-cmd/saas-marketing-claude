@@ -3,18 +3,18 @@
 -- O front-end (public/verbas.html) foi escrito como um artefato do Claude, que guarda
 -- documentos JSON em coleções. Para manter o mesmo código, os dados ficam numa única
 -- tabela de documentos: (collection, id) -> data jsonb. As coleções são:
---   fornecedores, ciclos, verbas, campanhas, equipe, pedidos, historico
+--   fornecedores, ciclos, verbas, campanhas, eventos, equipe, pedidos, historico
 --
 -- Acesso: as rotas /api/verbas usam a sessão do usuário (publishable key + RLS),
 -- então quem decide o que cada um pode ler e gravar são as policies abaixo.
 --   * Ler: qualquer usuário aprovado (ou admin).
 --   * fornecedores, ciclos, equipe: só admin grava.
 --   * pedidos: cada pessoa grava só o próprio pedido (id = seu user id); admin grava todos.
---   * verbas, campanhas, historico: qualquer aprovado, exceto quem está na área Diretoria.
+--   * verbas, campanhas, eventos, historico: qualquer aprovado, exceto quem está na área Diretoria.
 -- As regras por área (Comercial, Compras, Financeiro, Marketing) ficam na interface.
 
 create table if not exists public.verbas_docs (
-  collection text not null check (collection in ('fornecedores','ciclos','verbas','campanhas','equipe','pedidos','historico')),
+  collection text not null check (collection in ('fornecedores','ciclos','verbas','campanhas','eventos','equipe','pedidos','historico')),
   id text not null check (id ~ '^[A-Za-z0-9_.:@+~-]{1,200}$'),
   data jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now(),
@@ -50,7 +50,7 @@ returns boolean language sql security definer stable set search_path = '' as $$
   select private.verbas_is_member() and case
     when p_collection in ('fornecedores','ciclos','equipe') then private.is_admin()
     when p_collection = 'pedidos' then p_id = (select auth.uid())::text or private.is_admin()
-    when p_collection in ('verbas','campanhas','historico') then coalesce(private.verbas_area(), '') <> 'diretoria'
+    when p_collection in ('verbas','campanhas','eventos','historico') then coalesce(private.verbas_area(), '') <> 'diretoria'
     else false
   end;
 $$;

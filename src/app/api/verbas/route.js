@@ -8,7 +8,7 @@ import { requireApprovedUser } from "@/lib/supabase/authGuard";
 
 export const dynamic = "force-dynamic";
 
-const COLLECTIONS = new Set(["fornecedores", "ciclos", "verbas", "campanhas", "equipe", "pedidos", "historico"]);
+const COLLECTIONS = new Set(["fornecedores", "ciclos", "verbas", "campanhas", "eventos", "equipe", "pedidos", "historico"]);
 const ID_RE = /^[A-Za-z0-9_.:@+~-]{1,200}$/;
 const MAX_BYTES = 256 * 1024;
 const HIST_LIMIT = 500;

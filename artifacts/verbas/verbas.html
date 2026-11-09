@@ -303,6 +303,45 @@ td .sub{font-size:.78rem;color:var(--muted);white-space:normal}
 .stat b{font-family:var(--f-display);font-size:1.45rem;font-weight:700;line-height:1.2}
 .stat span{font-size:.8rem;color:var(--muted)}
 .rel-wrap{background:var(--sunk);border-radius:var(--r);padding:16px}
+/* calendário anual */
+.cal-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);align-items:center}
+.cal-legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-2px}
+.tl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow)}
+.tl{min-width:1000px;position:relative}
+.tl-row{display:grid;grid-template-columns:250px minmax(0,1fr);align-items:stretch;border-bottom:1px solid var(--line);position:relative;z-index:1}
+.tl-row:last-child{border-bottom:0}
+.tl-lbl{padding:9px 14px;font-size:.82rem;min-width:0;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;background:var(--surface)}
+.tl-lbl b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-lbl small{color:var(--muted);font-size:.72rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-track{position:relative;min-height:46px}
+.tl-head .tl-track{min-height:34px}
+.tl-head .tl-lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+.tl-m{position:absolute;top:0;bottom:0;display:flex;align-items:center;padding-left:8px;font-size:.74rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tl-m.now{color:var(--bolt)}
+.tl-sec{padding:7px 14px;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;background:var(--sunk);border-bottom:1px solid var(--line);position:relative;z-index:1}
+.tl-bar{position:absolute;top:9px;bottom:9px;border-radius:6px;font-size:.72rem;font-weight:600;color:#fff;padding:0 8px;display:flex;align-items:center;white-space:nowrap;overflow:hidden;cursor:pointer;border:0;min-width:10px;font-family:inherit}
+.tl-bar:hover{filter:brightness(1.08);box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.tl-bar.camp{background:var(--brand)}
+.tl-bar.evt{background:#111}
+.tl-bar.trein{background:var(--bolt)}
+.tl-bar.ciclo{background:var(--accent-soft);color:var(--accent);border:1px solid #f8cfb4;cursor:default}
+.tl-bar.cancel{opacity:.35;text-decoration:line-through}
+.tl-bar.feito::after{content:"✓";margin-left:6px}
+.tl-grid{position:absolute;top:0;bottom:0;left:250px;right:0;pointer-events:none;z-index:2}
+.tl-grid i{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line)}
+.tl-grid b{position:absolute;top:0;bottom:0;border-left:2px solid var(--bolt)}
+.tl-grid b::before{content:"hoje";position:absolute;top:2px;left:4px;font-size:.62rem;font-weight:700;color:var(--bolt);text-transform:uppercase}
+.mes-list{display:flex;flex-direction:column;gap:16px}
+.mes h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px}
+.mes h3.now{color:var(--bolt)}
+.ev{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;text-align:left;width:100%;margin-bottom:6px;box-shadow:var(--shadow)}
+.ev:hover{border-color:var(--brand)}
+.ev .dt{font-size:.72rem;color:var(--muted);line-height:1.25;border-right:3px solid var(--brand);padding-right:8px}
+.ev .dt.evt{border-color:#111}.ev .dt.trein{border-color:var(--bolt)}
+.ev .dt b{display:block;font-size:1.05rem;color:var(--ink)}
+.ev .nm{min-width:0}
+.ev .nm b{display:block;overflow-wrap:anywhere}
+.ev .nm small{color:var(--muted);font-size:.76rem}
 @media (max-width:1100px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:900px){.tools{width:100%}.search{flex:1}.search input{width:100%}.fun-grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:560px){.fb{grid-template-columns:minmax(0,1fr) 40px}.fb-l{grid-column:1/-1}}
@@ -317,7 +356,7 @@ td .sub{font-size:.78rem;color:var(--muted);white-space:normal}
   .topbar{position:static}
   .topbar .wrap{padding-block:10px 12px}
   main{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
-  .bnav{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);
+  .bnav{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(64px,1fr);overflow-x:auto;scrollbar-width:none;position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);
     padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
   .bnav a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 7px;font-size:.68rem;font-weight:600;color:var(--muted);text-decoration:none;position:relative}
   .bnav a.on{color:var(--accent)}
@@ -411,15 +450,19 @@ const IC = {
   sino:'<path d="M6 9a6 6 0 0 1 12 0c0 6 3 8 3 8H3s3-2 3-8"/><path d="M10 21h4"/>',
   baixar:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
   lista:'<path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
-  quadro:'<path d="M3 4h5v16H3zM10 4h5v10h-5zM17 4h4v13h-4z"/>'};
+  quadro:'<path d="M3 4h5v16H3zM10 4h5v10h-5zM17 4h4v13h-4z"/>',
+  calendario:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  trofeu:'<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H4v1a3 3 0 0 0 4 3M16 6h4v1a3 3 0 0 1-4 3M12 13v4M8 21h8M10 17h4v4h-4z"/>'};
+const TIPOS_EVT = {evento:"Evento na loja", feira:"Feira ou exposição", treinamento:"Treinamento técnico", lancamento:"Lançamento de produto", sorteio:"Sorteio ou premiação", acao:"Ação promocional", visita:"Visita ou reunião", outro:"Outro"};
+const STATUS_E = {planejado:["Planejado",""], confirmado:["Confirmado","info"], realizado:["Realizado","ok"], cancelado:["Cancelado","crit"]};
 const ico=(k,cls="i")=>`<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>`;
 
 /* ===================== estado ===================== */
 const S = {
   db:null, user:null, uid:null, me:null, isOwner:false, canWrite:null, noDb:false,
-  fornecedores:[], ciclos:[], verbas:[], campanhas:[], equipe:{}, pedidos:{}, feed:[], prof:{},
+  fornecedores:[], ciclos:[], verbas:[], campanhas:[], eventos:[], equipe:{}, pedidos:{}, feed:[], prof:{},
   ok:{}, slow:false, view:"painel",
-  fil:{forn:"", ciclo:"", tipo:"", area:""}, col:"negociada", fornBusca:"", fornFaixa:"", campFil:"", vview:"quadro", sort:{k:"prev",dir:"asc"},
+  fil:{forn:"", ciclo:"", tipo:"", area:""}, col:"negociada", fornBusca:"", fornFaixa:"", campFil:"", vview:"quadro", sort:{k:"prev",dir:"asc"}, calTab:"calendario", calView:(window.innerWidth<760?"mes":"ano"), calFil:{forn:"",tipo:""},
   modal:null, dirty:false, histV:[], histUnsub:null, ownerSelfDone:false, acaoEdit:null
 };
 
@@ -568,13 +611,14 @@ function idsVisiveis(){
   const ids=[S.uid,...Object.keys(S.equipe),...Object.keys(S.pedidos)];
   for(const v of S.verbas){ids.push(v.criadoPor,v.atualizadoPor);Object.values(v.responsaveis||{}).forEach(x=>ids.push(x));if(v.adiantamento)ids.push(v.adiantamento.por);if(v.repasse)ids.push(v.repasse.por);(v.notas||[]).forEach(n=>ids.push(n.por));}
   for(const c of S.campanhas){ids.push(c.responsavel,c.criadoPor);}
+  for(const e of S.eventos){ids.push(e.criadoPor);}
   S.feed.forEach(h=>ids.push(h.por));S.histV.forEach(h=>ids.push(h.por));
   return ids}
 function membros(ar){return Object.entries(S.equipe).filter(([,e])=>e.area===ar).map(([id])=>id)}
 
 /* ===================== gravação ===================== */
-async function addHist(verbaId, acao, detalhes, alvo, campanhaId){
-  try{await S.db.collection("historico").add({verbaId:verbaId||"", campanhaId:campanhaId||"", alvo:alvo||"", em:new Date().toISOString(), por:S.uid||"", acao, detalhes:detalhes||[]});}catch(e){}
+async function addHist(verbaId, acao, detalhes, alvo, campanhaId, eventoId){
+  try{await S.db.collection("historico").add({verbaId:verbaId||"", campanhaId:campanhaId||"", eventoId:eventoId||"", alvo:alvo||"", em:new Date().toISOString(), por:S.uid||"", acao, detalhes:detalhes||[]});}catch(e){}
 }
 async function salvarVerba(id, patch, acao, detalhes){
   patch.atualizadoEm=new Date().toISOString(); patch.atualizadoPor=S.uid||"";
@@ -606,6 +650,7 @@ async function boot(){
   db.collection("fornecedores").onSnapshot(s=>{S.fornecedores=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.compras2026||0)-(a.compras2026||0));if(!s.metadata.fromCache)done("fornecedores");renderAll();},onErr("fornecedores"));
   db.collection("ciclos").onSnapshot(s=>{S.ciclos=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.ano-b.ano)||(a.numero-b.numero));if(!s.metadata.fromCache)done("ciclos");renderAll();},onErr("ciclos"));
   db.collection("verbas").onSnapshot(s=>{S.verbas=s.docs.map(d=>({id:d.id,...d.data()}));if(!s.metadata.fromCache)done("verbas");afterData();},onErr("verbas"));
+  db.collection("eventos").onSnapshot(s=>{S.eventos=s.docs.map(d=>({id:d.id,...d.data()}));afterData();},()=>{});
   db.collection("campanhas").onSnapshot(s=>{S.campanhas=s.docs.map(d=>({id:d.id,...d.data()}));if(!s.metadata.fromCache)done("campanhas");afterData();},onErr("campanhas"));
   db.collection("equipe").onSnapshot(s=>{S.equipe=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));if(!s.metadata.fromCache){done("equipe");ownerSelf();}afterData();},onErr("equipe"));
   db.collection("pedidos").onSnapshot(s=>{S.pedidos=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));afterData();},()=>{});
@@ -617,7 +662,7 @@ async function ownerSelf(){
   S.ownerSelfDone=true;
   try{await S.db.doc("equipe/"+S.uid).set({area:"marketing",desde:new Date().toISOString()});}catch(e){}
 }
-const VIEWS={relatorios:["Relatórios","Relatórios de contrapartida para os fornecedores"],painel:["Painel","Visão geral das verbas de "+ANO],verbas:["Verbas","Fluxo de cada verba, da negociação à comprovação"],campanhas:["Campanhas","Ciclos de sell-out, ações nas 3 camadas e uso das verbas"],fornecedores:["Fornecedores","Compras 2026, faixa e verbas por fornecedor"],config:["Configurar","Equipe, ciclos e atividade"]};
+const VIEWS={calendario:["Calendário","Campanhas, eventos e resultados de "+ANO],relatorios:["Relatórios","Relatórios de contrapartida para os fornecedores"],painel:["Painel","Visão geral das verbas de "+ANO],verbas:["Verbas","Fluxo de cada verba, da negociação à comprovação"],campanhas:["Campanhas","Ciclos de sell-out, ações nas 3 camadas e uso das verbas"],fornecedores:["Fornecedores","Compras 2026, faixa e verbas por fornecedor"],config:["Configurar","Equipe, ciclos e atividade"]};
 function route(){const h=(location.hash||"").replace("#","");S.view=VIEWS[h]?h:"painel";}
 
 /* ===================== renderização ===================== */
@@ -625,11 +670,11 @@ function renderAll(){renderHeader();renderMain();if(S.modal&&!S.dirty)renderModa
 function navGroups(){
   const ar=area();
   if(ar==="diretoria") return [["Visão geral",[["painel","Painel"]]]];
-  const g=[["Visão geral",[["painel","Painel"]]],["Operação",[["verbas","Verbas"],["campanhas","Campanhas"],["relatorios","Relatórios"]]],["Cadastros",[["fornecedores","Fornecedores"]]]];
+  const g=[["Visão geral",[["painel","Painel"]]],["Operação",[["verbas","Verbas"],["campanhas","Campanhas"],["calendario","Calendário"],["relatorios","Relatórios"]]],["Cadastros",[["fornecedores","Fornecedores"]]]];
   if(ar==="marketing") g[2][1].push(["config","Configurar"]);
   return g}
 function navItems(){return navGroups().flatMap(g=>g[1])}
-const NAV_CURTO={fornecedores:"Fornec.",config:"Config.",relatorios:"Relatórios"};
+const NAV_CURTO={fornecedores:"Fornec.",config:"Config.",relatorios:"Relatórios",calendario:"Agenda"};
 function relPendentes(){return S.verbas.filter(v=>v.etapa!=="perdida"&&v.executadaEm&&!v.comprovadaEm).length}
 function renderHeader(){
   const ar=area();
@@ -648,6 +693,7 @@ function renderHeader(){
   const [t,sub]=VIEWS[S.view];
   let act="";
   if(S.view==="verbas"&&pode("criar")) act=`<button class="btn pri" data-act="novaVerba">+ Nova verba</button>`;
+  if(S.view==="calendario"&&pode("campanha")) act=`<button class="btn pri" data-act="novoEvt">+ Novo evento</button>`;
   if(S.view==="campanhas"&&pode("campanha")) act=`<button class="btn pri" data-act="novaCamp">+ Nova campanha</button>`;
   if(S.view==="fornecedores"&&pode("config")) act=`<button class="btn pri" data-act="novoForn">+ Novo fornecedor</button>`;
   if(S.view==="painel"&&pode("criar")) act=`<button class="btn" data-act="novaVerba">+ Nova verba</button>`;
@@ -666,6 +712,7 @@ function renderMain(){
   else if(S.view==="fornecedores") h+=fornecedoresHtml();
   else if(S.view==="config") h+=configHtml();
   else if(S.view==="relatorios") h+=relatoriosHtml();
+  else if(S.view==="calendario") h+=calendarioHtml();
   m.innerHTML=h;
 }
 function bannerHtml(){
@@ -724,9 +771,10 @@ function painelHtml(){
   if(ar && ar!=="diretoria"){
     const minhas=[];
     for(const v of S.verbas) for(const p of pendencias(v)) if(p.area===ar) minhas.push({tipo:"v",id:v.id,t:p.t,s:fornNome(v.fornecedorId)+(v.titulo?" · "+v.titulo:"")+" · "+brl(v.valorPrometido)});
+    if(ar==="marketing") for(const e of S.eventos) if(e.status!=="cancelado"&&!temResEvt(e)&&(e.status==="realizado"||(e.fim||e.inicio)<hoje())) minhas.push({tipo:"e",id:e.id,t:"Lançar o resultado do evento",s:e.titulo+" · "+dBR(e.inicio)});
     if(ar==="marketing") for(const p of pendCampanhas()) minhas.push({tipo:"c",id:p.c.id,t:p.t,s:p.c.nome+(p.a?" · "+p.a.tipo+" em "+dBR(p.a.data):"")});
     h+=`<section class="panel"><div class="panel-h"><h2>Suas pendências</h2><span class="pill info">${esc(AREAS[ar])}</span><span class="pill">${minhas.length}</span></div>
-      ${minhas.length?`<ul class="alist">${minhas.map(m=>`<li><button class="alert info" data-act="${m.tipo==="c"?"abrirCamp":"abrir"}" data-id="${m.id}"><span class="ai">${ico("tarefa")}</span><div><b>${esc(m.t)}</b><span>${esc(m.s)}</span></div></button></li>`).join("")}</ul>`
+      ${minhas.length?`<ul class="alist">${minhas.map(m=>`<li><button class="alert info" data-act="${m.tipo==="c"?"abrirCamp":m.tipo==="e"?"abrirEvt":"abrir"}" data-id="${m.id}"><span class="ai">${ico("tarefa")}</span><div><b>${esc(m.t)}</b><span>${esc(m.s)}</span></div></button></li>`).join("")}</ul>`
         :`<div class="empty">Nada pendente para ${esc(AREAS[ar])} agora.</div>`}</section>`;
   }
   if(!S.verbas.length && S.ok.verbas){
@@ -897,8 +945,153 @@ function buscaGlobal(q){
   let h="";
   if(vs.length) h+=`<div class="k">Verbas</div>`+vs.map(v=>`<button data-act="abrir" data-id="${v.id}"><b>${esc(fornNome(v.fornecedorId))}${v.titulo?" · "+esc(v.titulo):""}</b><small>${esc(COLN[coluna(v)])} · ${brl(v.valorPrometido)}</small></button>`).join("");
   if(cs.length) h+=`<div class="k">Campanhas</div>`+cs.map(c=>`<button data-act="abrirCamp" data-id="${c.id}"><b>${esc(c.nome)}</b><small>${dBR(c.inicio)} a ${dBR(c.fim)}</small></button>`).join("");
+  const es=S.eventos.filter(e=>(e.titulo||"").toLowerCase().includes(q)).slice(0,4);
+  if(es.length) h+=`<div class="k">Eventos</div>`+es.map(e=>`<button data-act="abrirEvt" data-id="${e.id}"><b>${esc(e.titulo)}</b><small>${esc(TIPOS_EVT[e.tipo]||"")} · ${dBR(e.inicio)}</small></button>`).join("");
   if(fs.length) h+=`<div class="k">Fornecedores</div>`+fs.map(f=>`<button data-act="buscaForn" data-k="${esc(f.nome)}"><b>${esc(f.nome)}</b><small>Faixa ${esc(f.faixa||"—")} · compras 2026 ${brl(f.compras2026)}</small></button>`).join("");
   box.innerHTML=h||`<div class="none">Nada encontrado para "${esc(q)}".</div>`;box.hidden=false;
+}
+
+/* ---------- calendário anual e resultados ---------- */
+const DIAS_ANO=(Date.UTC(ANO+1,0,1)-Date.UTC(ANO,0,1))/864e5;
+function doy(iso){return (Date.UTC(+iso.slice(0,4),+iso.slice(5,7)-1,+iso.slice(8,10))-Date.UTC(ANO,0,1))/864e5}
+function barPos(ini,fim){if(!ini)return null;let a=doy(ini),b=doy(fim&&fim>=ini?fim:ini)+1;a=Math.max(0,a);b=Math.min(DIAS_ANO,b);if(b<=0||a>=DIAS_ANO)return null;return {l:a/DIAS_ANO*100,w:(b-a)/DIAS_ANO*100}}
+function temResEvt(e){const r=e.resultados||{};return !!(+r.publico||+r.vendas||+r.contatos||(r.avaliacao||"").trim())}
+function periodo(ini,fim){return !fim||fim===ini?dBR(ini):dBR(ini)+" a "+dBR(fim)}
+function calItens(){
+  const f=S.calFil, out=[];
+  for(const c of S.campanhas){ if(!c.inicio) continue;
+    out.push({kind:"camp",id:c.id,nome:c.nome,ini:c.inicio,fim:c.fim||c.inicio,forn:c.fornecedorIds||[],tipoK:"campanha",tipo:"Campanha de sell-out",st:STATUS_C[c.status||"planejada"],cancel:c.status==="cancelada",feito:c.status==="concluida",cls:"camp"});}
+  for(const e of S.eventos){ if(!e.inicio) continue;
+    out.push({kind:"evt",id:e.id,nome:e.titulo,ini:e.inicio,fim:e.fim||e.inicio,forn:e.fornecedorIds||[],tipoK:e.tipo,tipo:TIPOS_EVT[e.tipo]||"Evento",st:STATUS_E[e.status||"planejado"],cancel:e.status==="cancelado",feito:e.status==="realizado",cls:e.tipo==="treinamento"?"trein":"evt",local:e.local});}
+  return out.filter(x=>(!f.forn||x.forn.includes(f.forn))&&(!f.tipo||x.tipoK===f.tipo)&&x.fim>=ANO+"-01-01"&&x.ini<=ANO+"-12-31").sort((a,b)=>a.ini.localeCompare(b.ini));
+}
+function calendarioHtml(){
+  const f=S.calFil;
+  const usados=[...new Set([...S.campanhas.flatMap(c=>c.fornecedorIds||[]),...S.eventos.flatMap(e=>e.fornecedorIds||[]),...S.ciclos.flatMap(c=>c.ancoras||[])])].map(forn).filter(Boolean).sort((a,b)=>a.nome.localeCompare(b.nome));
+  let h=`<div class="filters"><div class="seg" role="tablist" aria-label="Seção"><button data-act="calTab" data-k="calendario" class="${S.calTab==="calendario"?"on":""}">${ico("calendario")}Calendário</button><button data-act="calTab" data-k="resultados" class="${S.calTab==="resultados"?"on":""}">${ico("trofeu")}Resultados</button></div>
+    <select data-calfil="forn" aria-label="Fornecedor"><option value="">Todos os fornecedores</option>${usados.map(x=>`<option value="${x.id}" ${f.forn===x.id?"selected":""}>${esc(x.nome)}</option>`).join("")}</select>
+    <select data-calfil="tipo" aria-label="Tipo"><option value="">Campanhas e eventos</option><option value="campanha" ${f.tipo==="campanha"?"selected":""}>Só campanhas</option>${Object.entries(TIPOS_EVT).map(([k,n])=>`<option value="${k}" ${f.tipo===k?"selected":""}>${n}</option>`).join("")}</select>
+    ${S.calTab==="calendario"?`<div class="seg spacer" role="group" aria-label="Visualização"><button data-act="calView" data-k="ano" class="${S.calView==="ano"?"on":""}">Ano</button><button data-act="calView" data-k="mes" class="${S.calView==="mes"?"on":""}">Mês a mês</button></div>`:""}</div>`;
+  if(S.calTab==="resultados") return h+resultadosHtml();
+  const it=calItens();
+  h+=`<div class="cal-legend"><span><i style="background:var(--brand)"></i>Campanhas</span><span><i style="background:#111"></i>Eventos e ações</span><span><i style="background:var(--bolt)"></i>Treinamentos</span><span><i style="background:var(--accent-soft);border:1px solid #f8cfb4"></i>Ciclos de sell-out</span><span>✓ realizado</span></div>`;
+  if(!it.length&&!S.ciclos.length) return h+`<div class="empty">Nada no calendário de ${ANO} ainda.${pode("campanha")?`<br><br><button class="btn pri" data-act="novoEvt">Adicionar o primeiro evento</button>`:""}</div>`;
+  return h+(S.calView==="ano"?timelineHtml(it):mesesHtml(it));
+}
+function timelineHtml(it){
+  const ms=[];for(let m=0;m<12;m++){const a=doy(`${ANO}-${String(m+1).padStart(2,"0")}-01`);const b=m<11?doy(`${ANO}-${String(m+2).padStart(2,"0")}-01`):DIAS_ANO;ms.push({m,l:a/DIAS_ANO*100,w:(b-a)/DIAS_ANO*100});}
+  const t=hoje(), nowM=+t.slice(0,4)===ANO?+t.slice(5,7)-1:-1;
+  const bar=(x)=>{const p=barPos(x.ini,x.fim);if(!p)return "";const titulo=`${x.nome} · ${periodo(x.ini,x.fim)}${x.forn.length?" · "+x.forn.map(fornNome).join(" + "):""}`;
+    return `<button class="tl-bar ${x.cls}${x.cancel?" cancel":""}${x.feito?" feito":""}" style="left:${p.l}%;width:${p.w}%" data-act="${x.kind==="camp"?"abrirCamp":"abrirEvt"}" data-id="${x.id}" title="${esc(titulo)}">${p.w>4?esc(x.nome):""}</button>`};
+  const row=(lbl,sub,bars)=>`<div class="tl-row"><div class="tl-lbl"><b>${esc(lbl)}</b>${sub?`<small>${esc(sub)}</small>`:""}</div><div class="tl-track">${bars}</div></div>`;
+  let h=`<div class="tl-wrap"><div class="tl"><div class="tl-grid">${ms.map(m=>`<i style="left:${m.l}%"></i>`).join("")}${nowM>=0?`<b style="left:${doy(t)/DIAS_ANO*100}%"></b>`:""}</div>
+    <div class="tl-row tl-head"><div class="tl-lbl">${ANO}</div><div class="tl-track">${ms.map(m=>`<div class="tl-m ${m.m===nowM?"now":""}" style="left:${m.l}%;width:${m.w}%">${MESES[m.m]}</div>`).join("")}</div></div>`;
+  const cic=S.ciclos.filter(c=>c.ano===ANO&&(!S.calFil.forn||(c.ancoras||[]).includes(S.calFil.forn)));
+  if(cic.length&&(!S.calFil.tipo||S.calFil.tipo==="campanha")){h+=`<div class="tl-sec">Ciclos de sell-out</div>`;
+    h+=row("Ciclos bimestrais","Fornecedores-âncora",cic.map(c=>{const p=barPos(c.inicio,c.fim);return p?`<div class="tl-bar ciclo" style="left:${p.l}%;width:${p.w}%" title="${esc(cicloNome(c.id)+((c.ancoras||[]).length?" · "+c.ancoras.map(fornNome).join(" + "):""))}">C${c.numero}${(c.ancoras||[]).length?" · "+esc(c.ancoras.map(fornNome).join(" + ")):""}</div>`:""}).join(""));}
+  const camps=it.filter(x=>x.kind==="camp"), evts=it.filter(x=>x.kind==="evt");
+  if(camps.length){h+=`<div class="tl-sec">Campanhas</div>`;h+=camps.map(x=>row(x.nome,(x.forn.map(fornNome).join(" + ")||"Sem fornecedor")+" · "+x.st[0],bar(x))).join("");}
+  if(evts.length){h+=`<div class="tl-sec">Eventos e ações</div>`;h+=evts.map(x=>row(x.nome,x.tipo+(x.forn.length?" · "+x.forn.map(fornNome).join(" + "):""),bar(x))).join("");}
+  if(!camps.length&&!evts.length) h+=`<div class="tl-row"><div class="tl-lbl muted">Nenhum item com estes filtros</div><div class="tl-track"></div></div>`;
+  return h+`</div></div>`}
+function mesesHtml(it){
+  const t=hoje(); let h=`<div class="mes-list">`;
+  for(let m=0;m<12;m++){
+    const a=`${ANO}-${String(m+1).padStart(2,"0")}-01`, b=`${ANO}-${String(m+1).padStart(2,"0")}-31`;
+    const l=it.filter(x=>x.ini<=b&&x.fim>=a);
+    const nome=new Date(Date.UTC(ANO,m,1)).toLocaleDateString("pt-BR",{month:"long",timeZone:"UTC"});
+    h+=`<section class="mes"><h3 class="${t.slice(0,7)===a.slice(0,7)?"now":""}">${esc(nome)} ${ANO}</h3>${l.length?l.map(x=>`<button class="ev" data-act="${x.kind==="camp"?"abrirCamp":"abrirEvt"}" data-id="${x.id}"><div class="dt ${x.cls==="camp"?"":x.cls}"><b>${x.ini.slice(8,10)}/${x.ini.slice(5,7)}</b>${x.fim!==x.ini?"até "+x.fim.slice(8,10)+"/"+x.fim.slice(5,7):""}</div><div class="nm"><b>${esc(x.nome)}</b><small>${esc(x.tipo)}${x.forn.length?" · "+esc(x.forn.map(fornNome).join(" + ")):""}${x.local?" · "+esc(x.local):""}</small></div><span class="pill dot ${x.st[1]}">${x.st[0]}</span></button>`).join(""):`<div class="muted small">Nada programado.</div>`}</section>`;
+  }
+  return h+`</div>`}
+function resultadosHtml(){
+  const f=S.calFil, t=hoje(), rows=[];
+  for(const c of S.campanhas){ if(!c.inicio||c.status==="cancelada"||c.inicio>t) continue; if(f.forn&&!(c.fornecedorIds||[]).includes(f.forn)) continue; if(f.tipo&&f.tipo!=="campanha") continue;
+    const r=c.resultados||{}, m=campMetricas(c), vp=+r.media3m>0?((+r.vendasCiclo/ +r.media3m)-1)*100:null;
+    rows.push({kind:"camp",id:c.id,ini:c.inicio,fim:c.fim,nome:c.nome,tipo:"Campanha",forn:c.fornecedorIds||[],inv:m.custo?m.usadoV||m.custo:0,vendas:+r.vendasCiclo||0,
+      det:vp==null?(m.feitas+" ações feitas"):`${vp>=0?"+":""}${vp.toFixed(1).replace(".",",")}% sobre a média`,detCls:vp==null?"":vp>=0?"ok":"crit",ok:!!+r.vendasCiclo,publico:0});}
+  for(const e of S.eventos){ if(!e.inicio||e.status==="cancelado"||(e.inicio>t&&e.status!=="realizado")) continue; if(f.forn&&!(e.fornecedorIds||[]).includes(f.forn)) continue; if(f.tipo&&f.tipo!==e.tipo) continue;
+    const r=e.resultados||{};
+    rows.push({kind:"evt",id:e.id,ini:e.inicio,fim:e.fim,nome:e.titulo,tipo:TIPOS_EVT[e.tipo]||"Evento",forn:e.fornecedorIds||[],inv:+r.investimento||+e.investimento||0,vendas:+r.vendas||0,
+      det:[+r.publico?r.publico+" pessoas":"",+r.contatos?r.contatos+" contatos":""].filter(Boolean).join(" · ")||"—",detCls:"",ok:temResEvt(e),publico:+r.publico||0});}
+  rows.sort((a,b)=>b.ini.localeCompare(a.ini));
+  const pend=rows.filter(r=>!r.ok).length, vendas=rows.reduce((s,r)=>s+r.vendas,0), pub=rows.reduce((s,r)=>s+r.publico,0), inv=rows.reduce((s,r)=>s+r.inv,0);
+  let h=`<div class="summary"><div class="stat"><b>${rows.length}</b><span>Campanhas e eventos realizados</span></div><div class="stat"><b style="color:${pend?"var(--crit)":"inherit"}">${pend}</b><span>Resultados por lançar</span></div><div class="stat"><b>${brl(vendas)}</b><span>Vendas registradas</span></div><div class="stat"><b>${brl(inv)}</b><span>Investido</span></div><div class="stat"><b>${pub.toLocaleString("pt-BR")}</b><span>Público em eventos</span></div></div>`;
+  if(!rows.length) return h+`<div class="empty">Os resultados aparecem aqui quando uma campanha começa ou um evento acontece.<br>Lance as vendas, o público e a avaliação dentro de cada campanha ou evento.</div>`;
+  h+=`<div class="tablewrap"><table><thead><tr><th>Quando</th><th>Campanha ou evento</th><th>Fornecedores</th><th class="r">Investido</th><th class="r">Vendas</th><th>Resultado</th><th>Situação</th></tr></thead><tbody>${rows.map(r=>`<tr class="click" data-act="${r.kind==="camp"?"abrirCamp":"abrirEvt"}" data-id="${r.id}"><td>${periodo(r.ini,r.fim)}</td><td><b>${esc(r.nome)}</b><div class="sub">${esc(r.tipo)}</div></td><td style="white-space:normal">${esc(r.forn.map(fornNome).join(", ")||"—")}</td><td class="r">${r.inv?brl(r.inv):"—"}</td><td class="r">${r.vendas?brl(r.vendas):"—"}</td><td>${r.detCls?`<span class="pill ${r.detCls}">${esc(r.det)}</span>`:`<span class="sub">${esc(r.det)}</span>`}</td><td><span class="pill dot ${r.ok?"ok":"warn"}">${r.ok?"Resultado lançado":"Por lançar"}</span></td></tr>`).join("")}</tbody></table></div>`;
+  return h}
+
+/* ---------- evento: ficha e formulário ---------- */
+function eventoView(e){
+  const ed=pode("campanha"), [sn,sc]=STATUS_E[e.status||"planejado"], r=e.resultados||{};
+  const head=`<div class="t"><div class="muted small">${esc(TIPOS_EVT[e.tipo]||"Evento")} · ${periodo(e.inicio,e.fim)}</div><h2>${esc(e.titulo)} <span class="pill dot ${sc}" style="vertical-align:middle">${sn}</span></h2></div>${ed?`<button class="btn sm" data-act="editEvt" data-id="${e.id}">Editar</button>`:""}`;
+  let b=`<section class="sec"><dl class="dl">${dd("Fornecedores",(e.fornecedorIds||[]).map(fornNome).join(" + ")||"—")}${dd("Local",e.local||"—")}${dd("Investimento previsto",e.investimento?brl(e.investimento):"—")}${dd("Público esperado",e.publicoEsperado?String(e.publicoEsperado):"—")}</dl>${e.descricao?`<p class="small" style="margin:0;white-space:pre-line">${esc(e.descricao)}</p>`:""}
+    ${(e.links||[]).length?`<ul class="links">${e.links.map(l=>`<li><a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener">${esc(l.titulo||l.url)}</a></li>`).join("")}</ul>`:""}</section>`;
+  b+=`<section class="sec"><div class="sec-h"><h3>Resultados</h3>${temResEvt(e)?`<span class="pill ok spacer">Lançado</span>`:`<span class="pill warn spacer">Por lançar</span>`}</div>
+    <div class="kpis">${kpi("tarefa","Público presente",0,"").replace(brl(0),esc(r.publico?Number(r.publico).toLocaleString("pt-BR"):"—"))}${kpi("check","Contatos gerados",0,"").replace(brl(0),esc(r.contatos?Number(r.contatos).toLocaleString("pt-BR"):"—"))}${kpi("entrada","Vendas geradas",+r.vendas||0,"")}${kpi("promessa","Investimento realizado",+r.investimento||0,"")}</div>
+    ${r.avaliacao?`<p class="small" style="margin:0;white-space:pre-line">${esc(r.avaliacao)}</p>`:""}
+    ${(r.fotos||[]).length?`<ul class="links">${r.fotos.map(l=>`<li><a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener">${esc(l.titulo||l.url)}</a></li>`).join("")}</ul>`:""}
+    ${ed?`<details class="more" ${!temResEvt(e)&&(e.status==="realizado"||(e.fim||e.inicio)<hoje())?"open":""}><summary>${temResEvt(e)?"Atualizar":"Lançar"} resultados</summary><div><form id="fEvtRes" data-id="${e.id}" class="fg" novalidate>
+      <label class="f"><span>Público presente</span><input type="text" inputmode="numeric" name="publico" value="${esc(r.publico||"")}"></label>
+      <label class="f"><span>Contatos gerados</span><input type="text" inputmode="numeric" name="contatos" value="${esc(r.contatos||"")}"><small>Cadastros, leads, eletricistas no Pontuei</small></label>
+      <label class="f"><span>Vendas geradas (R$)</span><input type="text" inputmode="decimal" name="vendas" value="${inMoney(r.vendas)}"></label>
+      <label class="f"><span>Investimento realizado (R$)</span><input type="text" inputmode="decimal" name="investimento" value="${inMoney(r.investimento||e.investimento)}"></label>
+      <label class="f wide"><span>Avaliação</span><textarea name="avaliacao" placeholder="O que funcionou, o que mudar na próxima vez">${esc(r.avaliacao||"")}</textarea></label>
+      <div class="f wide"><span>Fotos e materiais (links)</span><div class="rows" id="rowsEf">${(r.fotos||[]).map(lkRow).join("")}</div><div><button type="button" class="btn sm" data-act="addRow" data-k="ef">+ Link</button></div></div>
+      ${e.status!=="realizado"?`<label class="check wide"><input type="checkbox" name="realizado" checked> Marcar o evento como realizado</label>`:""}
+      <div class="wide"><button class="btn pri">Salvar resultados</button></div></form></div></details>`:""}
+  </section>`;
+  if(ed) b+=`<details class="more"><summary>Excluir evento</summary><div><form class="row"><label class="check"><input type="checkbox" name="certeza"> Quero excluir este evento</label><button class="btn danger" type="button" data-act="delEvt" data-id="${e.id}">Excluir evento</button></form></div></details>`;
+  b+=`<section class="sec"><h3>Histórico</h3><div id="histV">${histList(S.histV,false)}</div></section>`;
+  return [head,b]}
+function eventoForm(e,dataPre){
+  const novo=!e; e=e||{tipo:"",status:"planejado",fornecedorIds:[],inicio:dataPre||"",links:[]};
+  const fs=S.fornecedores.filter(f=>f.ativo!==false||(e.fornecedorIds||[]).includes(f.id)).slice().sort((a,b)=>a.nome.localeCompare(b.nome));
+  const head=`<div class="t"><h2>${novo?"Novo evento":"Editar evento"}</h2></div>`;
+  const b=`<form id="fEvt" data-id="${e.id||""}" class="sec" novalidate><div class="fg">
+    <label class="f wide"><span>Nome *</span><input type="text" name="titulo" value="${esc(e.titulo||"")}" placeholder="Ex.: Feira do Eletricista WEG, Treinamento Lorenzetti" required></label>
+    <label class="f"><span>Tipo *</span><select name="tipo" required><option value="">Escolha…</option>${Object.entries(TIPOS_EVT).map(([k,n])=>`<option value="${k}" ${e.tipo===k?"selected":""}>${n}</option>`).join("")}</select></label>
+    <label class="f"><span>Início *</span><input type="date" name="inicio" value="${esc(e.inicio||"")}" required></label>
+    <label class="f"><span>Fim</span><input type="date" name="fim" value="${esc(e.fim||"")}"><small>Vazio = um dia só</small></label>
+    <label class="f"><span>Situação</span><select name="status">${Object.entries(STATUS_E).map(([k,[n]])=>`<option value="${k}" ${e.status===k?"selected":""}>${n}</option>`).join("")}</select></label>
+    <label class="f"><span>Local</span><input type="text" name="local" value="${esc(e.local||"")}" placeholder="Ex.: Loja matriz, auditório"></label>
+    <label class="f"><span>Investimento previsto (R$)</span><input type="text" inputmode="decimal" name="investimento" value="${inMoney(e.investimento)}"></label>
+    <label class="f"><span>Público esperado</span><input type="text" inputmode="numeric" name="publicoEsperado" value="${esc(e.publicoEsperado||"")}"></label>
+    <div class="f wide"><span>Fornecedores que participam</span><div class="checkgrid" id="fornChecks">${fs.map(f=>`<label class="check"><input type="checkbox" value="${f.id}" ${(e.fornecedorIds||[]).includes(f.id)?"checked":""}> ${esc(f.nome)}</label>`).join("")}</div></div>
+    <label class="f wide"><span>Descrição</span><textarea name="descricao" placeholder="O que vai acontecer, quem participa, o que cada fornecedor leva">${esc(e.descricao||"")}</textarea></label>
+    <div class="f wide"><span>Links (convite, inscrição, materiais)</span><div class="rows" id="rowsLk">${(e.links||[]).map(lkRow).join("")}</div><div><button type="button" class="btn sm" data-act="addRow" data-k="lk">+ Link</button></div></div>
+  </div><div class="err" id="fErr" role="alert"></div><div class="formbar"><button type="button" class="btn" data-act="${novo?"fechar":"abrirEvt"}" data-id="${e.id||""}">Cancelar</button><button class="btn pri">${novo?"Adicionar ao calendário":"Salvar"}</button></div></form>`;
+  return [head,b]}
+async function salvarEvento(f){
+  const err=$("#fErr");err.textContent="";
+  const d={titulo:f.titulo.value.trim(),tipo:f.tipo.value,inicio:f.inicio.value,fim:f.fim.value,status:f.status.value,local:f.local.value.trim(),
+    investimento:num(f.investimento.value),publicoEsperado:Math.round(num(f.publicoEsperado.value))||0,descricao:f.descricao.value.trim(),
+    fornecedorIds:$$("#fornChecks input:checked").map(i=>i.value),links:lerRows("rowsLk",o=>o.url?{titulo:o.titulo,url:safeUrl(o.url)}:null)};
+  if(!d.titulo) return err.textContent="Dê um nome ao evento.";
+  if(!d.tipo) return err.textContent="Escolha o tipo.";
+  if(!d.inicio) return err.textContent="Informe a data de início.";
+  if(d.fim&&d.fim<d.inicio) return err.textContent="A data de fim está antes do início.";
+  if(!d.fim) d.fim=d.inicio;
+  const id=f.dataset.id, now=new Date().toISOString();
+  try{
+    if(!id){const ref=S.db.collection("eventos").doc();
+      await ref.set({...d,resultados:{},criadoEm:now,criadoPor:S.uid||"",atualizadoEm:now,atualizadoPor:S.uid||""});
+      await addHist("","adicionou ao calendário",[`${d.titulo} · ${TIPOS_EVT[d.tipo]} · ${periodo(d.inicio,d.fim)}`],"","",ref.id);
+      toast("Evento adicionado ao calendário");S.dirty=false;abrirModal({tipo:"evento",id:ref.id});}
+    else{await S.db.doc("eventos/"+id).update({...d,atualizadoEm:now,atualizadoPor:S.uid||""});
+      await addHist("","editou o evento",[`${d.titulo} · ${STATUS_E[d.status][0]} · ${periodo(d.inicio,d.fim)}`],"","",id);
+      toast("Evento salvo");S.dirty=false;abrirModal({tipo:"evento",id});}
+  }catch(x){err.textContent=errMsg(x);}
+}
+async function salvarResEvento(f){
+  const e=S.eventos.find(x=>x.id===f.dataset.id);if(!e)return;
+  const r={publico:Math.round(num(f.publico.value))||0,contatos:Math.round(num(f.contatos.value))||0,vendas:num(f.vendas.value),investimento:num(f.investimento.value),
+    avaliacao:f.avaliacao.value.trim(),fotos:lerRows("rowsEf",o=>o.url?{titulo:o.titulo,url:safeUrl(o.url)}:null)};
+  const patch={resultados:r,atualizadoEm:new Date().toISOString(),atualizadoPor:S.uid||""};
+  const ck=f.querySelector("[name=realizado]"); if(ck&&ck.checked) patch.status="realizado";
+  try{await S.db.doc("eventos/"+e.id).update(patch);
+    await addHist("","lançou os resultados do evento",[`Público ${r.publico} · contatos ${r.contatos} · vendas ${brl(r.vendas)} · investimento ${brl(r.investimento)}`],"","",e.id);
+    S.dirty=false;toast("Resultados salvos");S.modal.keep=true;renderModal();}
+  catch(x){toast(errMsg(x),true)}
 }
 
 /* ---------- campanhas ---------- */
@@ -970,13 +1163,14 @@ function histList(l,comAlvo){
   return `<ul class="hist">${l.map(x=>{
     let alvo="";
     if(comAlvo&&x.verbaId){const v=verba(x.verbaId);alvo=` · <a href="#" data-act="abrir" data-id="${esc(x.verbaId)}">${esc(v?fornNome(v.fornecedorId):"verba")}</a>`;}
+    else if(comAlvo&&x.eventoId){const e=S.eventos.find(y=>y.id===x.eventoId);alvo=` · <a href="#" data-act="abrirEvt" data-id="${esc(x.eventoId)}">${esc(e?e.titulo:"evento")}</a>`;}
     else if(comAlvo&&x.campanhaId){const c=camp(x.campanhaId);alvo=` · <a href="#" data-act="abrirCamp" data-id="${esc(x.campanhaId)}">${esc(c?c.nome:"campanha")}</a>`;}
     return `<li><img alt="" src="${esc(avatar(x.por))}"><div><b>${esc(nome(x.por))}</b> ${esc(x.acao)}${alvo}${x.alvo?` · ${esc(x.alvo)}`:""}</div><div class="q">${dhBR(x.em)}</div>${(x.detalhes||[]).length?`<ul>${x.detalhes.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>`:"<span></span>"}</li>`}).join("")}</ul>`}
 
 /* ===================== gaveta ===================== */
 function abrirModal(m){S.modal=m;S.dirty=false;S.acaoEdit=null;
   if(S.histUnsub){S.histUnsub();S.histUnsub=null;S.histV=[];}
-  const campo=m.tipo==="verba"?"verbaId":m.tipo==="camp"?"campanhaId":null;
+  const campo=m.tipo==="verba"?"verbaId":m.tipo==="camp"?"campanhaId":m.tipo==="evento"?"eventoId":null;
   if(campo&&S.db){S.histUnsub=S.db.collection("historico").where(campo,"==",m.id).onSnapshot(s=>{S.histV=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.em.localeCompare(a.em));const el=$("#histV");if(el)el.innerHTML=histList(S.histV,false);ensureProfiles(S.histV.map(h=>h.por));},()=>{});}
   renderModal()}
 function fecharModal(){S.modal=null;S.dirty=false;S.acaoEdit=null;if(S.histUnsub){S.histUnsub();S.histUnsub=null;}S.histV=[];$("#modal").innerHTML="";document.body.style.overflow=""}
@@ -989,6 +1183,8 @@ function renderModal(){
   else if(m.tipo==="campForm"){wide=true;[head,body]=campForm(m.id?camp(m.id):null,m.ciclo);}
   else if(m.tipo==="forn") [head,body]=fornForm(m.id?forn(m.id):null);
   else if(m.tipo==="ciclo") [head,body]=cicloForm(ciclo(m.id));
+  else if(m.tipo==="evento"){const e=S.eventos.find(x=>x.id===m.id);if(!e){head=`<div class="t"><h2>Evento não encontrado</h2></div>`;body=`<div class="empty">Este evento foi excluído.</div>`;}else [head,body]=eventoView(e);}
+  else if(m.tipo==="eventoForm") [head,body]=eventoForm(m.id?S.eventos.find(x=>x.id===m.id):null, m.data);
   else if(m.tipo==="relatorio"){wide=true;const v=verba(m.id);if(!v){head=`<div class="t"><h2>Verba não encontrada</h2></div>`;body=`<div class="empty">Esta verba foi excluída.</div>`;}else [head,body]=relatorioView(v);}
   const keepScroll=$(".drawer")?$(".drawer").scrollTop:0;
   $("#modal").innerHTML=`<div class="overlay" data-act="fecharFora"><div class="drawer${wide?" wide":""}" role="dialog" aria-modal="true"><div class="dr-h">${head}<button class="btn ghost" data-act="fechar" aria-label="Fechar">✕</button></div><div class="dr-b">${body}</div></div></div>`;
@@ -1506,6 +1702,13 @@ document.addEventListener("click",async e=>{
   if(t.closest("#gres")){const gs=$("#gsearch");if(gs)gs.value="";S.gq="";const gr=$("#gres");if(gr)gr.hidden=true;}
   if(a==="abrir")abrirModal({tipo:"verba",id});
   else if(a==="abrirRel")abrirModal({tipo:"relatorio",id});
+  else if(a==="abrirEvt")abrirModal({tipo:"evento",id});
+  else if(a==="novoEvt")abrirModal({tipo:"eventoForm"});
+  else if(a==="editEvt")abrirModal({tipo:"eventoForm",id});
+  else if(a==="calTab"){S.calTab=t.dataset.k;renderMain();}
+  else if(a==="calView"){S.calView=t.dataset.k;renderMain();}
+  else if(a==="delEvt"){const f=t.closest("form");if(!f.querySelector("[name=certeza]").checked){toast("Marque a caixa para confirmar a exclusão.",true);return;}
+    const e=S.eventos.find(x=>x.id===id);try{await S.db.doc("eventos/"+id).delete();await addHist("","excluiu um evento do calendário",[e?e.titulo:""],e?e.titulo:"");toast("Evento excluído");fecharModal();}catch(err){toast(errMsg(err),true)}}
   else if(a==="baixarRel"){const v=verba(id);if(v)baixarRelatorio(v);}
   else if(a==="vview"){S.vview=t.dataset.k;renderMain();}
   else if(a==="sort"){const k=t.dataset.k;S.sort=S.sort.k===k?{k,dir:S.sort.dir==="asc"?"desc":"asc"}:{k,dir:(k==="prom"||k==="receb"||k==="usado")?"desc":"asc"};renderMain();}
@@ -1525,7 +1728,7 @@ document.addEventListener("click",async e=>{
   else if(a==="limparFil"){S.fil={forn:"",ciclo:"",tipo:"",area:""};renderMain();}
   else if(a==="faixa"){S.fornFaixa=t.dataset.k;renderMain();}
   else if(a==="campFil"){S.campFil=t.dataset.k;renderMain();}
-  else if(a==="addRow"){const k=t.dataset.k;const box=$("#rows"+({deg:"Deg",cp:"Cp",lk:"Lk",ft:"Ft"})[k]);box.insertAdjacentHTML("beforeend",k==="deg"?degRow({}):k==="cp"?cpRow({}):lkRow({}));S.dirty=true;$("input",box.lastElementChild).focus();}
+  else if(a==="addRow"){const k=t.dataset.k;const box=$("#rows"+({deg:"Deg",cp:"Cp",lk:"Lk",ft:"Ft",ef:"Ef"})[k]);box.insertAdjacentHTML("beforeend",k==="deg"?degRow({}):k==="cp"?cpRow({}):lkRow({}));S.dirty=true;$("input",box.lastElementChild).focus();}
   else if(a==="delRow"){t.closest(".rowi").remove();S.dirty=true;}
   else if(a==="addAcao"){S.acaoEdit={mes:+t.dataset.mes,aid:null};reabrirAcao();}
   else if(a==="editAcao"){S.acaoEdit={aid:id};reabrirAcao();}
@@ -1548,6 +1751,7 @@ document.addEventListener("click",async e=>{
 document.addEventListener("change",async e=>{
   const t=e.target;
   if(t.dataset.fil){S.fil[t.dataset.fil]=t.value;renderMain();return;}
+  if(t.dataset.calfil){S.calFil[t.dataset.calfil]=t.value;renderMain();return;}
   if(t.dataset.actChange==="areaMembro"){try{await S.db.doc("equipe/"+t.dataset.id).update({area:t.value});await addHist("","mudou a área de uma pessoa",["Nova área: "+AREAS[t.value]],"Equipe");toast("Área atualizada");}catch(err){toast(errMsg(err),true)}return;}
   const f=t.form;
   if(f&&f.id==="fVerba"){
@@ -1576,6 +1780,8 @@ document.addEventListener("submit",async e=>{
   else if(f.id==="fResult"){const c=camp(f.dataset.id);const r={vendasCiclo:num(f.vendasCiclo.value),media3m:num(f.media3m.value),obs:f.obs.value.trim()};
     const fotos=lerRows("rowsFt",o=>o.url?{titulo:o.titulo,url:safeUrl(o.url)}:null);
     try{await salvarCamp(c.id,{resultados:r,fotos},"lançou resultados",[`Vendas no ciclo ${brl(r.vendasCiclo)} · média anterior ${brl(r.media3m)} · ${fotos.length} link(s)`]);S.dirty=false;toast("Resultados salvos");S.modal.keep=true;renderModal();}catch(err){toast(errMsg(err),true)}}
+  else if(f.id==="fEvt")await salvarEvento(f);
+  else if(f.id==="fEvtRes")await salvarResEvento(f);
   else if(f.id==="fRelTxt"){const v=verba(f.dataset.id);const txt=f.txt.value.trim();if(!v)return;if((v.relatorioTexto||"")===txt){toast("Nada foi alterado");return;}
     try{await salvarVerba(v.id,{relatorioTexto:txt},"editou o texto do relatório de contrapartida",[]);S.dirty=false;toast("Texto salvo");S.modal.keep=true;renderModal();}catch(err){toast(errMsg(err),true)}}
   else if(f.id==="fPedido"){const ar=$("#pedArea").value;if(!ar)return;try{await S.db.doc("pedidos/"+S.uid).set({area:ar,em:new Date().toISOString()});toast("Pedido enviado");}catch(err){toast(errMsg(err),true)}}
