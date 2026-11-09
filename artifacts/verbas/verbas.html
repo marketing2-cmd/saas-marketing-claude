@@ -1,0 +1,1013 @@
+<title>Verbas Contattos+</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@87,600;87,700;87,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: cabeçalho fixo com abas; uma coluna de conteúdo de até 1180px; ficha da verba em gaveta lateral (tela cheia no celular). */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --sunk:#e9edf2; --ink:#15212f; --muted:#5a6879; --line:#d8dee6;
+  --accent:#2347a3; --accent-ink:#ffffff; --accent-soft:#e3e9f8;
+  --signal:#f3b80c; --signal-ink:#1b1606;
+  --ok:#1d7a4c; --ok-soft:#dff2e7; --warn:#a35f00; --warn-soft:#fbeed6; --crit:#bb3427; --crit-soft:#f9e1de;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --surface:#171f2a; --sunk:#111821; --ink:#e5ebf3; --muted:#98a5b6; --line:#2a3544;
+  --accent:#86a3f2; --accent-ink:#0d1526; --accent-soft:#1f2b46;
+  --signal:#f3c53d; --signal-ink:#1b1606;
+  --ok:#4fc48c; --ok-soft:#163626; --warn:#e7a948; --warn-soft:#3a2b12; --crit:#f07466; --crit-soft:#3d1c19;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --surface:#171f2a; --sunk:#111821; --ink:#e5ebf3; --muted:#98a5b6; --line:#2a3544;
+  --accent:#86a3f2; --accent-ink:#0d1526; --accent-soft:#1f2b46;
+  --signal:#f3c53d; --signal-ink:#1b1606;
+  --ok:#4fc48c; --ok-soft:#163626; --warn:#e7a948; --warn-soft:#3a2b12; --crit:#f07466; --crit-soft:#3d1c19;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+h1,h2,h3{font-family:var(--f-display);font-stretch:87%;line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:1.5rem;font-weight:800}
+h2{font-size:1.15rem;font-weight:700}
+h3{font-size:.95rem;font-weight:700}
+.num,.kpi b,td.r{font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* cabeçalho */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-row{display:flex;align-items:center;gap:12px;padding-block:10px 4px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:8px;margin-right:auto;min-width:0}
+.brand h1{font-size:1.2rem}
+.brand h1 span{color:var(--accent)}
+.brand small{color:var(--muted);font-size:.8rem}
+.who{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.who img{width:26px;height:26px;border-radius:50%}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabs a{padding:10px 12px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.9rem;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs a.on{color:var(--ink);border-bottom-color:var(--signal)}
+
+main{padding-block:20px 60px;display:flex;flex-direction:column;gap:20px}
+.banner{padding:12px 14px;border-radius:var(--r);background:var(--sunk);border:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.banner.warn{background:var(--warn-soft);border-color:transparent}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{margin-left:auto}
+
+/* botões */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:600;font-size:.9rem;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:var(--muted)}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.danger{color:var(--crit);border-color:var(--crit)}
+.btn.sm{padding:5px 10px;font-size:.82rem}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* painel */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi span{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.kpi b{font-family:var(--f-display);font-stretch:87%;font-size:1.6rem;font-weight:800}
+.kpi small{color:var(--muted);font-size:.8rem}
+.gap{background:var(--signal);color:var(--signal-ink);border-radius:var(--r);padding:16px 18px;display:grid;grid-template-columns:auto 1fr;gap:6px 24px;align-items:center;
+  background-image:repeating-linear-gradient(135deg,transparent 0 14px,rgba(0,0,0,.06) 14px 28px)}
+.gap .big{font-family:var(--f-display);font-stretch:87%;font-weight:800;font-size:2.2rem;line-height:1}
+.gap .lbl{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.gap ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 18px;font-size:.9rem}
+.gap ul b{font-variant-numeric:tabular-nums}
+.grid2{display:grid;grid-template-columns:3fr 2fr;gap:20px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.legend{display:flex;gap:14px;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.chart svg{width:100%;height:auto;display:block}
+.alist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.alert{display:grid;grid-template-columns:4px 1fr;gap:0 12px;padding:10px 12px 10px 0;border-radius:8px;background:var(--sunk);cursor:pointer;border:0;text-align:left;width:100%}
+.alert::before{content:"";border-radius:4px;background:var(--warn)}
+.alert.crit::before{background:var(--crit)}
+.alert.info::before{background:var(--accent)}
+.alert b{display:block;font-size:.9rem}
+.alert span{font-size:.85rem;color:var(--muted)}
+.empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r);font-size:.9rem}
+
+/* chips */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;font-size:.75rem;font-weight:600;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.crit{background:var(--crit-soft);color:var(--crit)}
+.chip.acc{background:var(--accent-soft);color:var(--accent)}
+.chip.faixa{font-family:var(--f-mono);font-weight:500;background:var(--ink);color:var(--surface);border-radius:4px;padding:1px 6px}
+
+/* quadro */
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filters select{min-width:0;max-width:100%}
+select,input[type=text],input[type=date],input[type=month],input[type=url],input[type=search],textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+textarea{width:100%;min-height:70px;resize:vertical}
+.colchips{display:none;gap:6px;overflow-x:auto;padding-bottom:4px}
+.colchips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:.85rem;font-weight:600;white-space:nowrap;cursor:pointer}
+.colchips button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(240px,1fr);gap:12px;overflow-x:auto;padding-bottom:8px}
+.col{background:var(--sunk);border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.col-h{display:flex;align-items:baseline;gap:6px;padding:2px 4px}
+.col-h h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.05em}
+.col-h .n{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.col-h .t{margin-left:auto;font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.col-h small{display:block;font-size:.72rem;color:var(--muted);font-weight:400}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:6px;width:100%}
+.card:hover{border-color:var(--accent)}
+.card-top{display:flex;gap:8px;align-items:baseline}
+.card-top b{font-family:var(--f-display);font-stretch:87%;font-size:1rem;min-width:0;overflow-wrap:anywhere}
+.card-top .v{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.card .sub{font-size:.8rem;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.bar{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden;position:relative}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.bar.warn i{background:var(--warn)}
+.bar.ok i{background:var(--ok)}
+.col .card .bar{background:var(--bg)}
+
+/* tabelas */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;background:var(--sunk)}
+td.r,th.r{text-align:right}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+
+/* gaveta */
+.overlay{position:fixed;inset:0;background:rgba(10,15,22,.45);z-index:40;display:flex;justify-content:flex-end}
+.drawer{background:var(--bg);width:min(680px,100%);height:100%;overflow-y:auto;display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.dr-h{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);padding:14px 18px;display:flex;gap:10px;align-items:flex-start;z-index:2}
+.dr-h .t{min-width:0;flex:1}
+.dr-h h2{font-size:1.3rem;overflow-wrap:anywhere}
+.dr-b{padding:16px 18px 40px;display:flex;flex-direction:column;gap:16px}
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
+.sec > h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.dl{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px 16px;margin:0}
+.dl div{min-width:0}
+.dl dt{font-size:.75rem;color:var(--muted)}
+.dl dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.steps{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;list-style:none;padding:0;margin:0}
+.steps li{font-size:.68rem;color:var(--muted);display:flex;flex-direction:column;gap:4px;min-width:0}
+.steps li::before{content:"";height:5px;border-radius:3px;background:var(--line)}
+.steps li.done::before{background:var(--accent)}
+.steps li.cur{color:var(--ink);font-weight:700}
+.steps li.cur::before{background:var(--signal)}
+.steps li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rule{border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:4px;background:var(--sunk)}
+.rule.ok{background:var(--ok-soft)}
+.rule.warn{background:var(--warn-soft)}
+.rule.crit{background:var(--crit-soft)}
+.rule b{font-size:.95rem}
+.step{border:2px solid var(--accent);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.step h3{color:var(--accent)}
+.step .who{font-size:.78rem}
+details.more{border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+details.more summary{padding:10px 14px;cursor:pointer;font-weight:600;font-size:.9rem}
+details.more > div{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.hist li{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:.85rem}
+.hist li img{width:22px;height:22px;border-radius:50%;grid-row:span 3}
+.hist .q{color:var(--muted);font-size:.78rem}
+.hist ul{margin:2px 0 0;padding-left:16px;color:var(--muted)}
+.links{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.links a{overflow-wrap:anywhere}
+
+/* formulários */
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.f > span{font-size:.8rem;font-weight:600;color:var(--muted)}
+.f > small{font-size:.75rem;color:var(--muted)}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.fg .wide{grid-column:1/-1}
+.f input,.f select,.f textarea{width:100%}
+.tipos{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.tipo{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px;cursor:pointer;background:var(--surface)}
+.tipo:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.tipo b{display:block;font-size:.9rem}
+.tipo small{color:var(--muted);font-size:.78rem}
+.rows{display:flex;flex-direction:column;gap:6px}
+.rowi{display:flex;gap:6px;align-items:center}
+.rowi input{flex:1;min-width:0}
+.rowi input.n{flex:0 0 80px}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:.9rem}
+.check input{margin-top:3px}
+.err{color:var(--crit);font-size:.85rem;font-weight:600}
+.formbar{position:sticky;bottom:0;background:var(--bg);padding:12px 0 0;display:flex;gap:8px;justify-content:flex-end}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;z-index:60;font-size:.9rem;max-width:calc(100% - 32px)}
+.toast.bad{background:var(--crit);color:#fff}
+.people{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.people li{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 10px;background:var(--sunk);border-radius:8px}
+.people img{width:28px;height:28px;border-radius:50%}
+.people .nm{font-weight:600;margin-right:auto;min-width:0;overflow-wrap:anywhere}
+
+@media (max-width:900px){.grid2{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:760px){
+  .colchips{display:flex}
+  .board{display:block}
+  .board .col{display:none}
+  .board .col.on{display:flex}
+  .gap{grid-template-columns:1fr}
+  .gap .big{font-size:1.8rem}
+  .kpi b{font-size:1.3rem}
+  .steps li span{display:none}
+  .dr-h,.dr-b{padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:14px}
+}
+@media (prefers-reduced-motion:no-preference){.drawer{animation:slide .18s ease-out}@keyframes slide{from{transform:translateX(24px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="top-row">
+      <div class="brand"><h1>Verbas <span>Contattos+</span></h1><small id="anoLbl">2027</small></div>
+      <div class="who" id="who"></div>
+    </div>
+    <nav class="tabs" id="tabs"></nav>
+  </div>
+</header>
+<main class="wrap" id="main"></main>
+<div id="modal"></div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ===================== constantes ===================== */
+const ANO = 2027;
+const AREAS = {marketing:"Marketing", comercial:"Comercial", compras:"Compras", financeiro:"Financeiro", diretoria:"Diretoria"};
+const TIPOS = {fixa:"Fixa e assinada", executada:"Executada pelo fornecedor", condicionada:"Condicionada a meta", bonificacao:"Bonificação em mercadoria"};
+const TIPO_DESC = {
+  fixa:"Valor garantido em acordo assinado.",
+  executada:"O fornecedor paga direto o painel, os brindes ou o evento.",
+  condicionada:"Só é paga se a meta de compras for batida.",
+  bonificacao:"Vem em mercadoria, com nota de bonificação."};
+const REGRA = {
+  fixa:"Pode acontecer antes de a verba entrar",
+  executada:"Pode acontecer antes de a verba entrar",
+  condicionada:"Só depois de a meta ser confirmada",
+  bonificacao:"Só depois de a nota de bonificação entrar"};
+const FORMAS = {deposito:"Depósito", boleto:"Desconto em boleto", bonificacao:"Bonificação em mercadoria", terceiros:"Pagamento direto a terceiros"};
+const MOTIVOS = {meta:"Meta não batida", desistiu:"Fornecedor desistiu", prazo:"Prazo vencido", outro:"Outro"};
+const COLS = [
+  {k:"negociada", n:"Negociada", a:"Comercial ou Compras"},
+  {k:"formalizada", n:"Formalizada", a:"Comercial"},
+  {k:"apuracao", n:"Em apuração", a:"Compras"},
+  {k:"confirmada", n:"Confirmada", a:"Comercial"},
+  {k:"recebida", n:"Recebida", a:"Financeiro"},
+  {k:"executada", n:"Executada", a:"Marketing"},
+  {k:"comprovada", n:"Comprovada", a:"Marketing"},
+  {k:"perdida", n:"Perdida", a:"Com motivo"}];
+const COLN = Object.fromEntries(COLS.map(c=>[c.k,c.n]));
+const ORDEM = {negociada:1, formalizada:2, apuracao:3, confirmada:4, recebida:5};
+const PODE = {
+  criar:["marketing","comercial","compras"], editar:["marketing","comercial","compras"],
+  formalizar:["marketing","comercial"], apuracao:["marketing","compras"], realizado:["marketing","compras","comercial"],
+  confirmar:["marketing","comercial"], receber:["marketing","financeiro"], executar:["marketing"], comprovar:["marketing"],
+  perder:["marketing","comercial","compras"], corrigir:["marketing"], config:["marketing"]};
+const MESES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+
+/* ===================== estado ===================== */
+const S = {
+  db:null, user:null, uid:null, me:null, isOwner:false, canWrite:null, noDb:false,
+  fornecedores:[], ciclos:[], verbas:[], equipe:{}, pedidos:{}, feed:[], prof:{},
+  ok:{}, slow:false, view:"painel",
+  fil:{forn:"", ciclo:"", tipo:"", area:""}, col:"negociada", fornBusca:"", fornFaixa:"",
+  modal:null, dirty:false, histV:[], histUnsub:null, ownerSelfDone:false
+};
+
+/* ===================== utilidades ===================== */
+const $ = (s,el=document)=>el.querySelector(s);
+const $$ = (s,el=document)=>[...el.querySelectorAll(s)];
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+const fmt0 = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
+function brl(n){return fmt0.format(Number(n)||0)}
+function brlK(n){n=Number(n)||0;const a=Math.abs(n);
+  if(a>=1e6) return "R$ "+(n/1e6).toLocaleString("pt-BR",{maximumFractionDigits:1})+" mi";
+  if(a>=1e3) return "R$ "+Math.round(n/1e3).toLocaleString("pt-BR")+" mil";
+  return brl(n)}
+function num(s){if(typeof s==="number")return s;s=String(s||"").replace(/[R$\s%]/g,"");if(!s)return 0;
+  if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");else s=s.replace(/\.(?=\d{3}(\D|$))/g,"");
+  const n=parseFloat(s);return isFinite(n)?n:0}
+function inMoney(n){return n?Number(n).toLocaleString("pt-BR",{maximumFractionDigits:2}):""}
+function hoje(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function dBR(iso){if(!iso)return "—";const [y,m,d]=String(iso).slice(0,10).split("-");return d+"/"+m+"/"+y}
+function dhBR(iso){if(!iso)return "";const d=new Date(iso);return d.toLocaleDateString("pt-BR")+" "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}
+function dias(a,b){return Math.round((Date.parse(String(b).slice(0,10))-Date.parse(String(a).slice(0,10)))/864e5)}
+function fimTrimestre(iso){const [y,m,d]=iso.split("-").map(Number);const dt=new Date(Date.UTC(y,m-1+3,d));dt.setUTCDate(dt.getUTCDate()-1);return dt.toISOString().slice(0,10)}
+function mesBR(ym){if(!ym)return "";const [y,m]=ym.split("-");return MESES[+m-1]+"/"+y}
+function faixaDe(v){v=+v||0;return v>=1e6?"A":v>=3e5?"B":v>=1e5?"C":"—"}
+function safeUrl(u){u=String(u||"").trim();if(!u)return "";if(!/^https?:\/\//i.test(u))u="https://"+u;return u}
+function toast(msg,bad){const t=$("#toast");t.innerHTML=`<div class="toast${bad?" bad":""}" role="status">${esc(msg)}</div>`;clearTimeout(toast.t);toast.t=setTimeout(()=>t.innerHTML="",bad?6000:2600)}
+function errMsg(e){const c=e&&e.code;
+  if(c==="invalid_argument")return "Não foi possível salvar: seu acesso não permite esta alteração. Fale com a gestora de marketing.";
+  if(c==="quota_exceeded")return "O banco de dados está cheio. Fale com a gestora de marketing.";
+  if(c==="resource_exhausted")return "Muitas alterações seguidas. Espere alguns segundos e tente de novo.";
+  return "Não foi possível salvar agora. Verifique a conexão e tente de novo."}
+
+/* ===================== dados derivados ===================== */
+const forn = id=>S.fornecedores.find(f=>f.id===id);
+const ciclo = id=>S.ciclos.find(c=>c.id===id);
+function fornNome(id){const f=forn(id);return f?f.nome:"Fornecedor removido"}
+function cicloNome(id){const c=ciclo(id);if(!c)return "Sem ciclo";return "Ciclo "+c.numero+" · "+MESES[+c.inicio.slice(5,7)-1]+"–"+MESES[+c.fim.slice(5,7)-1]}
+function realizado(v){return (v.realizados||[]).reduce((s,r)=>s+(+r.valor||0),0)}
+function temMeta(v){return v.tipo==="condicionada"||(+v.meta>0)}
+function liberado(v){
+  const fx=+v.parteFixa||0, vr=+v.parteVariavel||0, base=(fx||vr)?null:(+v.valorPrometido||0);
+  if(!(+v.meta>0)) return base??(fx+vr);
+  const at=realizado(v)/v.meta*100;
+  const ds=(v.degraus||[]).filter(d=>+d.pct>0).sort((a,b)=>a.pct-b.pct);
+  let lib=0; if(ds.length){for(const d of ds) if(at>=+d.pct) lib=+d.libera||0;} else lib=at>=100?100:0;
+  return base!=null? base*lib/100 : fx+vr*lib/100}
+function esperado(v){return +v.valorConfirmado||+v.valorPrometido||0}
+function permitida(v){
+  if(v.tipo==="fixa"||v.tipo==="executada") return true;
+  if(v.tipo==="condicionada") return v.etapa==="confirmada"||v.etapa==="recebida";
+  if(v.tipo==="bonificacao") return v.etapa==="recebida";
+  return false}
+function coluna(v){if(v.etapa==="perdida")return "perdida";if(v.comprovadaEm)return "comprovada";if(v.executadaEm)return "executada";return v.etapa||"negociada"}
+function anoDe(v){const c=ciclo(v.cicloId);if(c)return c.ano;const d=v.previsaoEntrada||v.dataCampanha;return d?+d.slice(0,4):ANO}
+function statusCampanha(v){
+  if(v.etapa==="perdida") return {c:"", t:"Verba perdida"};
+  if(v.comprovadaEm) return {c:"ok", t:"Contrapartida comprovada"};
+  if(v.executadaEm) return {c:"acc", t:"Campanha executada"};
+  if(permitida(v)) return {c:"ok", t:"Campanha liberada"};
+  if(v.adiantamento&&v.adiantamento.marcado) return {c:"warn", t:"Adiantamento: risco assumido"};
+  return {c:"crit", t:v.tipo==="bonificacao"?"Campanha só após a nota":"Campanha só após a meta"}}
+
+/* próxima ação de cada verba, por área */
+function pendencias(v){
+  const out=[]; if(v.etapa==="perdida") return out;
+  const e=v.etapa;
+  if(e==="negociada") out.push({area:"comercial", t:"Anexar o acordo e formalizar"});
+  else if(e==="formalizada"){ if(temMeta(v)) out.push({area:"compras", t:"Iniciar a apuração da meta"}); else out.push({area:"comercial", t:"Confirmar a liberação da verba"}); }
+  else if(e==="apuracao"){
+    const ult=(v.realizados||[]).map(r=>r.mes).sort().pop()||"";
+    const mesPassado=(()=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-1);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")})();
+    if(ult<mesPassado) out.push({area:"compras", t:"Lançar o realizado de "+mesBR(mesPassado)});
+    if(+v.meta>0 && realizado(v)>=v.meta) out.push({area:"comercial", t:"Meta batida: confirmar a verba"});
+    else if(v.apuracaoFim && v.apuracaoFim<hoje()) out.push({area:"comercial", t:"Apuração encerrada: confirmar ou marcar como perdida"});
+  }
+  else if(e==="confirmada") out.push({area:"financeiro", t:"Registrar a entrada da verba"});
+  if(!v.executadaEm && permitida(v)) out.push({area:"marketing", t:"Executar a campanha"});
+  if(v.executadaEm && !v.comprovadaEm) out.push({area:"marketing", t:"Enviar o relatório de contrapartida"});
+  return out}
+
+function alertas(){
+  const out=[], t=hoje();
+  for(const v of S.verbas){
+    if(v.etapa==="perdida") continue;
+    if(v.etapa==="apuracao" && +v.meta>0 && v.apuracaoInicio && v.apuracaoFim){
+      const tot=Math.max(1,dias(v.apuracaoInicio,v.apuracaoFim)), dec=dias(v.apuracaoInicio,t), frac=Math.min(1,dec/tot);
+      if(frac>=.5){const esp=v.meta*frac, r=realizado(v);
+        if(r<esp) out.push({sev:frac>=1?"crit":"warn", v, titulo:frac>=1?"Apuração encerrada abaixo da meta":"Meta em risco",
+          texto:`Realizado ${brl(r)}, esperado ${brl(esp)} até hoje. ${Math.round(r/v.meta*100)}% da meta com ${Math.round(frac*100)}% do período.`});}
+    }
+    if(v.etapa==="confirmada" && v.previsaoEntrada && v.previsaoEntrada<t)
+      out.push({sev:"crit", v, titulo:"Verba confirmada não entrou", texto:`Previsão era ${dBR(v.previsaoEntrada)}: ${dias(v.previsaoEntrada,t)} dias de atraso.`});
+    if(!v.executadaEm && v.dataCampanha && !permitida(v) && !(v.adiantamento&&v.adiantamento.marcado))
+      out.push({sev:"warn", v, titulo:"Campanha marcada antes de a verba ser permitida", texto:`Campanha em ${dBR(v.dataCampanha)}. Regra: ${REGRA[v.tipo].toLowerCase()}.`});
+    if(v.executadaEm && !v.comprovadaEm && dias(v.executadaEm,t)>15)
+      out.push({sev:"warn", v, titulo:"Campanha sem relatório de contrapartida", texto:`Executada em ${dBR(v.executadaEm)}, há ${dias(v.executadaEm,t)} dias.`});
+  }
+  return out.sort((a,b)=>(a.sev==="crit"?0:1)-(b.sev==="crit"?0:1))}
+
+/* ===================== pessoas ===================== */
+function area(){const e=S.equipe[S.uid];if(e&&e.area)return e.area;return S.isOwner?"marketing":null}
+function pode(a){return S.canWrite!==false && !!S.db && PODE[a].includes(area())}
+function nome(id){if(!id)return "—";const p=S.prof[id];return (p&&p.name)||(id===S.uid?"Você":"Pessoa sem nome")}
+function avatar(id){const p=S.prof[id];return p?p.avatarUrl:""}
+async function ensureProfiles(ids){
+  if(!S.user) return;
+  const miss=[...new Set(ids.filter(x=>typeof x==="string"&&x))].filter(id=>!(id in S.prof));
+  if(!miss.length) return;
+  miss.forEach(id=>S.prof[id]=null);
+  try{const ps=await S.user.profiles(miss);Object.assign(S.prof,ps);}catch(e){}
+  renderAll()}
+function idsVisiveis(){
+  const ids=[S.uid,...Object.keys(S.equipe),...Object.keys(S.pedidos)];
+  for(const v of S.verbas){ids.push(v.criadoPor,v.atualizadoPor);Object.values(v.responsaveis||{}).forEach(x=>ids.push(x));if(v.adiantamento)ids.push(v.adiantamento.por);}
+  S.feed.forEach(h=>ids.push(h.por));S.histV.forEach(h=>ids.push(h.por));
+  return ids}
+function membros(ar){
+  const ids=Object.entries(S.equipe).filter(([,e])=>e.area===ar).map(([id])=>id);
+  return ids}
+
+/* ===================== gravação ===================== */
+async function addHist(verbaId, acao, detalhes, alvo){
+  try{await S.db.collection("historico").add({verbaId:verbaId||"", alvo:alvo||"", em:new Date().toISOString(), por:S.uid||"", acao, detalhes:detalhes||[]});}catch(e){}
+}
+async function salvarVerba(id, patch, acao, detalhes){
+  patch.atualizadoEm=new Date().toISOString(); patch.atualizadoPor=S.uid||"";
+  await S.db.doc("verbas/"+id).update(patch);
+  await addHist(id, acao, detalhes);
+}
+
+/* ===================== inicialização ===================== */
+async function boot(){
+  route(); renderAll();
+  window.addEventListener("hashchange",()=>{route();renderMain();});
+  const c=window.claude;
+  if(!c||!c.use){S.noDb=true;renderAll();return;}
+  const timer=setTimeout(()=>{S.slow=true;renderMain();},10000);
+  const [db,user]=await Promise.all([c.use("db"),c.use("user")]);
+  S.db=db; S.user=user;
+  if(user){
+    const me=await user.me(); S.me=me; S.uid=me.id; S.isOwner=me.isOwner;
+    try{S.canWrite=await user.can("data.write");}catch(e){S.canWrite=null}
+  }
+  if(!db){clearTimeout(timer);S.noDb=true;renderAll();return;}
+  const done=k=>{S.ok[k]=true;if(["fornecedores","ciclos","verbas","equipe"].every(x=>S.ok[x])){clearTimeout(timer);S.slow=false;}};
+  const onErr=k=>e=>{done(k);if(e&&e.code!=="revoked")toast("Não foi possível carregar "+k+". Recarregue a página.",true);renderAll();};
+  db.collection("fornecedores").onSnapshot(s=>{S.fornecedores=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.compras2026||0)-(a.compras2026||0));if(!s.metadata.fromCache)done("fornecedores");renderAll();},onErr("fornecedores"));
+  db.collection("ciclos").onSnapshot(s=>{S.ciclos=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.ano-b.ano)||(a.numero-b.numero));if(!s.metadata.fromCache)done("ciclos");renderAll();},onErr("ciclos"));
+  db.collection("verbas").onSnapshot(s=>{S.verbas=s.docs.map(d=>({id:d.id,...d.data()}));if(!s.metadata.fromCache)done("verbas");afterData();},onErr("verbas"));
+  db.collection("equipe").onSnapshot(s=>{S.equipe=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));if(!s.metadata.fromCache){done("equipe");ownerSelf();}afterData();},onErr("equipe"));
+  db.collection("pedidos").onSnapshot(s=>{S.pedidos=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));afterData();},()=>{});
+  db.collection("historico").orderBy("em","desc").limit(40).onSnapshot(s=>{S.feed=s.docs.map(d=>({id:d.id,...d.data()}));afterData();},()=>{});
+}
+function afterData(){renderAll();ensureProfiles(idsVisiveis());}
+async function ownerSelf(){
+  if(S.ownerSelfDone||!S.isOwner||!S.uid||S.equipe[S.uid])return;
+  S.ownerSelfDone=true;
+  try{await S.db.doc("equipe/"+S.uid).set({area:"marketing",desde:new Date().toISOString()});}catch(e){}
+}
+function route(){
+  const h=(location.hash||"").replace("#","");
+  S.view=["painel","verbas","fornecedores","config"].includes(h)?h:"painel";
+  if(area()==="diretoria") S.view="painel";
+}
+
+/* ===================== renderização ===================== */
+function renderAll(){renderHeader();renderMain();if(S.modal&&!S.dirty)renderModal();}
+function renderHeader(){
+  const ar=area();
+  if(ar==="diretoria"&&S.view!=="painel")S.view="painel";
+  const tabs=[["painel","Painel"],["verbas","Verbas"],["fornecedores","Fornecedores"]];
+  if(ar==="diretoria") tabs.splice(1);
+  if(ar==="marketing") tabs.push(["config","Configurar"]);
+  $("#tabs").innerHTML=tabs.map(([k,n])=>`<a href="#${k}" class="${S.view===k?"on":""}">${n}</a>`).join("");
+  $("#anoLbl").textContent="Ano "+ANO;
+  const w=$("#who");
+  if(S.me&&S.uid){w.innerHTML=`<img alt="" src="${esc(S.me.avatarUrl)}"><span>${esc(S.me.name||"Você")} · <b>${esc(ar?AREAS[ar]:"sem área")}</b></span>`;}
+  else w.innerHTML="";
+}
+function renderMain(){
+  const m=$("#main"); let h="";
+  h+=bannerHtml();
+  if(S.view==="painel") h+=painelHtml();
+  else if(S.view==="verbas") h+=quadroHtml();
+  else if(S.view==="fornecedores") h+=fornecedoresHtml();
+  else if(S.view==="config") h+=configHtml();
+  m.innerHTML=h;
+}
+function bannerHtml(){
+  let h="";
+  if(S.noDb) return `<div class="banner warn">Abra este sistema pelo link do Claude, com sua conta da empresa, para ver e editar as verbas.</div>`;
+  if(S.slow) h+=`<div class="banner warn">Os dados ainda não carregaram. Verifique a conexão; a página continua tentando.</div>`;
+  if(S.db && S.uid && !area() && S.ok.equipe){
+    const ped=S.pedidos[S.uid];
+    if(S.canWrite===false) h+=`<div class="banner">Você está no modo de visualização.</div>`;
+    else if(ped) h+=`<div class="banner">Você pediu acesso como <b>${esc(AREAS[ped.area])}</b>. Aguarde a gestora de marketing confirmar.</div>`;
+    else h+=`<form class="banner" id="fPedido"><b>Qual é a sua área?</b><select id="pedArea" required><option value="">Escolha…</option>${["comercial","compras","financeiro","marketing","diretoria"].map(a=>`<option value="${a}">${AREAS[a]}</option>`).join("")}</select><button class="btn pri sm">Pedir acesso</button><span class="muted small">A gestora de marketing confirma o seu acesso.</span></form>`;
+  } else if(S.canWrite===false && area()!=="diretoria") h+=`<div class="banner">Você está no modo de visualização: pode ver tudo, mas não alterar.</div>`;
+  return h}
+
+/* ---------- painel ---------- */
+function painelHtml(){
+  const vs=S.verbas.filter(v=>anoDe(v)===ANO);
+  const ativas=vs.filter(v=>v.etapa!=="perdida");
+  const prometido=vs.reduce((s,v)=>s+(+v.valorPrometido||0),0);
+  const confirm=vs.filter(v=>v.etapa==="confirmada"||v.etapa==="recebida");
+  const confirmado=confirm.reduce((s,v)=>s+esperado(v),0);
+  const receb=vs.filter(v=>v.etapa==="recebida");
+  const recebido=receb.reduce((s,v)=>s+(+v.valorRecebido||0),0);
+  const exec=vs.filter(v=>v.executadaEm);
+  const executado=exec.reduce((s,v)=>s+(v.etapa==="recebida"?(+v.valorRecebido||0):esperado(v)),0);
+  const perdido=vs.filter(v=>v.etapa==="perdida").reduce((s,v)=>s+(+v.valorPrometido||0),0);
+  const aReceber=vs.filter(v=>v.etapa==="confirmada").reduce((s,v)=>s+esperado(v),0);
+  const emAndamento=ativas.filter(v=>ORDEM[v.etapa]<=3).reduce((s,v)=>s+(+v.valorPrometido||0),0);
+  const dif=prometido-recebido;
+  const al=alertas();
+  const ar=area();
+  let h=`<div class="kpis">
+    ${kpi("Prometido",prometido,vs.length+" verba"+(vs.length===1?"":"s"))}
+    ${kpi("Confirmado",confirmado,confirm.length+" com meta batida ou verba liberada")}
+    ${kpi("Recebido",recebido,receb.length+" já entraram")}
+    ${kpi("Executado",executado,exec.length+" campanha"+(exec.length===1?"":"s")+" feita"+(exec.length===1?"":"s"))}
+  </div>
+  <section class="gap" aria-label="Diferença entre prometido e recebido">
+    <div><div class="lbl">Prometido − recebido em ${ANO}</div><div class="big num">${brl(dif)}</div></div>
+    <ul>
+      <li>Perdido: <b>${brl(perdido)}</b></li>
+      <li>Confirmado, falta entrar: <b>${brl(aReceber)}</b></li>
+      <li>Em negociação ou apuração: <b>${brl(emAndamento)}</b></li>
+    </ul>
+  </section>
+  <div class="grid2">
+    <section class="panel">
+      <div class="panel-h"><h2>Entradas por mês</h2><div class="legend spacer"><span><i style="background:var(--accent-soft);outline:1.5px solid var(--accent)"></i>Previsto</span><span><i style="background:var(--accent)"></i>Recebido</span></div></div>
+      <div class="chart">${chartHtml(vs)}</div>
+    </section>
+    <section class="panel">
+      <div class="panel-h"><h2>Alertas</h2><span class="chip ${al.some(a=>a.sev==="crit")?"crit":al.length?"warn":"ok"}">${al.length}</span></div>
+      ${al.length?`<ul class="alist">${al.map(a=>`<li><button class="alert ${a.sev}" data-act="abrir" data-id="${a.v.id}"><div><b>${esc(a.titulo)} · ${esc(fornNome(a.v.fornecedorId))}</b><span>${esc(a.texto)}</span></div></button></li>`).join("")}</ul>`
+        :`<div class="empty">Nenhum alerta. Os avisos de meta em risco, verba atrasada, campanha antes da hora e relatório pendente aparecem aqui.</div>`}
+    </section>
+  </div>`;
+  if(ar && ar!=="diretoria"){
+    const minhas=[];
+    for(const v of S.verbas) for(const p of pendencias(v)) if(p.area===ar||(ar==="compras"&&p.area==="comercial"&&v.etapa==="negociada")) minhas.push({v,p});
+    h+=`<section class="panel"><div class="panel-h"><h2>Suas pendências</h2><span class="muted small">Área: ${esc(AREAS[ar])}</span></div>
+      ${minhas.length?`<ul class="alist">${minhas.map(({v,p})=>`<li><button class="alert info" data-act="abrir" data-id="${v.id}"><div><b>${esc(p.t)}</b><span>${esc(fornNome(v.fornecedorId))}${v.titulo?" · "+esc(v.titulo):""} · ${brl(v.valorPrometido)}</span></div></button></li>`).join("")}</ul>`
+        :`<div class="empty">Nada pendente para ${esc(AREAS[ar])} agora.</div>`}</section>`;
+  }
+  if(!S.verbas.length && S.ok.verbas){
+    h+=`<div class="empty">Nenhuma verba cadastrada ainda. ${pode("criar")?`<br><br><button class="btn pri" data-act="novaVerba">Cadastrar a primeira verba</button>`:"Comercial e Compras cadastram as verbas negociadas."}</div>`;
+  }
+  return h}
+function kpi(l,v,s){return `<div class="kpi"><span>${l}</span><b>${brl(v)}</b><small>${esc(s)}</small></div>`}
+function niceMax(m){if(m<=0)return 1;const p=10**Math.floor(Math.log10(m)),f=m/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p}
+function chartHtml(vs){
+  const prev=Array(12).fill(0), rec=Array(12).fill(0);
+  for(const v of vs){
+    if(v.etapa!=="perdida"&&v.previsaoEntrada&&+v.previsaoEntrada.slice(0,4)===ANO) prev[+v.previsaoEntrada.slice(5,7)-1]+=esperado(v);
+    if(v.etapa==="recebida"&&v.dataEntrada&&+v.dataEntrada.slice(0,4)===ANO) rec[+v.dataEntrada.slice(5,7)-1]+=(+v.valorRecebido||0);
+  }
+  const mx=Math.max(...prev,...rec);
+  if(mx<=0) return `<div class="empty">O gráfico aparece quando as verbas tiverem previsão de entrada em ${ANO}.</div>`;
+  const top=niceMax(mx), W=640, H=230, L=64, B=26, T=10, cw=(W-L-8)/12, bw=Math.min(16,cw/2-3);
+  const y=v=>T+(H-T-B)*(1-v/top);
+  let g="";
+  [0,.5,1].forEach(f=>{const yy=y(top*f);g+=`<line x1="${L}" x2="${W-4}" y1="${yy}" y2="${yy}" stroke="var(--line)" stroke-width="1"/><text x="${L-8}" y="${yy+4}" text-anchor="end" font-size="11" fill="var(--muted)">${esc(brlK(top*f))}</text>`;});
+  const tm=new Date().getFullYear()===ANO?new Date().getMonth():-1;
+  for(let i=0;i<12;i++){
+    const cx=L+cw*i+cw/2;
+    if(prev[i]>0){const yy=y(prev[i]);g+=`<rect x="${cx-bw-1}" y="${yy}" width="${bw}" height="${H-B-yy}" rx="2" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.2"><title>${MESES[i]}: previsto ${brl(prev[i])}</title></rect>`;}
+    if(rec[i]>0){const yy=y(rec[i]);g+=`<rect x="${cx+1}" y="${yy}" width="${bw}" height="${H-B-yy}" rx="2" fill="var(--accent)"><title>${MESES[i]}: recebido ${brl(rec[i])}</title></rect>`;}
+    g+=`<text x="${cx}" y="${H-8}" text-anchor="middle" font-size="11" fill="${i===tm?"var(--ink)":"var(--muted)"}" font-weight="${i===tm?700:400}">${MESES[i]}</text>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Previsto e recebido por mês">${g}</svg>`}
+
+/* ---------- quadro ---------- */
+function filtrar(){
+  const f=S.fil;
+  return S.verbas.filter(v=>(!f.forn||v.fornecedorId===f.forn)&&(!f.ciclo||(f.ciclo==="_"?!v.cicloId:v.cicloId===f.ciclo))&&(!f.tipo||v.tipo===f.tipo)
+    &&(!f.area||pendencias(v).some(p=>p.area===f.area)))}
+function quadroHtml(){
+  const vs=filtrar(), f=S.fil;
+  const fornUsados=[...new Set(S.verbas.map(v=>v.fornecedorId))].map(forn).filter(Boolean).sort((a,b)=>a.nome.localeCompare(b.nome));
+  let h=`<div class="row"><h2>Verbas por etapa</h2>${pode("criar")?`<button class="btn pri spacer" data-act="novaVerba">+ Nova verba</button>`:""}</div>
+  <div class="filters">
+    <select data-fil="forn" aria-label="Fornecedor"><option value="">Todos os fornecedores</option>${fornUsados.map(x=>`<option value="${x.id}" ${f.forn===x.id?"selected":""}>${esc(x.nome)}</option>`).join("")}</select>
+    <select data-fil="ciclo" aria-label="Ciclo"><option value="">Todos os ciclos</option>${S.ciclos.map(c=>`<option value="${c.id}" ${f.ciclo===c.id?"selected":""}>${esc(cicloNome(c.id))}</option>`).join("")}<option value="_" ${f.ciclo==="_"?"selected":""}>Sem ciclo</option></select>
+    <select data-fil="tipo" aria-label="Tipo"><option value="">Todos os tipos</option>${Object.entries(TIPOS).map(([k,n])=>`<option value="${k}" ${f.tipo===k?"selected":""}>${n}</option>`).join("")}</select>
+    <select data-fil="area" aria-label="Área com pendência"><option value="">Pendência de qualquer área</option>${["comercial","compras","financeiro","marketing"].map(a=>`<option value="${a}" ${f.area===a?"selected":""}>Pendente com ${AREAS[a]}</option>`).join("")}</select>
+    ${(f.forn||f.ciclo||f.tipo||f.area)?`<button class="btn ghost sm" data-act="limparFil">Limpar filtros</button>`:""}
+  </div>`;
+  const by={}; COLS.forEach(c=>by[c.k]=[]); vs.forEach(v=>by[coluna(v)].push(v));
+  Object.values(by).forEach(l=>l.sort((a,b)=>String(a.previsaoEntrada||a.dataCampanha||"9").localeCompare(String(b.previsaoEntrada||b.dataCampanha||"9"))));
+  h+=`<div class="colchips" role="tablist">${COLS.map(c=>`<button data-act="col" data-k="${c.k}" class="${S.col===c.k?"on":""}">${c.n} <span class="num">${by[c.k].length}</span></button>`).join("")}</div>`;
+  h+=`<div class="board">${COLS.map(c=>{const l=by[c.k];const tot=l.reduce((s,v)=>s+(+v.valorPrometido||0),0);
+    return `<section class="col ${S.col===c.k?"on":""}"><div class="col-h"><div><h3>${c.n} <span class="n">${l.length}</span></h3><small>${esc(c.a)}</small></div><span class="t">${l.length?brlK(tot):""}</span></div>
+      ${l.length?l.map(cardHtml).join(""):`<div class="empty small">Nenhuma verba</div>`}</section>`}).join("")}</div>`;
+  return h}
+function cardHtml(v){
+  const st=statusCampanha(v), n=alertas().filter(a=>a.v.id===v.id).length;
+  let bar="";
+  if(temMeta(v)&&+v.meta>0&&v.etapa!=="perdida"){const p=Math.min(100,realizado(v)/v.meta*100);bar=`<div class="bar ${p>=100?"ok":""}" title="${Math.round(p)}% da meta"><i style="width:${p}%"></i></div><div class="sub">Meta ${Math.round(realizado(v)/v.meta*100)}% · ${brlK(realizado(v))} de ${brlK(v.meta)}</div>`;}
+  const falta=(v.executadaEm&&v.etapa!=="recebida"&&v.etapa!=="perdida")?`<span class="chip warn">Verba ainda não entrou</span>`:"";
+  return `<button class="card" data-act="abrir" data-id="${v.id}">
+    <div class="card-top"><b>${esc(fornNome(v.fornecedorId))}</b><span class="v">${brlK(v.valorPrometido)}</span></div>
+    <div class="sub">${v.titulo?esc(v.titulo)+" · ":""}${esc(TIPOS[v.tipo]||"")}${v.cicloId?" · "+esc(cicloNome(v.cicloId)):""}</div>
+    ${bar}
+    <div class="chips"><span class="chip ${st.c}">${esc(st.t)}</span>${falta}${n?`<span class="chip crit">${n} alerta${n>1?"s":""}</span>`:""}${v.etapa==="perdida"&&v.motivoPerda?`<span class="chip">${esc(MOTIVOS[v.motivoPerda])}</span>`:""}</div>
+  </button>`}
+
+/* ---------- fornecedores ---------- */
+function fornecedoresHtml(){
+  const q=S.fornBusca.toLowerCase(), fx=S.fornFaixa;
+  const l=S.fornecedores.filter(f=>(!q||f.nome.toLowerCase().includes(q))&&(!fx||f.faixa===fx));
+  const ed=pode("config");
+  let h=`<div class="row"><h2>Fornecedores</h2><span class="muted small">Compras de 01/01 a 09/11/2026, valor contábil, sem fios e cabos</span>${ed?`<button class="btn pri spacer" data-act="novoForn">+ Novo fornecedor</button>`:""}</div>
+  <div class="filters"><input type="search" id="fornBusca" placeholder="Buscar fornecedor" value="${esc(S.fornBusca)}" aria-label="Buscar fornecedor">
+  ${["","A","B","C"].map(x=>`<button class="btn sm ${fx===x?"pri":""}" data-act="faixa" data-k="${x}">${x?"Faixa "+x:"Todas"}</button>`).join("")}</div>`;
+  if(!S.fornecedores.length) return h+`<div class="empty">${S.ok.fornecedores?"Nenhum fornecedor cadastrado.":"Carregando fornecedores…"}</div>`;
+  h+=`<div class="tablewrap"><table><thead><tr><th>Fornecedor</th><th>Faixa</th><th class="r">Compras 2026</th><th class="r">Verbas ${ANO}</th><th class="r">Prometido</th><th class="r">Recebido</th><th>Observação</th></tr></thead><tbody>
+  ${l.map(f=>{const vs=S.verbas.filter(v=>v.fornecedorId===f.id&&anoDe(v)===ANO);
+    return `<tr class="${ed?"click":""}" ${ed?`data-act="editForn" data-id="${f.id}"`:""}><td><b>${esc(f.nome)}</b>${f.ativo===false?` <span class="chip">inativo</span>`:""}${f.distribuidor?` <span class="chip acc">distribuidor</span>`:""}${f.categoria?`<div class="muted small">${esc(f.categoria)}</div>`:""}</td>
+    <td><span class="chip faixa">${esc(f.faixa||"—")}</span></td><td class="r">${brl(f.compras2026)}</td><td class="r">${vs.length||"—"}</td>
+    <td class="r">${vs.length?brl(vs.reduce((s,v)=>s+(+v.valorPrometido||0),0)):"—"}</td><td class="r">${vs.length?brl(vs.reduce((s,v)=>s+(v.etapa==="recebida"?+v.valorRecebido||0:0),0)):"—"}</td>
+    <td class="muted small" style="white-space:normal;min-width:180px">${esc(f.obs||"")}</td></tr>`}).join("")}
+  </tbody></table></div>`;
+  return h}
+
+/* ---------- configurar ---------- */
+function configHtml(){
+  if(area()!=="marketing") return `<div class="empty">Só Marketing configura o sistema.</div>`;
+  const eq=Object.entries(S.equipe), ped=Object.entries(S.pedidos);
+  const areaSel=(id,val)=>`<select data-act-change="areaMembro" data-id="${id}" aria-label="Área">${Object.entries(AREAS).map(([k,n])=>`<option value="${k}" ${val===k?"selected":""}>${n}</option>`).join("")}</select>`;
+  let h=`<section class="panel"><div class="panel-h"><h2>Equipe</h2><span class="muted small">A área define o que cada pessoa pode fazer em cada verba.</span></div>`;
+  if(ped.length) h+=`<h3>Pedidos de acesso</h3><ul class="people">${ped.map(([id,p])=>`<li><img alt="" src="${esc(avatar(id))}"><span class="nm">${esc(nome(id))} <span class="muted small">pediu ${esc(AREAS[p.area]||"")}</span></span><button class="btn pri sm" data-act="aprovar" data-id="${id}">Confirmar como ${esc(AREAS[p.area]||"")}</button><button class="btn sm" data-act="recusar" data-id="${id}">Recusar</button></li>`).join("")}</ul>`;
+  h+=`<ul class="people">${eq.length?eq.map(([id,e])=>`<li><img alt="" src="${esc(avatar(id))}"><span class="nm">${esc(nome(id))}${id===S.uid?" (você)":""}</span>${areaSel(id,e.area)}${id!==S.uid?`<button class="btn ghost sm" data-act="removerMembro" data-id="${id}">Remover</button>`:""}</li>`).join(""):`<li class="muted">Ninguém cadastrado ainda.</li>`}</ul>
+  <div class="f"><span>Adicionar pessoa da empresa</span><input type="search" id="buscaPessoa" placeholder="Digite o nome ou e-mail" autocomplete="off"></div><ul class="people" id="buscaRes"></ul>
+  <p class="muted small" style="margin:0">Para a pessoa abrir o sistema, compartilhe o link do artefato com ela: <b>Colaborador</b> para Comercial, Compras e Financeiro; <b>Leitor</b> para a Diretoria (só visualiza).</p></section>`;
+  h+=`<section class="panel"><div class="panel-h"><h2>Ciclos de sell-out ${ANO}</h2><span class="muted small">Até 2 fornecedores-âncora por ciclo, de categorias que não competem.</span></div>
+  <div class="tablewrap"><table><thead><tr><th>Ciclo</th><th>Período</th><th>Âncoras</th><th>Tema</th><th></th></tr></thead><tbody>
+  ${S.ciclos.map(c=>{const an=(c.ancoras||[]).map(fornNome);const cats=(c.ancoras||[]).map(id=>(forn(id)||{}).categoria).filter(Boolean);const conflito=cats.length===2&&cats[0].toLowerCase()===cats[1].toLowerCase();
+    return `<tr><td><b>Ciclo ${c.numero}</b></td><td>${dBR(c.inicio)} a ${dBR(c.fim)}</td><td style="white-space:normal">${an.length?esc(an.join(" + ")):`<span class="muted">a definir</span>`}${conflito?` <span class="chip warn">mesma categoria</span>`:""}</td><td style="white-space:normal">${esc(c.tema||"")}</td><td><button class="btn sm" data-act="editCiclo" data-id="${c.id}">Editar</button></td></tr>`}).join("")}
+  </tbody></table></div></section>`;
+  h+=`<section class="panel"><h2>Atividade recente</h2>${histList(S.feed,true)}</section>`;
+  return h}
+function histList(l,comVerba){
+  if(!l.length) return `<div class="empty small">Nenhuma alteração registrada ainda.</div>`;
+  return `<ul class="hist">${l.map(x=>`<li><img alt="" src="${esc(avatar(x.por))}"><div><b>${esc(nome(x.por))}</b> ${esc(x.acao)}${comVerba&&x.verbaId?` · <a href="#" data-act="abrir" data-id="${esc(x.verbaId)}">${esc(fornNome((S.verbas.find(v=>v.id===x.verbaId)||{}).fornecedorId))}</a>`:""}${x.alvo?` · ${esc(x.alvo)}`:""}</div><div class="q">${dhBR(x.em)}</div>${(x.detalhes||[]).length?`<ul>${x.detalhes.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>`:"<span></span>"}</li>`).join("")}</ul>`}
+
+/* ===================== gaveta (modal) ===================== */
+function abrirModal(m){S.modal=m;S.dirty=false;
+  if(S.histUnsub){S.histUnsub();S.histUnsub=null;S.histV=[];}
+  if(m.tipo==="verba"&&S.db){S.histUnsub=S.db.collection("historico").where("verbaId","==",m.id).onSnapshot(s=>{S.histV=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.em.localeCompare(a.em));const el=$("#histV");if(el)el.innerHTML=histList(S.histV,false);ensureProfiles(S.histV.map(h=>h.por));},()=>{});}
+  renderModal()}
+function fecharModal(){S.modal=null;S.dirty=false;if(S.histUnsub){S.histUnsub();S.histUnsub=null;}S.histV=[];$("#modal").innerHTML="";document.body.style.overflow=""}
+function renderModal(){
+  const m=S.modal;if(!m){$("#modal").innerHTML="";return}
+  let head="",body="";
+  if(m.tipo==="verba"){const v=S.verbas.find(x=>x.id===m.id);if(!v){head=`<div class="t"><h2>Verba não encontrada</h2></div>`;body=`<div class="empty">Esta verba foi excluída.</div>`;}else [head,body]=verbaView(v);}
+  else if(m.tipo==="verbaForm") [head,body]=verbaForm(m.id?S.verbas.find(x=>x.id===m.id):null);
+  else if(m.tipo==="forn") [head,body]=fornForm(m.id?forn(m.id):null);
+  else if(m.tipo==="ciclo") [head,body]=cicloForm(ciclo(m.id));
+  const keepScroll=$(".drawer")?$(".drawer").scrollTop:0;
+  $("#modal").innerHTML=`<div class="overlay" data-act="fecharFora"><div class="drawer" role="dialog" aria-modal="true"><div class="dr-h">${head}<button class="btn ghost" data-act="fechar" aria-label="Fechar">✕</button></div><div class="dr-b">${body}</div></div></div>`;
+  document.body.style.overflow="hidden";
+  if(m.keep) $(".drawer").scrollTop=keepScroll; m.keep=false;
+}
+
+/* ---------- ficha da verba ---------- */
+function verbaView(v){
+  const f=forn(v.fornecedorId)||{}, col=coluna(v), st=statusCampanha(v);
+  const idx=COLS.findIndex(c=>c.k===col);
+  const head=`<div class="t"><div class="muted small">${esc(TIPOS[v.tipo]||"")}${v.cicloId?" · "+esc(cicloNome(v.cicloId)):""}</div><h2>${esc(f.nome||"Fornecedor removido")}${v.titulo?` <span class="muted" style="font-weight:600">· ${esc(v.titulo)}</span>`:""}</h2></div>${pode("editar")&&v.etapa!=="perdida"?`<button class="btn sm" data-act="editVerba" data-id="${v.id}">Editar</button>`:""}`;
+  let b="";
+  b+= v.etapa==="perdida"
+    ? `<div class="rule crit"><b>Verba perdida: ${esc(MOTIVOS[v.motivoPerda]||"")}</b><span class="small">${esc(v.motivoDetalhe||"")} ${v.perdidaEm?"· em "+dBR(v.perdidaEm):""}</span></div>`
+    : `<ol class="steps" aria-label="Etapas">${COLS.slice(0,7).map((c,i)=>`<li class="${i<idx?"done":i===idx?"cur":""}" title="${c.n}"><span>${c.n}</span></li>`).join("")}</ol>`;
+  const rc=v.etapa==="perdida"?"":permitida(v)?"ok":(v.adiantamento&&v.adiantamento.marcado)?"warn":"crit";
+  b+=`<div class="rule ${rc}"><b>${esc(REGRA[v.tipo]||"")}</b><span class="small">${esc(st.t)}${v.dataCampanha?" · campanha marcada para "+dBR(v.dataCampanha):" · sem data de campanha"}${v.adiantamento&&v.adiantamento.marcado?` · Adiantamento com verba interna, risco assumido. Aprovado por ${esc(v.adiantamento.aprovadoPor)} (marcado por ${esc(nome(v.adiantamento.por))} em ${dBR(v.adiantamento.em)})`:""}</span></div>`;
+  if(f.distribuidor) b+=`<div class="banner small">${esc(f.nome)} é distribuidor: a verba vem do repasse dos fabricantes.</div>`;
+  b+=passosHtml(v);
+  b+=`<section class="sec"><h3>Valores</h3><dl class="dl">
+    ${dd("Prometido",brl(v.valorPrometido))}${dd("Parte fixa",brl(v.parteFixa))}${dd("Parte variável",brl(v.parteVariavel))}
+    ${dd("Confirmado",v.valorConfirmado?brl(v.valorConfirmado):"—")}${dd("Recebido",v.etapa==="recebida"?brl(v.valorRecebido):"—")}</dl></section>`;
+  if(temMeta(v)){
+    const r=realizado(v), p=+v.meta>0?r/v.meta*100:0;
+    b+=`<section class="sec"><h3>Meta</h3><dl class="dl">${dd("Meta",brl(v.meta))}${dd("Realizado",brl(r))}${dd("Atingimento",+v.meta>0?Math.round(p)+"%":"—")}${dd("Libera pelo realizado",brl(liberado(v)))}${dd("Apuração",v.apuracaoInicio?dBR(v.apuracaoInicio)+" a "+dBR(v.apuracaoFim):"—")}</dl>
+      ${+v.meta>0?`<div class="bar ${p>=100?"ok":""}"><i style="width:${Math.min(100,p)}%"></i></div>`:""}
+      ${v.regraTexto?`<p style="margin:0" class="small">${esc(v.regraTexto)}</p>`:""}
+      ${(v.degraus||[]).length?`<div class="chips">${v.degraus.map(d=>`<span class="chip acc">${esc(d.pct)}% da meta libera ${esc(d.libera)}% do variável</span>`).join("")}</div>`:""}
+      ${(v.realizados||[]).length?`<div class="tablewrap"><table><thead><tr><th>Mês</th><th class="r">Realizado</th></tr></thead><tbody>${[...v.realizados].sort((a,b)=>a.mes.localeCompare(b.mes)).map(x=>`<tr><td>${mesBR(x.mes)}</td><td class="r">${brl(x.valor)}</td></tr>`).join("")}</tbody></table></div>`:`<span class="muted small">Nenhum realizado lançado.</span>`}
+    </section>`;
+  }
+  b+=`<section class="sec"><h3>Recebimento e campanha</h3><dl class="dl">
+    ${dd("Forma de recebimento",FORMAS[v.etapa==="recebida"&&v.formaReal?v.formaReal:v.formaRecebimento]||"—")}${dd("Previsão de entrada",dBR(v.previsaoEntrada))}${dd("Data real de entrada",dBR(v.dataEntrada))}
+    ${dd("Data da campanha",dBR(v.dataCampanha))}${dd("Executada em",dBR(v.executadaEm))}${dd("Relatório enviado em",dBR(v.comprovadaEm))}</dl>
+    ${v.relatorioLink?`<a href="${esc(safeUrl(v.relatorioLink))}" target="_blank" rel="noopener">Abrir relatório de contrapartida</a>`:""}</section>`;
+  const resp=v.responsaveis||{};
+  b+=`<section class="sec"><h3>Responsáveis</h3><dl class="dl">${["comercial","compras","financeiro","marketing"].map(a=>dd(AREAS[a],resp[a]?nome(resp[a]):"—")).join("")}</dl></section>`;
+  b+=`<section class="sec"><h3>Contrapartidas prometidas ao fornecedor</h3>${(v.contrapartidas||[]).length?`<ul style="margin:0;padding-left:18px">${v.contrapartidas.map(c=>`<li>${esc(c.texto)}</li>`).join("")}</ul>`:`<span class="muted small">Nenhuma contrapartida registrada.</span>`}</section>`;
+  b+=`<section class="sec"><h3>Acordo</h3>${(v.links||[]).length?`<ul class="links">${v.links.map(l=>`<li><a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener">${esc(l.titulo||l.url)}</a></li>`).join("")}</ul>`:`<span class="muted small">Nenhum link do acordo anexado.</span>`}</section>`;
+  b+=maisAcoes(v);
+  b+=`<section class="sec"><h3>Histórico</h3><div id="histV">${histList(S.histV,false)}</div><span class="muted small">Criada por ${esc(nome(v.criadoPor))} em ${dhBR(v.criadoEm)}</span></section>`;
+  return [head,b]}
+function dd(l,v){return `<div><dt>${esc(l)}</dt><dd>${esc(v)}</dd></div>`}
+
+/* próximo passo, de acordo com a etapa e a área de quem está vendo */
+function passosHtml(v){
+  if(v.etapa==="perdida") return "";
+  let h="";const e=v.etapa;
+  const box=(titulo,quem,ok,conteudo)=>`<form class="step" data-step><h3>${titulo}</h3><div class="muted who">Responsável: ${quem}</div>${ok?conteudo:`<div class="muted small">Aguardando ${quem}.</div>`}</form>`;
+  if(e==="negociada"){
+    const sem=!(v.links||[]).length;
+    h+=box("Formalizar o acordo","Comercial",pode("formalizar"),
+      sem?`<div class="small">Anexe o link do acordo por escrito (e-mail, PDF no Drive, contrato) para formalizar.</div><div><button type="button" class="btn" data-act="editVerba" data-id="${v.id}">Anexar link do acordo</button></div>`
+         :`<div class="small">O acordo por escrito já está anexado.</div><div><button class="btn pri" data-step-act="formalizar" data-id="${v.id}">Marcar como formalizada</button></div>`);
+  }
+  if(e==="formalizada"){
+    if(temMeta(v)) h+=box("Iniciar a apuração da meta","Compras",pode("apuracao"),
+      `<div class="fg"><label class="f"><span>Início da apuração</span><input type="date" name="ini" value="${esc(v.apuracaoInicio||"")}" required></label><label class="f"><span>Fim da apuração</span><input type="date" name="fim" value="${esc(v.apuracaoFim||"")}"><small>Vazio = 3 meses após o início</small></label><label class="f"><span>Meta (R$)</span><input type="text" inputmode="decimal" name="meta" value="${inMoney(v.meta)}" required></label></div><div><button class="btn pri" data-step-act="apuracao" data-id="${v.id}">Iniciar apuração</button></div>`);
+    else h+=confirmBox(v,"Confirmar a liberação da verba",esperado(v));
+  }
+  if(e==="apuracao"){
+    const ym=(()=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-1);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")})();
+    h+=box("Lançar o realizado do mês","Compras",pode("realizado"),
+      `<div class="fg"><label class="f"><span>Mês</span><input type="month" name="mes" value="${ym}" required></label><label class="f"><span>Compras no mês (R$)</span><input type="text" inputmode="decimal" name="valor" required placeholder="0"></label></div><div class="muted small">Se o mês já tiver valor, ele é substituído.</div><div><button class="btn pri" data-step-act="realizado" data-id="${v.id}">Lançar realizado</button></div>`);
+    h+=confirmBox(v,"Confirmar a meta batida",liberado(v));
+  }
+  if(e==="confirmada"){
+    h+=box("Registrar a entrada da verba","Financeiro",pode("receber"),
+      `<div class="fg"><label class="f"><span>Data real de entrada</span><input type="date" name="data" value="${hoje()}" required></label><label class="f"><span>Valor recebido (R$)</span><input type="text" inputmode="decimal" name="valor" value="${inMoney(esperado(v))}" required></label>
+      <label class="f"><span>Forma de recebimento</span><select name="forma" required>${Object.entries(FORMAS).map(([k,n])=>`<option value="${k}" ${v.formaRecebimento===k?"selected":""}>${n}</option>`).join("")}</select></label></div>
+      ${v.tipo==="bonificacao"?`<div class="small muted">Registre quando a nota de bonificação entrar. A campanha fica liberada a partir daí.</div>`:""}
+      <div><button class="btn pri" data-step-act="receber" data-id="${v.id}">Confirmar recebimento</button></div>`);
+  }
+  if(!v.executadaEm){
+    const ok=permitida(v), ad=v.adiantamento&&v.adiantamento.marcado;
+    const precisa=!ok&&!ad;
+    h+=box("Executar a campanha","Marketing",pode("executar"),
+      `<label class="f" style="max-width:220px"><span>Data em que a campanha aconteceu</span><input type="date" name="data" value="${hoje()}" required></label>
+      ${precisa?`<div class="rule warn"><b>A regra ainda não permite esta campanha</b><span class="small">${esc(REGRA[v.tipo])}. Para fazer antes, marque o adiantamento e diga quem aprovou.</span>
+        <label class="check"><input type="checkbox" name="adiant"> Adiantamento com verba interna — risco assumido</label>
+        <label class="f"><span>Quem aprovou</span><input type="text" name="aprov" placeholder="Nome de quem aprovou"></label></div>`:""}
+      <div><button class="btn pri" data-step-act="executar" data-id="${v.id}">Marcar campanha como executada</button></div>`);
+  } else if(!v.comprovadaEm){
+    h+=box("Enviar o relatório de contrapartida","Marketing",pode("comprovar"),
+      `<div class="fg"><label class="f"><span>Data de envio ao fornecedor</span><input type="date" name="data" value="${hoje()}" required></label><label class="f"><span>Link do relatório (opcional)</span><input type="url" name="link" placeholder="https://"></label></div><div><button class="btn pri" data-step-act="comprovar" data-id="${v.id}">Marcar relatório como enviado</button></div>`);
+  }
+  return h}
+function confirmBox(v,titulo,sug){
+  return `<form class="step" data-step><h3>${titulo}</h3><div class="muted who">Responsável: Comercial</div>${pode("confirmar")?`
+    <div class="fg"><label class="f"><span>Valor confirmado (R$)</span><input type="text" inputmode="decimal" name="valor" value="${inMoney(sug)}" required><small>${temMeta(v)?"Sugestão pelo realizado e degraus: "+brl(liberado(v)):"Valor prometido: "+brl(v.valorPrometido)}</small></label>
+    <label class="f"><span>Previsão de entrada</span><input type="date" name="prev" value="${esc(v.previsaoEntrada||"")}" required></label></div>
+    <div><button class="btn pri" data-step-act="confirmar" data-id="${v.id}">Confirmar verba</button></div>`:`<div class="muted small">Aguardando Comercial.</div>`}</form>`}
+function maisAcoes(v){
+  let h="";
+  if(v.etapa!=="perdida"&&v.etapa!=="recebida"&&pode("perder")) h+=`<details class="more"><summary>Marcar como perdida</summary><div><form data-step class="fg">
+    <label class="f"><span>Motivo</span><select name="motivo" required><option value="">Escolha…</option>${Object.entries(MOTIVOS).map(([k,n])=>`<option value="${k}">${n}</option>`).join("")}</select></label>
+    <label class="f wide"><span>Detalhe</span><textarea name="det" placeholder="O que aconteceu (obrigatório se o motivo for Outro)"></textarea></label>
+    <div class="wide"><button class="btn danger" data-step-act="perder" data-id="${v.id}">Marcar como perdida</button></div></form></div></details>`;
+  if(pode("corrigir")) h+=`<details class="more"><summary>Corrigir etapa ou excluir</summary><div>
+    <form data-step class="row"><select name="etapa" aria-label="Etapa">${["negociada","formalizada","apuracao","confirmada","recebida"].map(k=>`<option value="${k}" ${v.etapa===k?"selected":""}>${COLN[k]}</option>`).join("")}</select>
+    <label class="check"><input type="checkbox" name="limparExec"> Desfazer execução e relatório</label><button class="btn" data-step-act="corrigir" data-id="${v.id}">Aplicar correção</button></form>
+    <form data-step class="row"><label class="check"><input type="checkbox" name="certeza"> Quero excluir esta verba de vez</label><button class="btn danger" data-step-act="excluir" data-id="${v.id}">Excluir verba</button></form></div></details>`;
+  return h}
+
+/* ---------- formulário da verba ---------- */
+function verbaForm(v){
+  const nova=!v; v=v||{tipo:"",responsaveis:{},degraus:[{pct:80,libera:50},{pct:100,libera:100}],contrapartidas:[],links:[],formaRecebimento:"deposito"};
+  if(nova&&area()&&area()!=="diretoria"&&S.uid) v.responsaveis={[area()]:S.uid};
+  const fsel=S.fornecedores.filter(f=>f.ativo!==false||f.id===v.fornecedorId).slice().sort((a,b)=>a.nome.localeCompare(b.nome));
+  const respSel=a=>{const ms=membros(a);const cur=(v.responsaveis||{})[a]||"";
+    return `<label class="f"><span>${AREAS[a]}</span><select name="resp_${a}"><option value="">${ms.length?"Escolha…":"Ninguém cadastrado"}</option>${ms.map(id=>`<option value="${id}" ${cur===id?"selected":""}>${esc(nome(id))}</option>`).join("")}</select></label>`};
+  const head=`<div class="t"><h2>${nova?"Nova verba":"Editar verba"}</h2>${nova?"":`<div class="muted small">${esc(fornNome(v.fornecedorId))}</div>`}</div>`;
+  const b=`<form id="fVerba" data-id="${v.id||""}" novalidate>
+  <div style="display:flex;flex-direction:column;gap:16px">
+  <section class="sec"><h3>Fornecedor e campanha</h3><div class="fg">
+    <label class="f"><span>Fornecedor *</span><select name="fornecedorId" required><option value="">Escolha…</option>${fsel.map(f=>`<option value="${f.id}" ${v.fornecedorId===f.id?"selected":""}>${esc(f.nome)} (${esc(f.faixa||"—")})</option>`).join("")}</select></label>
+    <label class="f"><span>Ciclo / campanha ligada</span><select name="cicloId"><option value="">Sem ciclo</option>${S.ciclos.map(c=>`<option value="${c.id}" ${v.cicloId===c.id?"selected":""}>${esc(cicloNome(c.id))} ${c.ano}</option>`).join("")}</select></label>
+    <label class="f wide"><span>Nome da campanha ou descrição curta</span><input type="text" name="titulo" value="${esc(v.titulo||"")}" placeholder="Ex.: Ciclo de chuveiros, Blitz WEG motores"></label>
+  </div></section>
+  <section class="sec"><h3>Tipo de verba *</h3><div class="tipos">${Object.entries(TIPOS).map(([k,n])=>`<label class="tipo"><input type="radio" name="tipo" value="${k}" ${v.tipo===k?"checked":""} required><div><b>${n}</b><small>${TIPO_DESC[k]}<br><b>Campanha:</b> ${REGRA[k].toLowerCase()}.</small></div></label>`).join("")}</div></section>
+  <section class="sec"><h3>Valores</h3><div class="fg">
+    <label class="f"><span>Valor prometido (R$) *</span><input type="text" inputmode="decimal" name="valorPrometido" value="${inMoney(v.valorPrometido)}" required></label>
+    <label class="f"><span>Parte fixa (R$)</span><input type="text" inputmode="decimal" name="parteFixa" value="${inMoney(v.parteFixa)}"></label>
+    <label class="f"><span>Parte variável (R$)</span><input type="text" inputmode="decimal" name="parteVariavel" value="${inMoney(v.parteVariavel)}"></label>
+  </div><div class="small muted" id="somaPartes"></div></section>
+  <section class="sec" id="secMeta"><h3>Meta</h3><div class="fg">
+    <label class="f"><span>Meta de compras (R$)</span><input type="text" inputmode="decimal" name="meta" value="${inMoney(v.meta)}"></label>
+    <label class="f"><span>Início da apuração</span><input type="date" name="apuracaoInicio" value="${esc(v.apuracaoInicio||"")}"></label>
+    <label class="f"><span>Fim da apuração</span><input type="date" name="apuracaoFim" value="${esc(v.apuracaoFim||"")}"><small>Trimestral por padrão: preenche sozinho 3 meses após o início.</small></label>
+    <label class="f wide"><span>Regra da meta</span><textarea name="regraTexto" placeholder="Ex.: compras de jan a mar acima de R$ 300 mil">${esc(v.regraTexto||"")}</textarea></label>
+  </div><div class="f"><span>Degraus: % da meta atingida libera % da parte variável</span><div class="rows" id="rowsDeg">${(v.degraus||[]).map(degRow).join("")}</div><div><button type="button" class="btn sm" data-act="addRow" data-k="deg">+ Degrau</button></div></div></section>
+  <section class="sec"><h3>Recebimento e campanha</h3><div class="fg">
+    <label class="f"><span>Forma de recebimento</span><select name="formaRecebimento">${Object.entries(FORMAS).map(([k,n])=>`<option value="${k}" ${v.formaRecebimento===k?"selected":""}>${n}</option>`).join("")}</select></label>
+    <label class="f"><span>Previsão de entrada</span><input type="date" name="previsaoEntrada" value="${esc(v.previsaoEntrada||"")}"></label>
+    <label class="f"><span>Data da campanha</span><input type="date" name="dataCampanha" value="${esc(v.dataCampanha||"")}"><small>Preenche com o início do ciclo, se vazio.</small></label>
+  </div>
+  <div id="adiantBox"></div></section>
+  <section class="sec"><h3>Responsáveis</h3><div class="fg">${["comercial","compras","financeiro","marketing"].map(respSel).join("")}</div></section>
+  <section class="sec"><h3>Contrapartidas prometidas ao fornecedor</h3><div class="rows" id="rowsCp">${(v.contrapartidas||[]).map(cpRow).join("")}</div><div><button type="button" class="btn sm" data-act="addRow" data-k="cp">+ Contrapartida</button></div></section>
+  <section class="sec"><h3>Acordo por escrito (links)</h3><div class="rows" id="rowsLk">${(v.links||[]).map(lkRow).join("")}</div><div><button type="button" class="btn sm" data-act="addRow" data-k="lk">+ Link</button></div><small class="muted">Link do e-mail, do PDF no Drive ou do contrato assinado.</small></section>
+  <div class="err" id="fErr" role="alert"></div>
+  <div class="formbar"><button type="button" class="btn" data-act="${nova?"fechar":"cancelarEdit"}" data-id="${v.id||""}">Cancelar</button><button class="btn pri" type="submit">${nova?"Cadastrar verba":"Salvar alterações"}</button></div>
+  </div></form>`;
+  setTimeout(()=>{const f=$("#fVerba");if(f){f._adiant=v.adiantamento||null;atualizaForm(f);}},0);
+  return [head,b]}
+const degRow=d=>`<div class="rowi"><input class="n" type="text" inputmode="decimal" data-k="pct" value="${esc(d.pct??"")}" aria-label="% da meta"><span class="muted small">% da meta libera</span><input class="n" type="text" inputmode="decimal" data-k="libera" value="${esc(d.libera??"")}" aria-label="% liberado"><span class="muted small">%</span><button type="button" class="btn ghost sm" data-act="delRow" aria-label="Remover">✕</button></div>`;
+const cpRow=c=>`<div class="rowi"><input type="text" data-k="texto" value="${esc(c.texto||"")}" placeholder="Ex.: 2 painéis na loja por 60 dias"><button type="button" class="btn ghost sm" data-act="delRow" aria-label="Remover">✕</button></div>`;
+const lkRow=l=>`<div class="rowi"><input type="text" data-k="titulo" value="${esc(l.titulo||"")}" placeholder="Descrição" style="flex:0 1 35%"><input type="url" data-k="url" value="${esc(l.url||"")}" placeholder="https://"><button type="button" class="btn ghost sm" data-act="delRow" aria-label="Remover">✕</button></div>`;
+function atualizaForm(f){
+  const tipo=(f.querySelector("[name=tipo]:checked")||{}).value;
+  const fx=num(f.parteFixa.value), vr=num(f.parteVariavel.value), pr=num(f.valorPrometido.value);
+  $("#somaPartes").textContent=(fx||vr)?(Math.abs(fx+vr-pr)>0.5?`Atenção: fixa + variável = ${brl(fx+vr)}, diferente do prometido (${brl(pr)}).`:`Fixa + variável = ${brl(fx+vr)}.`):"";
+  $("#secMeta").style.display=(tipo==="condicionada"||num(f.meta.value)>0||!tipo)?"":"none";
+  const box=$("#adiantBox");const a=f._adiant;
+  const precisa=tipo==="condicionada"||tipo==="bonificacao";
+  if(precisa){
+    if(!box.dataset.on){box.dataset.on="1";box.innerHTML=`<div class="rule warn" style="margin-top:10px"><b>Campanha antes da verba?</b><span class="small" id="adTxt"></span>
+      <label class="check"><input type="checkbox" name="adiant" ${a&&a.marcado?"checked":""}> Adiantamento com verba interna — risco assumido</label>
+      <label class="f"><span>Quem aprovou</span><input type="text" name="aprov" value="${esc(a&&a.aprovadoPor||"")}" placeholder="Nome de quem aprovou"></label></div>`;}
+    $("#adTxt").textContent="Regra deste tipo: "+REGRA[tipo].toLowerCase()+". Se a campanha vai acontecer antes, marque abaixo e diga quem aprovou.";
+  } else {box.dataset.on="";box.innerHTML="";}
+}
+function lerRows(id,map){return $$("#"+id+" .rowi").map(r=>{const o={};$$("input",r).forEach(i=>o[i.dataset.k]=i.value.trim());return map(o)}).filter(Boolean)}
+
+const CAMPOS={fornecedorId:["Fornecedor","forn"],cicloId:["Ciclo","ciclo"],titulo:["Campanha","txt"],tipo:["Tipo de verba","tipo"],valorPrometido:["Valor prometido","brl"],parteFixa:["Parte fixa","brl"],parteVariavel:["Parte variável","brl"],meta:["Meta","brl"],apuracaoInicio:["Início da apuração","data"],apuracaoFim:["Fim da apuração","data"],regraTexto:["Regra da meta","txt"],degraus:["Degraus","deg"],formaRecebimento:["Forma de recebimento","forma"],previsaoEntrada:["Previsão de entrada","data"],dataCampanha:["Data da campanha","data"],adiantamento:["Adiantamento","adiant"],responsaveis:["Responsáveis","resp"],contrapartidas:["Contrapartidas","cp"],links:["Links do acordo","lk"]};
+function fmtCampo(t,x){switch(t){case"brl":return brl(x);case"data":return dBR(x);case"forn":return fornNome(x);case"ciclo":return x?cicloNome(x):"Sem ciclo";case"tipo":return TIPOS[x]||"—";case"forma":return FORMAS[x]||"—";
+  case"deg":return (x||[]).map(d=>d.pct+"% → "+d.libera+"%").join("; ")||"—";case"cp":return (x||[]).map(c=>c.texto).join("; ")||"—";case"lk":return (x||[]).length+" link(s)";
+  case"adiant":return x&&x.marcado?"marcado, aprovado por "+x.aprovadoPor:"não";default:return x||"—"}}
+
+async function salvarVerbaForm(f){
+  const err=$("#fErr");err.textContent="";
+  const id=f.dataset.id, old=id?S.verbas.find(x=>x.id===id):null;
+  const tipo=(f.querySelector("[name=tipo]:checked")||{}).value||"";
+  const d={
+    fornecedorId:f.fornecedorId.value, cicloId:f.cicloId.value, titulo:f.titulo.value.trim(), tipo,
+    valorPrometido:num(f.valorPrometido.value), parteFixa:num(f.parteFixa.value), parteVariavel:num(f.parteVariavel.value),
+    meta:num(f.meta.value), apuracaoInicio:f.apuracaoInicio.value, apuracaoFim:f.apuracaoFim.value, regraTexto:f.regraTexto.value.trim(),
+    degraus:lerRows("rowsDeg",o=>(num(o.pct)>0?{pct:num(o.pct),libera:num(o.libera)}:null)),
+    formaRecebimento:f.formaRecebimento.value, previsaoEntrada:f.previsaoEntrada.value, dataCampanha:f.dataCampanha.value,
+    responsaveis:Object.fromEntries(["comercial","compras","financeiro","marketing"].map(a=>[a,f["resp_"+a].value])),
+    contrapartidas:lerRows("rowsCp",o=>o.texto?{texto:o.texto,entregue:!!((old&&old.contrapartidas||[]).find(c=>c.texto===o.texto)||{}).entregue}:null),
+    links:lerRows("rowsLk",o=>o.url?{titulo:o.titulo,url:safeUrl(o.url)}:null)
+  };
+  if(!d.fornecedorId) return err.textContent="Escolha o fornecedor.";
+  if(!d.tipo) return err.textContent="Escolha o tipo de verba.";
+  if(!(d.valorPrometido>0)) return err.textContent="Informe o valor prometido.";
+  if(d.apuracaoInicio&&!d.apuracaoFim) d.apuracaoFim=fimTrimestre(d.apuracaoInicio);
+  if(d.apuracaoInicio&&d.apuracaoFim<d.apuracaoInicio) return err.textContent="O fim da apuração está antes do início.";
+  if(!d.dataCampanha&&d.cicloId){const c=ciclo(d.cicloId);if(c)d.dataCampanha=c.inicio;}
+  const ad=f.querySelector("[name=adiant]");
+  if(ad){
+    if(ad.checked){const ap=f.aprov.value.trim();if(!ap)return err.textContent="Diga quem aprovou o adiantamento com verba interna.";
+      const prev=old&&old.adiantamento;d.adiantamento=(prev&&prev.marcado&&prev.aprovadoPor===ap)?prev:{marcado:true,aprovadoPor:ap,por:S.uid||"",em:hoje()};}
+    else d.adiantamento=null;
+  } else d.adiantamento=old?old.adiantamento||null:null;
+  const btn=f.querySelector("[type=submit]");btn.disabled=true;
+  try{
+    const now=new Date().toISOString();
+    if(!old){
+      const ref=S.db.collection("verbas").doc();
+      await ref.set({...d,etapa:"negociada",realizados:[],criadoEm:now,criadoPor:S.uid||"",atualizadoEm:now,atualizadoPor:S.uid||""});
+      await addHist(ref.id,"cadastrou a verba (Negociada)",[`${fornNome(d.fornecedorId)} · ${TIPOS[d.tipo]} · ${brl(d.valorPrometido)}`]);
+      toast("Verba cadastrada");S.dirty=false;abrirModal({tipo:"verba",id:ref.id});
+    } else {
+      const patch={},det=[];
+      for(const k of Object.keys(d)){const a=JSON.stringify(old[k]??null),b=JSON.stringify(d[k]??null);
+        if(a!==b && !(isEmpty(old[k])&&isEmpty(d[k]))){patch[k]=d[k];const [lb,t]=CAMPOS[k]||[k,"txt"];det.push(t==="resp"?"Responsáveis alterados":`${lb}: ${fmtCampo(t,old[k])} → ${fmtCampo(t,d[k])}`);}}
+      if(!det.length){toast("Nada foi alterado");S.dirty=false;abrirModal({tipo:"verba",id});return;}
+      await salvarVerba(id,patch,"editou a verba",det);
+      toast("Alterações salvas");S.dirty=false;abrirModal({tipo:"verba",id});
+    }
+  }catch(e){btn.disabled=false;err.textContent=errMsg(e);}
+}
+function isEmpty(x){return x==null||x===""||x===0||(Array.isArray(x)&&!x.length)}
+
+/* ---------- ações de etapa ---------- */
+async function passo(act,id,form){
+  const v=S.verbas.find(x=>x.id===id);if(!v)return;
+  const g=n=>{const el=form.querySelector(`[name=${n}]`);return el?(el.type==="checkbox"?el.checked:el.value.trim()):""};
+  const falha=m=>{toast(m,true)};
+  try{
+    if(act==="formalizar"){if(!(v.links||[]).length)return falha("Anexe o link do acordo antes de formalizar.");
+      await salvarVerba(id,{etapa:"formalizada",formalizadaEm:hoje()},"formalizou a verba",["Etapa: Negociada → Formalizada"]);}
+    else if(act==="apuracao"){const ini=g("ini");let fim=g("fim");const meta=num(g("meta"));
+      if(!ini||!(meta>0))return falha("Informe o início da apuração e a meta.");
+      if(!fim)fim=fimTrimestre(ini);if(fim<ini)return falha("O fim da apuração está antes do início.");
+      await salvarVerba(id,{etapa:"apuracao",apuracaoInicio:ini,apuracaoFim:fim,meta},"iniciou a apuração",[`Etapa: Formalizada → Em apuração`,`Meta ${brl(meta)} de ${dBR(ini)} a ${dBR(fim)}`]);}
+    else if(act==="realizado"){const mes=g("mes"),val=num(g("valor"));if(!mes)return falha("Escolha o mês.");
+      const l=(v.realizados||[]).filter(r=>r.mes!==mes);const ant=(v.realizados||[]).find(r=>r.mes===mes);l.push({mes,valor:val});
+      await salvarVerba(id,{realizados:l},"lançou realizado",[`${mesBR(mes)}: ${ant?brl(ant.valor)+" → ":""}${brl(val)}`]);}
+    else if(act==="confirmar"){const val=num(g("valor")),prev=g("prev");if(!(val>0))return falha("Informe o valor confirmado.");if(!prev)return falha("Informe a previsão de entrada.");
+      await salvarVerba(id,{etapa:"confirmada",valorConfirmado:val,previsaoEntrada:prev,confirmadaEm:hoje()},"confirmou a verba",[`Etapa: ${COLN[v.etapa]} → Confirmada`,`Valor confirmado ${brl(val)}, previsão ${dBR(prev)}`]);}
+    else if(act==="receber"){const data=g("data"),val=num(g("valor")),forma=g("forma");if(!data||!(val>0))return falha("Informe a data e o valor recebido.");
+      await salvarVerba(id,{etapa:"recebida",dataEntrada:data,valorRecebido:val,formaReal:forma},"registrou a entrada",[`Etapa: Confirmada → Recebida`,`${brl(val)} em ${dBR(data)} por ${FORMAS[forma]}`]);}
+    else if(act==="executar"){const data=g("data");if(!data)return falha("Informe a data da campanha.");
+      const patch={executadaEm:data},det=[`Campanha executada em ${dBR(data)}`];
+      if(!permitida(v)&&!(v.adiantamento&&v.adiantamento.marcado)){
+        if(!g("adiant"))return falha("Pela regra, esta campanha ainda não pode acontecer. Marque o adiantamento com verba interna para seguir.");
+        const ap=g("aprov");if(!ap)return falha("Diga quem aprovou o adiantamento.");
+        patch.adiantamento={marcado:true,aprovadoPor:ap,por:S.uid||"",em:hoje()};det.push(`Adiantamento com verba interna, risco assumido, aprovado por ${ap}`);}
+      await salvarVerba(id,patch,"marcou a campanha como executada",det);}
+    else if(act==="comprovar"){const data=g("data");if(!data)return falha("Informe a data de envio.");
+      await salvarVerba(id,{comprovadaEm:data,relatorioLink:safeUrl(g("link"))},"registrou o envio do relatório de contrapartida",[`Enviado em ${dBR(data)}`]);}
+    else if(act==="perder"){const mo=g("motivo"),det=g("det");if(!mo)return falha("Escolha o motivo.");if(mo==="outro"&&!det)return falha("Descreva o motivo.");
+      await salvarVerba(id,{etapa:"perdida",etapaAntes:v.etapa,motivoPerda:mo,motivoDetalhe:det,perdidaEm:hoje()},"marcou a verba como perdida",[`Motivo: ${MOTIVOS[mo]}${det?" · "+det:""}`]);}
+    else if(act==="corrigir"){const e=g("etapa"),lim=g("limparExec");const patch={etapa:e};const det=[`Etapa: ${COLN[v.etapa]} → ${COLN[e]}`];
+      if(v.etapa==="perdida"){patch.motivoPerda=null;patch.motivoDetalhe=null;patch.perdidaEm=null;det.push("Verba reaberta");}
+      if(lim){patch.executadaEm=null;patch.comprovadaEm=null;patch.relatorioLink=null;det.push("Execução e relatório desfeitos");}
+      await salvarVerba(id,patch,"corrigiu a etapa",det);}
+    else if(act==="excluir"){if(!g("certeza"))return falha("Marque a caixa para confirmar a exclusão.");
+      await S.db.doc("verbas/"+id).delete();await addHist("", "excluiu uma verba",[`${fornNome(v.fornecedorId)} · ${brl(v.valorPrometido)}`],fornNome(v.fornecedorId));
+      toast("Verba excluída");fecharModal();return;}
+    toast("Salvo");S.dirty=false;if(S.modal)S.modal.keep=true;renderModal();
+  }catch(e){toast(errMsg(e),true)}
+}
+
+/* ---------- fornecedor e ciclo ---------- */
+function fornForm(f){
+  const novo=!f;f=f||{ativo:true};
+  const head=`<div class="t"><h2>${novo?"Novo fornecedor":esc(f.nome)}</h2></div>`;
+  const b=`<form id="fForn" data-id="${f.id||""}" class="sec" novalidate><div class="fg">
+    <label class="f wide"><span>Nome *</span><input type="text" name="nome" value="${esc(f.nome||"")}" required></label>
+    <label class="f"><span>Compras 2026 (R$)</span><input type="text" inputmode="decimal" name="compras" value="${inMoney(f.compras2026)}"><small>Faixa calculada: <b id="fxCalc">${esc(f.faixa||faixaDe(f.compras2026))}</b></small></label>
+    <label class="f"><span>Categoria</span><input type="text" name="categoria" value="${esc(f.categoria||"")}" placeholder="Ex.: Iluminação, Chuveiros"><small>Usada para evitar âncoras concorrentes no mesmo ciclo.</small></label>
+    <label class="f wide"><span>Observação</span><textarea name="obs">${esc(f.obs||"")}</textarea></label>
+    <label class="check"><input type="checkbox" name="distribuidor" ${f.distribuidor?"checked":""}> É distribuidor (verba vem do repasse dos fabricantes)</label>
+    <label class="check"><input type="checkbox" name="ativo" ${f.ativo!==false?"checked":""}> Ativo</label>
+  </div><div class="err" id="fErr"></div><div class="formbar"><button type="button" class="btn" data-act="fechar">Cancelar</button><button class="btn pri">Salvar</button></div></form>`;
+  return [head,b]}
+async function salvarForn(f){
+  const nomeF=f.nome.value.trim();if(!nomeF)return $("#fErr").textContent="Informe o nome.";
+  const compras=num(f.compras.value);
+  const d={nome:nomeF,compras2026:compras,faixa:faixaDe(compras),categoria:f.categoria.value.trim(),obs:f.obs.value.trim(),distribuidor:f.distribuidor.checked,ativo:f.ativo.checked};
+  const id=f.dataset.id;
+  try{
+    if(id){await S.db.doc("fornecedores/"+id).update(d);await addHist("","editou o fornecedor",[],nomeF);}
+    else{const slug=nomeF.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40)||"forn";
+      const ref=S.db.collection("fornecedores").doc(forn(slug)?undefined:slug);await ref.set(d);await addHist("","cadastrou o fornecedor",[],nomeF);}
+    toast("Fornecedor salvo");fecharModal();
+  }catch(e){$("#fErr").textContent=errMsg(e)+" Para alterar fornecedores e ciclos, a pessoa precisa ser Editora do artefato.";}
+}
+function cicloForm(c){
+  const fs=S.fornecedores.filter(f=>f.ativo!==false).slice().sort((a,b)=>a.nome.localeCompare(b.nome));
+  const an=c.ancoras||[];
+  const sel=(i)=>`<label class="f"><span>Âncora ${i+1}</span><select name="a${i}"><option value="">—</option>${fs.map(f=>`<option value="${f.id}" ${an[i]===f.id?"selected":""}>${esc(f.nome)}${f.categoria?" · "+esc(f.categoria):""}</option>`).join("")}</select></label>`;
+  return [`<div class="t"><h2>Ciclo ${c.numero} · ${c.ano}</h2></div>`,
+  `<form id="fCiclo" data-id="${c.id}" class="sec" novalidate><div class="fg">
+    <label class="f"><span>Início</span><input type="date" name="inicio" value="${esc(c.inicio)}" required></label>
+    <label class="f"><span>Fim</span><input type="date" name="fim" value="${esc(c.fim)}" required></label>
+    ${sel(0)}${sel(1)}
+    <label class="f wide"><span>Tema</span><input type="text" name="tema" value="${esc(c.tema||"")}" placeholder="Ex.: Verão de chuveiros + iluminação"></label>
+  </div><div class="err" id="fErr"></div><div class="formbar"><button type="button" class="btn" data-act="fechar">Cancelar</button><button class="btn pri">Salvar ciclo</button></div></form>`]}
+async function salvarCiclo(f){
+  const a=[f.a0.value,f.a1.value].filter(Boolean);
+  if(a.length===2&&a[0]===a[1])return $("#fErr").textContent="Escolha dois fornecedores diferentes.";
+  const cats=a.map(id=>(forn(id)||{}).categoria).filter(Boolean);
+  if(cats.length===2&&cats[0].toLowerCase()===cats[1].toLowerCase()&&!f.dataset.ok){f.dataset.ok="1";return $("#fErr").textContent="As duas âncoras são da mesma categoria. Clique em Salvar de novo para manter assim.";}
+  if(!f.inicio.value||!f.fim.value||f.fim.value<f.inicio.value)return $("#fErr").textContent="Confira as datas do ciclo.";
+  const c=ciclo(f.dataset.id);
+  try{await S.db.doc("ciclos/"+c.id).update({inicio:f.inicio.value,fim:f.fim.value,ancoras:a,tema:f.tema.value.trim()});
+    await addHist("","editou o ciclo "+c.numero,[a.length?"Âncoras: "+a.map(fornNome).join(" + "):"Sem âncoras"],"");toast("Ciclo salvo");fecharModal();}
+  catch(e){$("#fErr").textContent=errMsg(e);}
+}
+
+/* ===================== eventos ===================== */
+document.addEventListener("click",async e=>{
+  const sa=e.target.closest("[data-step-act]");
+  if(sa){e.preventDefault();sa.disabled=true;await passo(sa.dataset.stepAct,sa.dataset.id,sa.closest("form"));sa.disabled=false;return;}
+  const t=e.target.closest("[data-act]");if(!t)return;
+  const a=t.dataset.act,id=t.dataset.id;
+  if(a==="fecharFora"){if(e.target===t&&!S.dirty)fecharModal();return;}
+  if(t.tagName==="A"||t.tagName==="TR")e.preventDefault();
+  if(a==="abrir")abrirModal({tipo:"verba",id});
+  else if(a==="fechar")fecharModal();
+  else if(a==="novaVerba")abrirModal({tipo:"verbaForm"});
+  else if(a==="editVerba")abrirModal({tipo:"verbaForm",id});
+  else if(a==="cancelarEdit")abrirModal({tipo:"verba",id});
+  else if(a==="novoForn")abrirModal({tipo:"forn"});
+  else if(a==="editForn")abrirModal({tipo:"forn",id});
+  else if(a==="editCiclo")abrirModal({tipo:"ciclo",id});
+  else if(a==="col"){S.col=t.dataset.k;renderMain();}
+  else if(a==="limparFil"){S.fil={forn:"",ciclo:"",tipo:"",area:""};renderMain();}
+  else if(a==="faixa"){S.fornFaixa=t.dataset.k;renderMain();}
+  else if(a==="addRow"){const k=t.dataset.k;const box=$("#rows"+(k==="deg"?"Deg":k==="cp"?"Cp":"Lk"));box.insertAdjacentHTML("beforeend",k==="deg"?degRow({}):k==="cp"?cpRow({}):lkRow({}));S.dirty=true;$("input",box.lastElementChild).focus();}
+  else if(a==="delRow"){t.closest(".rowi").remove();S.dirty=true;}
+  else if(a==="aprovar"){const p=S.pedidos[id];try{await S.db.doc("equipe/"+id).set({area:p.area,desde:new Date().toISOString()});await S.db.doc("pedidos/"+id).delete();await addHist("","confirmou o acesso de uma pessoa",[AREAS[p.area]],"Equipe");toast("Acesso confirmado");}catch(err){toast(errMsg(err),true)}}
+  else if(a==="recusar"){try{await S.db.doc("pedidos/"+id).delete();toast("Pedido recusado");}catch(err){toast(errMsg(err),true)}}
+  else if(a==="removerMembro"){try{await S.db.doc("equipe/"+id).delete();await addHist("","removeu uma pessoa da equipe",[],"Equipe");toast("Pessoa removida");}catch(err){toast(errMsg(err),true)}}
+  else if(a==="addPessoa"){const ar=t.parentElement.querySelector("select").value;try{await S.db.doc("equipe/"+id).set({area:ar,desde:new Date().toISOString()});if(S.pedidos[id])await S.db.doc("pedidos/"+id).delete();await addHist("","adicionou uma pessoa à equipe",[AREAS[ar]],"Equipe");toast("Pessoa adicionada");$("#buscaRes").innerHTML="";$("#buscaPessoa").value="";}catch(err){toast(errMsg(err),true)}}
+});
+document.addEventListener("change",async e=>{
+  const t=e.target;
+  if(t.dataset.fil){S.fil[t.dataset.fil]=t.value;renderMain();return;}
+  if(t.dataset.actChange==="areaMembro"){try{await S.db.doc("equipe/"+t.dataset.id).update({area:t.value});await addHist("","mudou a área de uma pessoa",["Nova área: "+AREAS[t.value]],"Equipe");toast("Área atualizada");}catch(err){toast(errMsg(err),true)}return;}
+  const f=t.form;
+  if(f&&f.id==="fVerba"){S.dirty=true;
+    if(t.name==="apuracaoInicio"&&t.value&&!f.apuracaoFim.value)f.apuracaoFim.value=fimTrimestre(t.value);
+    if(t.name==="cicloId"&&t.value&&!f.dataCampanha.value){const c=ciclo(t.value);if(c)f.dataCampanha.value=c.inicio;}
+    if(t.name==="adiant"&&t.checked)f.aprov.focus();
+    atualizaForm(f);}
+  if(f&&f.closest&&f.closest("#modal"))S.dirty=true;
+});
+document.addEventListener("input",e=>{
+  const t=e.target;
+  if(t.id==="fornBusca"){S.fornBusca=t.value;const pos=t.selectionStart;renderMain();const n=$("#fornBusca");n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}return;}
+  if(t.id==="buscaPessoa"){buscarPessoa(t.value);return;}
+  if(t.closest("#modal")){S.dirty=true;const f=t.form;if(f&&f.id==="fVerba"&&["valorPrometido","parteFixa","parteVariavel","meta"].includes(t.name))atualizaForm(f);if(f&&f.id==="fForn"&&t.name==="compras")$("#fxCalc").textContent=faixaDe(num(t.value));}
+});
+document.addEventListener("submit",async e=>{
+  const f=e.target;e.preventDefault();
+  if(f.id==="fVerba")await salvarVerbaForm(f);
+  else if(f.id==="fForn")await salvarForn(f);
+  else if(f.id==="fCiclo")await salvarCiclo(f);
+  else if(f.id==="fPedido"){const ar=$("#pedArea").value;if(!ar)return;try{await S.db.doc("pedidos/"+S.uid).set({area:ar,em:new Date().toISOString()});toast("Pedido enviado");}catch(err){toast(errMsg(err),true)}}
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.modal&&!S.dirty)fecharModal();});
+async function buscarPessoa(q){
+  const box=$("#buscaRes");if(!box)return;
+  if(!S.user||!q.trim()){box.innerHTML="";return;}
+  const hits=await S.user.search(q);
+  if($("#buscaPessoa").value!==q)return;
+  box.innerHTML=hits.length?hits.map(p=>`<li><img alt="" src="${esc(p.avatarUrl)}"><span class="nm">${esc(p.name)}${S.equipe[p.id]?` <span class="muted small">já está como ${esc(AREAS[S.equipe[p.id].area])}</span>`:""}</span><select aria-label="Área">${Object.entries(AREAS).map(([k,n])=>`<option value="${k}">${n}</option>`).join("")}</select><button class="btn pri sm" data-act="addPessoa" data-id="${esc(p.id)}">Adicionar</button></li>`).join(""):`<li class="muted">Ninguém encontrado. A pessoa precisa ter conta do Claude na organização.</li>`;
+  hits.forEach(p=>{S.prof[p.id]=p;});
+}
+
+boot();
+</script>
