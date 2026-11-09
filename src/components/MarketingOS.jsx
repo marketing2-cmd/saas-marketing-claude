@@ -580,6 +580,9 @@ export default function MarketingOS() {
               <n.icon size={15} /> <span>{n.label}</span>
             </button>
           ))}
+          <a className="mkos-nav-item" href="/verbas" style={{ color: C.inkSoft, borderLeft: "3px solid transparent", textDecoration: "none" }}>
+            <Zap size={15} /> <span>Verbas de fornecedores</span>
+          </a>
         </div>
         <div className="mkos-sidebar-foot">
           <input className="mkos-username" placeholder="Seu nome" value={username} onChange={(e) => setName(e.target.value)} title="Usado para identificar seus comentários" />
