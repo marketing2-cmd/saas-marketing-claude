@@ -55,6 +55,10 @@ returns boolean language sql security definer stable set search_path = '' as $$
   end;
 $$;
 
+-- As policies chamam funções do schema private; o papel authenticated precisa de USAGE
+-- nele (o schema continua fora da Data API, então nada dele vira endpoint).
+grant usage on schema private to authenticated;
+
 revoke all on function private.verbas_is_member() from public, anon;
 revoke all on function private.verbas_area() from public, anon;
 revoke all on function private.verbas_can_write(text, text) from public, anon;
