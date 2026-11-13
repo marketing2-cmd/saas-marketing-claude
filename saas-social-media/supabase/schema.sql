@@ -88,8 +88,7 @@ create table public.post_comments (
 create index post_comments_post_idx on public.post_comments(post_id);
 
 -- Contas sociais conectadas (Instagram via Meta). Guarda tokens de acesso:
--- SEM policies para usuários — só o servidor (service role) lê e grava.
--- O app consulta a view social_accounts_public abaixo (sem o token).
+-- o navegador só enxerga as colunas sem token (ver grants mais abaixo).
 create table public.social_accounts (
   id               uuid primary key default gen_random_uuid(),
   workspace_id     uuid not null references public.workspaces(id) on delete cascade,
@@ -109,7 +108,11 @@ create table public.social_accounts (
 -- ─────────────────────────────────────────────────────────────
 
 -- security definer: evita recursão de RLS ao checar workspace_members
-create or replace function public.is_member(ws uuid)
+-- Funções auxiliares ficam no schema "private", que a API do Supabase não expõe
+create schema if not exists private;
+grant usage on schema private to authenticated;
+
+create or replace function private.is_member(ws uuid)
 returns boolean
 language sql
 stable
@@ -161,7 +164,7 @@ for each row execute function public.touch_updated_at();
 
 -- Garante que client_id e workspace_id do post batem (não dá para criar
 -- post de um workspace apontando para cliente de outro)
-create or replace function public.check_post_client()
+create or replace function private.check_post_client()
 returns trigger
 language plpgsql
 security definer
@@ -178,15 +181,11 @@ begin
 end;
 $$;
 create trigger posts_check_client before insert or update of client_id, workspace_id on public.posts
-for each row execute function public.check_post_client();
+for each row execute function private.check_post_client();
+revoke execute on function private.check_post_client() from public, anon, authenticated;
 
--- View sem o access_token, para o app mostrar "Instagram conectado: @fulano"
-create view public.social_accounts_public
-with (security_invoker = false) as
-  select id, workspace_id, client_id, provider, username, token_expires_at, created_at
-  from public.social_accounts
-  where public.is_member(workspace_id);
-grant select on public.social_accounts_public to authenticated;
+revoke execute on function private.is_member(uuid) from public, anon;
+grant execute on function private.is_member(uuid) to authenticated;
 
 -- ─────────────────────────────────────────────────────────────
 -- RLS
@@ -200,30 +199,42 @@ alter table public.post_comments     enable row level security;
 alter table public.social_accounts   enable row level security;
 
 create policy workspaces_select on public.workspaces
-  for select to authenticated using (public.is_member(id));
+  for select to authenticated using (private.is_member(id));
 create policy workspaces_update on public.workspaces
   for update to authenticated using (owner_id = (select auth.uid()));
 
 create policy members_select on public.workspace_members
-  for select to authenticated using (public.is_member(workspace_id));
+  for select to authenticated using (private.is_member(workspace_id));
 
 create policy clients_all on public.clients
   for all to authenticated
-  using (public.is_member(workspace_id))
-  with check (public.is_member(workspace_id));
+  using (private.is_member(workspace_id))
+  with check (private.is_member(workspace_id));
 
 create policy posts_all on public.posts
   for all to authenticated
-  using (public.is_member(workspace_id))
-  with check (public.is_member(workspace_id));
+  using (private.is_member(workspace_id))
+  with check (private.is_member(workspace_id));
 
 create policy comments_select on public.post_comments
-  for select to authenticated using (public.is_member(workspace_id));
+  for select to authenticated using (private.is_member(workspace_id));
 create policy comments_insert on public.post_comments
   for insert to authenticated
-  with check (public.is_member(workspace_id) and author_type = 'team');
+  with check (private.is_member(workspace_id) and author_type = 'team');
 
--- social_accounts: nenhuma policy de propósito (só service role).
+-- social_accounts: membros leem só as colunas SEM o access_token (grant por
+-- coluna). Escrita e leitura do token: só o servidor (service role).
+revoke all on public.social_accounts from anon, authenticated;
+grant select (id, workspace_id, client_id, provider, username, token_expires_at, created_at)
+  on public.social_accounts to authenticated;
+create policy social_accounts_select on public.social_accounts
+  for select to authenticated using (private.is_member(workspace_id));
+
+create view public.social_accounts_public with (security_invoker = true) as
+  select id, workspace_id, client_id, provider, username, token_expires_at, created_at
+  from public.social_accounts;
+revoke all on public.social_accounts_public from anon;
+grant select on public.social_accounts_public to authenticated;
 
 -- ─────────────────────────────────────────────────────────────
 -- Storage: bucket público "media" (a API do Instagram exige URL pública
@@ -238,17 +249,17 @@ create policy media_insert on storage.objects
   for insert to authenticated
   with check (
     bucket_id = 'media'
-    and public.is_member(((storage.foldername(name))[1])::uuid)
+    and private.is_member(((storage.foldername(name))[1])::uuid)
   );
 create policy media_update on storage.objects
   for update to authenticated
   using (
     bucket_id = 'media'
-    and public.is_member(((storage.foldername(name))[1])::uuid)
+    and private.is_member(((storage.foldername(name))[1])::uuid)
   );
 create policy media_delete on storage.objects
   for delete to authenticated
   using (
     bucket_id = 'media'
-    and public.is_member(((storage.foldername(name))[1])::uuid)
+    and private.is_member(((storage.foldername(name))[1])::uuid)
   );
