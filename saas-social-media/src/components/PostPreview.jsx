@@ -12,9 +12,9 @@ export default function PostPreview({ client, post }) {
   const aspect = post.format === "reels" || post.format === "story" ? "aspect-[9/16]" : "aspect-[4/5]";
 
   return (
-    <div className="overflow-hidden rounded-xl border border-line bg-white">
+    <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-soft">
       <div className="flex items-center gap-2 px-3 py-2.5">
-        <Avatar client={client} size={28} />
+        <span className="rounded-full bg-gradient-to-tr from-[#FEDA75] via-[#D62976] to-[#4F5BD5] p-[2px]"><span className="block rounded-full bg-white p-[1.5px]"><Avatar client={client} size={26} /></span></span>
         <span className="text-sm font-semibold">{handle}</span>
       </div>
       <div className={`relative ${aspect} max-h-[520px] w-full bg-paper`}>

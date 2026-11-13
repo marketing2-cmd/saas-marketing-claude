@@ -55,5 +55,5 @@ function redirectTo(request, pathname) {
 // Fora do middleware: /api (cada rota se protege), /c/* (portal público do cliente),
 // /privacidade e arquivos estáticos.
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api|c/|privacidade|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api|c/|demo|privacidade|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };

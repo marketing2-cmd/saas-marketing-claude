@@ -28,7 +28,7 @@ export default function BoardPage() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Quadro de conteúdo</h1>
+          <h1 className="page-title">Quadro de tarefas</h1>
           <p className="mt-1 text-sm text-ink-soft">Arraste os cards para mudar o status.</p>
         </div>
         <ClientFilter value={clientId} onChange={setClientId} />
@@ -44,13 +44,13 @@ export default function BoardPage() {
                 onDragOver={(e) => { e.preventDefault(); setOver(status); }}
                 onDragLeave={() => setOver(null)}
                 onDrop={() => drop(status)}
-                className={`w-72 shrink-0 rounded-xl p-2 transition ${over === status ? "bg-brand-soft" : "bg-slate-100/70"}`}
+                className={`w-[280px] shrink-0 rounded-2xl p-2.5 transition ${over === status ? "bg-brand-soft ring-2 ring-brand-ring" : "bg-[#EFEDF6]"}`}
               >
-                <div className="flex items-center justify-between px-2 py-1.5">
-                  <span className="flex items-center gap-2 text-sm font-semibold">
+                <div className="flex items-center justify-between px-1.5 py-1">
+                  <span className="chip bg-white text-xs shadow-sm" style={{ color: STATUSES[status].accent }}>
                     <span className={`h-2 w-2 rounded-full ${STATUSES[status].dot}`} />{STATUSES[status].label}
                   </span>
-                  <span className="text-xs text-ink-mute">{items.length}</span>
+                  <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-white px-1.5 text-xs font-bold text-ink-soft shadow-sm">{items.length}</span>
                 </div>
                 <div className="mt-1 space-y-2">
                   {items.map((p) => (
@@ -59,9 +59,9 @@ export default function BoardPage() {
                       draggable={!["published", "publishing"].includes(p.status)}
                       onDragStart={() => setDragging(p.id)}
                       onClick={() => openEditor(p)}
-                      className="card cursor-pointer overflow-hidden transition hover:border-brand"
+                      className="card cursor-grab overflow-hidden transition hover:-translate-y-0.5 hover:shadow-float active:cursor-grabbing"
                     >
-                      {p.media?.[0] && <MediaView item={p.media[0]} className="h-32 w-full object-cover" />}
+                      {p.media?.[0] && <MediaView item={p.media[0]} className="h-36 w-full object-cover" />}
                       <div className="p-3">
                         <div className="flex items-center gap-2 text-xs text-ink-soft">
                           <Avatar client={clientById[p.client_id]} size={18} />
@@ -71,7 +71,7 @@ export default function BoardPage() {
                         <div className="mt-1.5 text-xs text-ink-mute">{formatDateTime(p.scheduled_at)}</div>
                         {p.tags?.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-1">
-                            {p.tags.map((t) => <span key={t} className="rounded bg-paper px-1.5 py-0.5 text-[10px] text-ink-soft">#{t}</span>)}
+                            {p.tags.map((t) => <span key={t} className="rounded-full bg-brand-soft px-2 py-0.5 text-[10px] font-semibold text-brand">#{t}</span>)}
                           </div>
                         )}
                       </div>

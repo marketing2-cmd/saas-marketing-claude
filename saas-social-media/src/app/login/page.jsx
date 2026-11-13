@@ -39,6 +39,7 @@ export default function LoginPage() {
         <p className="mt-4 text-center text-sm text-ink-soft">
           Ainda não tem conta? <Link href="/signup" className="font-semibold text-brand">Criar conta grátis</Link>
         </p>
+        <Link href="/demo" className="btn-ghost mt-6 w-full">Ver demonstração sem cadastro</Link>
       </form>
     </AuthCard>
   );

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useWorkspace } from "@/components/WorkspaceProvider";
 import ClientFilter from "@/components/ClientFilter";
+import { MediaView } from "@/components/PostPreview";
 import { STATUSES, sameDay } from "@/lib/posts";
 
 const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -42,18 +43,22 @@ export default function CalendarPage() {
     openEditor({ scheduled_at: d.toISOString(), ...(clientId ? { client_id: clientId } : {}) });
   }
 
-  const title = cursor.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const rawTitle = cursor.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const title = rawTitle.charAt(0).toUpperCase() + rawTitle.slice(1);
   const today = new Date();
 
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">Calendário</h1>
+        <div>
+          <h1 className="page-title">Calendário de conteúdo</h1>
+          <p className="mt-1 text-sm text-ink-soft">Visão semanal e mensal de tudo que vai ao ar.</p>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <ClientFilter value={clientId} onChange={setClientId} />
-          <div className="flex rounded-lg border border-line bg-white p-0.5 text-sm">
+          <div className="flex rounded-xl border border-line bg-white p-1 text-sm">
             {[["month", "Mês"], ["week", "Semana"]].map(([k, l]) => (
-              <button key={k} onClick={() => setView(k)} className={`rounded-md px-3 py-1 font-medium ${view === k ? "bg-brand-soft text-brand" : "text-ink-soft"}`}>{l}</button>
+              <button key={k} onClick={() => setView(k)} className={`rounded-lg px-3.5 py-1.5 font-semibold transition ${view === k ? "bg-navy text-white" : "text-ink-soft hover:text-ink"}`}>{l}</button>
             ))}
           </div>
         </div>
@@ -63,13 +68,13 @@ export default function CalendarPage() {
         <button onClick={() => shift(-1)} className="btn-ghost px-2" aria-label="Anterior"><ChevronLeft size={16} /></button>
         <button onClick={() => setCursor(new Date())} className="btn-ghost px-3">Hoje</button>
         <button onClick={() => shift(1)} className="btn-ghost px-2" aria-label="Próximo"><ChevronRight size={16} /></button>
-        <span className="ml-2 text-lg font-semibold capitalize">{title}</span>
+        <span className="ml-2 text-lg font-bold">{title}</span>
       </div>
 
       {loading ? null : (
         <div className="mt-4 overflow-x-auto">
-          <div className="card min-w-[720px] overflow-hidden">
-            <div className="grid grid-cols-7 border-b border-line bg-paper text-center text-xs font-semibold uppercase text-ink-mute">
+          <div className="card min-w-[760px] overflow-hidden">
+            <div className="grid grid-cols-7 border-b border-line bg-paper text-center text-[11px] font-semibold uppercase tracking-wider text-ink-mute">
               {WEEKDAYS.map((d) => <div key={d} className="py-2">{d}</div>)}
             </div>
             <div className="grid grid-cols-7">
@@ -79,28 +84,43 @@ export default function CalendarPage() {
                   .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
                 const outside = view === "month" && day.getMonth() !== cursor.getMonth();
                 return (
-                  <div key={day.toISOString()} className={`group border-b border-r border-line p-1.5 ${view === "week" ? "min-h-[360px]" : "min-h-[110px]"} ${outside ? "bg-paper/60" : ""}`}>
+                  <div key={day.toISOString()} className={`group border-b border-r border-line p-2 ${view === "week" ? "min-h-[420px]" : "min-h-[124px]"} ${outside ? "bg-paper/70" : ""}`}>
                     <div className="mb-1 flex items-center justify-between">
-                      <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${sameDay(day, today) ? "bg-brand text-white" : outside ? "text-ink-mute" : "text-ink-soft"}`}>
+                      <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${sameDay(day, today) ? "bg-brand text-white shadow-[0_4px_10px_-4px_rgba(124,92,252,.8)]" : outside ? "text-ink-mute/60" : "text-ink"}`}>
                         {day.getDate()}
                       </span>
                       <button onClick={() => newOn(day)} className="rounded p-0.5 text-ink-mute opacity-0 hover:bg-brand-soft hover:text-brand group-hover:opacity-100" aria-label="Novo post neste dia">
                         <Plus size={14} />
                       </button>
                     </div>
-                    <div className="space-y-1">
-                      {dayPosts.map((p) => (
-                        <button
-                          key={p.id}
-                          onClick={() => openEditor(p)}
-                          className="flex w-full items-center gap-1.5 truncate rounded-md border border-line bg-white px-1.5 py-1 text-left text-[11px] hover:border-brand"
-                          style={{ borderLeft: `3px solid ${clientById[p.client_id]?.color || "#6D4AFF"}` }}
-                        >
-                          <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUSES[p.status].dot}`} />
-                          <span className="font-semibold">{new Date(p.scheduled_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</span>
-                          <span className="truncate">{p.title || clientById[p.client_id]?.name}</span>
-                        </button>
-                      ))}
+                    <div className="space-y-1.5">
+                      {dayPosts.map((p) => {
+                        const st = STATUSES[p.status];
+                        const client = clientById[p.client_id];
+                        return (
+                          <button
+                            key={p.id}
+                            onClick={() => openEditor(p)}
+                            className="block w-full overflow-hidden rounded-xl border border-line bg-white text-left shadow-sm transition hover:-translate-y-px hover:border-brand-ring hover:shadow-soft"
+                          >
+                            {view === "week" && p.media?.[0] && <MediaView item={p.media[0]} className="h-24 w-full object-cover" />}
+                            <div className="flex items-center gap-1.5 p-1.5">
+                              {view === "month" && (
+                                <div className="h-6 w-6 shrink-0 overflow-hidden rounded-md" style={{ background: client?.color }}>
+                                  {p.media?.[0] && <MediaView item={p.media[0]} className="h-full w-full object-cover" />}
+                                </div>
+                              )}
+                              <div className="min-w-0 flex-1">
+                                <div className="truncate text-[11px] font-semibold leading-tight">{p.title || client?.name}</div>
+                                <div className="mt-0.5 flex items-center gap-1 text-[10px] font-semibold" style={{ color: st.accent }}>
+                                  <span className={`h-1.5 w-1.5 rounded-full ${st.dot}`} />
+                                  {new Date(p.scheduled_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })} · {st.label}
+                                </div>
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 );
@@ -121,7 +141,7 @@ export default function CalendarPage() {
           <h2 className="mb-3 font-bold">Sem data definida ({unscheduled.length})</h2>
           <div className="flex flex-wrap gap-2">
             {unscheduled.map((p) => (
-              <button key={p.id} onClick={() => openEditor(p)} className="card px-3 py-2 text-left text-sm hover:border-brand">
+              <button key={p.id} onClick={() => openEditor(p)} className="card px-3.5 py-2.5 text-left text-sm hover:border-brand-ring">
                 <span className="font-semibold">{p.title || "Sem título"}</span>
                 <span className="text-ink-mute"> · {clientById[p.client_id]?.name}</span>
               </button>

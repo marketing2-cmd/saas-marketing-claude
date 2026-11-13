@@ -5,9 +5,10 @@ import { CheckCircle2, MessageSquareWarning } from "lucide-react";
 import PostPreview, { Avatar } from "@/components/PostPreview";
 import FeedGrid from "@/components/FeedGrid";
 import StatusBadge from "@/components/StatusBadge";
-import { FORMATS, formatDateTime } from "@/lib/posts";
+import Logo from "@/components/Logo";
+import { FORMATS, clientGradient, formatDateTime, statusAfterApproval } from "@/lib/posts";
 
-export default function ClientPortal({ token, client, agency, initialPosts, initialComments }) {
+export default function ClientPortal({ token, client, agency, initialPosts, initialComments, demo = false }) {
   const [posts, setPosts] = useState(initialPosts);
   const [comments, setComments] = useState(initialComments);
   const [tab, setTab] = useState("review");
@@ -25,6 +26,12 @@ export default function ClientPortal({ token, client, agency, initialPosts, init
   const others = posts.filter((p) => p.status !== "in_review");
 
   async function review(post, action, comment) {
+    if (demo) {
+      const status = action === "approve" ? statusAfterApproval(post) : "changes_requested";
+      setPosts((list) => list.map((p) => (p.id === post.id ? { ...p, status } : p)));
+      if (comment) setComments((list) => [...list, { id: String(Math.random()), post_id: post.id, author_type: "client", author_name: name, body: comment, created_at: new Date().toISOString() }]);
+      return true;
+    }
     const res = await fetch(`/api/public/${token}/review`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -42,18 +49,29 @@ export default function ClientPortal({ token, client, agency, initialPosts, init
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-line bg-white">
-        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-4">
-          <Avatar client={client} size={40} />
-          <div>
-            <div className="font-bold">{client.name}</div>
-            <div className="text-xs text-ink-mute">Aprovação de conteúdo{agency ? ` · ${agency}` : ""}</div>
-          </div>
+      {demo && (
+        <div className="bg-navy px-4 py-2 text-center text-xs text-white">
+          <b>Demonstração</b> — é isto que o seu cliente vê ao abrir o link de aprovação.
         </div>
-        <div className="mx-auto flex max-w-3xl gap-1 px-4">
-          {[["review", `Para aprovar (${toReview.length})`], ["feed", "Prévia do feed"], ["history", "Histórico"]].map(([k, l]) => (
-            <button key={k} onClick={() => setTab(k)} className={`border-b-2 px-3 py-2 text-sm font-semibold ${tab === k ? "border-brand text-brand" : "border-transparent text-ink-soft"}`}>{l}</button>
-          ))}
+      )}
+      <header className="border-b border-line bg-white">
+        <div className="h-24" style={{ background: clientGradient(client.color) }} />
+        <div className="mx-auto max-w-3xl px-4">
+          <div className="-mt-9 flex items-end gap-3">
+            <div className="rounded-full bg-white p-1 shadow-soft"><Avatar client={client} size={64} /></div>
+            <div className="pb-1">
+              <div className="text-lg font-bold">{client.name}</div>
+              <div className="text-xs text-ink-mute">Aprovação de conteúdo{agency ? ` · ${agency}` : ""}</div>
+            </div>
+          </div>
+          <div className="mt-4 flex gap-1 overflow-x-auto">
+            {[["review", "Para aprovar", toReview.length], ["feed", "Prévia do feed"], ["history", "Histórico"]].map(([k, l, n]) => (
+              <button key={k} onClick={() => setTab(k)} className={`flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2.5 text-sm font-semibold ${tab === k ? "border-brand text-brand" : "border-transparent text-ink-soft"}`}>
+                {l}
+                {n > 0 && <span className="rounded-full bg-amber-100 px-1.5 text-[11px] font-bold text-amber-700">{n}</span>}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
@@ -83,7 +101,7 @@ export default function ClientPortal({ token, client, agency, initialPosts, init
         {tab === "feed" && (
           <>
             <p className="mb-3 text-sm text-ink-soft">Assim o seu perfil vai ficar com os posts planejados.</p>
-            <FeedGrid posts={posts} />
+            <div className="mx-auto max-w-[560px]"><FeedGrid posts={posts} /></div>
           </>
         )}
 
@@ -102,6 +120,7 @@ export default function ClientPortal({ token, client, agency, initialPosts, init
           </div>
         )}
       </main>
+      <footer className="flex justify-center pb-10 pt-4 opacity-70"><Logo /></footer>
     </div>
   );
 }
@@ -120,14 +139,20 @@ function ReviewCard({ post, client, comments, onReview }) {
   }
 
   return (
-    <div className="card grid gap-5 p-4 sm:grid-cols-[280px_1fr]">
+    <div className="card grid items-start gap-5 p-4 sm:grid-cols-[280px_1fr] sm:p-5">
       <PostPreview client={client} post={post} />
       <div className="flex flex-col">
         <div className="flex flex-wrap items-center gap-2">
           <StatusBadge status={post.status} />
           <span className="text-xs text-ink-mute">{FORMATS[post.format]} · {formatDateTime(post.scheduled_at)}</span>
         </div>
-        {post.title && <h3 className="mt-2 font-bold">{post.title}</h3>}
+        {post.title && <h3 className="mt-2 text-lg font-bold">{post.title}</h3>}
+        {post.caption && (
+          <div className="mt-3 rounded-2xl bg-paper p-4">
+            <div className="mb-1 text-xs font-semibold text-ink-mute">Legenda</div>
+            <p className="whitespace-pre-wrap text-sm">{post.caption}</p>
+          </div>
+        )}
 
         {comments.length > 0 && (
           <div className="mt-3 space-y-2">
@@ -140,7 +165,10 @@ function ReviewCard({ post, client, comments, onReview }) {
           </div>
         )}
 
-        <div className="mt-auto pt-4">
+        <div className="mt-5">
+          {post.scheduled_at && mode !== "changes" && (
+            <p className="mb-3 text-xs text-ink-soft">Ao aprovar, o post fica agendado para <b>{formatDateTime(post.scheduled_at)}</b>.</p>
+          )}
           {mode === "changes" ? (
             <div>
               <textarea className="input min-h-[90px]" autoFocus placeholder="O que precisa mudar?" value={text} onChange={(e) => setText(e.target.value)} />

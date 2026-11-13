@@ -11,14 +11,19 @@ export function useWorkspace() {
   return useContext(WorkspaceContext);
 }
 
-export default function WorkspaceProvider({ workspace, user, children }) {
-  const supabase = useMemo(() => createClient(), []);
+const uid = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2));
+
+// demo: objeto com dados fictícios → nada vai para o Supabase (modo demonstração /demo)
+export default function WorkspaceProvider({ workspace, user, demo = null, children }) {
+  const supabase = useMemo(() => (demo ? null : createClient()), [demo]);
   const [clients, setClients] = useState([]);
   const [posts, setPosts] = useState([]);
   const [accounts, setAccounts] = useState([]);
+  const [demoComments, setDemoComments] = useState(demo?.comments || {});
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
   const [toast, setToast] = useState(null);
+  const base = demo ? "/demo" : "";
 
   const notify = useCallback((message, kind = "ok") => {
     setToast({ message, kind });
@@ -26,6 +31,13 @@ export default function WorkspaceProvider({ workspace, user, children }) {
   }, []);
 
   const reload = useCallback(async () => {
+    if (demo) {
+      setClients(demo.clients);
+      setPosts(demo.posts);
+      setAccounts(demo.accounts);
+      setLoading(false);
+      return;
+    }
     const [c, p, a] = await Promise.all([
       supabase.from("clients").select("*").eq("workspace_id", workspace.id).order("name"),
       supabase.from("posts").select("*").eq("workspace_id", workspace.id).order("scheduled_at", { ascending: true, nullsFirst: false }),
@@ -36,11 +48,13 @@ export default function WorkspaceProvider({ workspace, user, children }) {
     setPosts(p.data || []);
     setAccounts(a.data || []);
     setLoading(false);
-  }, [supabase, workspace.id, notify]);
+  }, [supabase, workspace.id, notify, demo]);
 
   useEffect(() => {
     reload();
   }, [reload]);
+
+  const sortClients = (list) => [...list].sort((a, b) => a.name.localeCompare(b.name));
 
   // ── Clientes ───────────────────────────────────────────────
   async function saveClient(client) {
@@ -51,22 +65,30 @@ export default function WorkspaceProvider({ workspace, user, children }) {
       notes: client.notes || null,
       workspace_id: workspace.id,
     };
-    const query = client.id
-      ? supabase.from("clients").update(payload).eq("id", client.id).select().single()
-      : supabase.from("clients").insert(payload).select().single();
-    const { data, error } = await query;
-    if (error) {
-      notify(error.message, "error");
-      return null;
+    let data;
+    if (demo) {
+      data = { ...client, ...payload, id: client.id || uid(), approval_token: client.approval_token || uid() };
+    } else {
+      const query = client.id
+        ? supabase.from("clients").update(payload).eq("id", client.id).select().single()
+        : supabase.from("clients").insert(payload).select().single();
+      const res = await query;
+      if (res.error) {
+        notify(res.error.message, "error");
+        return null;
+      }
+      data = res.data;
     }
-    setClients((list) => [...list.filter((x) => x.id !== data.id), data].sort((a, b) => a.name.localeCompare(b.name)));
+    setClients((list) => sortClients([...list.filter((x) => x.id !== data.id), data]));
     notify(client.id ? "Cliente atualizado." : "Cliente criado.");
     return data;
   }
 
   async function deleteClient(id) {
-    const { error } = await supabase.from("clients").delete().eq("id", id);
-    if (error) return notify(error.message, "error");
+    if (!demo) {
+      const { error } = await supabase.from("clients").delete().eq("id", id);
+      if (error) return notify(error.message, "error");
+    }
     setClients((list) => list.filter((x) => x.id !== id));
     setPosts((list) => list.filter((x) => x.client_id !== id));
     notify("Cliente removido.");
@@ -86,17 +108,22 @@ export default function WorkspaceProvider({ workspace, user, children }) {
       status: post.status || "draft",
       scheduled_at: post.scheduled_at || null,
     };
-    // Mudou a data de um post aprovado/agendado → recalcula o status
     if (["approved", "scheduled"].includes(payload.status)) payload.status = statusAfterApproval(payload);
-    if (!post.id) payload.created_by = user.id;
 
-    const query = post.id
-      ? supabase.from("posts").update(payload).eq("id", post.id).select().single()
-      : supabase.from("posts").insert(payload).select().single();
-    const { data, error } = await query;
-    if (error) {
-      notify(error.message, "error");
-      return null;
+    let data;
+    if (demo) {
+      data = { ...post, ...payload, id: post.id || uid() };
+    } else {
+      if (!post.id) payload.created_by = user.id;
+      const query = post.id
+        ? supabase.from("posts").update(payload).eq("id", post.id).select().single()
+        : supabase.from("posts").insert(payload).select().single();
+      const res = await query;
+      if (res.error) {
+        notify(res.error.message, "error");
+        return null;
+      }
+      data = res.data;
     }
     setPosts((list) => [...list.filter((x) => x.id !== data.id), data]);
     return data;
@@ -106,37 +133,53 @@ export default function WorkspaceProvider({ workspace, user, children }) {
     const patch = { status };
     if (status === "approved" || status === "scheduled") patch.status = statusAfterApproval(post);
     if (patch.status === "scheduled") patch.publish_error = null;
-    const { data, error } = await supabase.from("posts").update(patch).eq("id", post.id).select().single();
-    if (error) return notify(error.message, "error");
+    let data;
+    if (demo) {
+      data = { ...post, ...patch };
+    } else {
+      const res = await supabase.from("posts").update(patch).eq("id", post.id).select().single();
+      if (res.error) return notify(res.error.message, "error");
+      data = res.data;
+    }
     setPosts((list) => list.map((x) => (x.id === data.id ? data : x)));
     return data;
   }
 
   async function deletePost(id) {
-    const { error } = await supabase.from("posts").delete().eq("id", id);
-    if (error) return notify(error.message, "error");
+    if (!demo) {
+      const { error } = await supabase.from("posts").delete().eq("id", id);
+      if (error) return notify(error.message, "error");
+    }
     setPosts((list) => list.filter((x) => x.id !== id));
     notify("Post excluído.");
   }
 
   async function uploadMedia(file) {
+    const type = file.type.startsWith("video") ? "video" : "image";
+    if (demo) return { path: `demo/${uid()}`, url: URL.createObjectURL(file), type };
     const ext = (file.name.split(".").pop() || "bin").toLowerCase();
-    const path = `${workspace.id}/${crypto.randomUUID()}.${ext}`;
+    const path = `${workspace.id}/${uid()}.${ext}`;
     const { error } = await supabase.storage.from("media").upload(path, file, { contentType: file.type });
     if (error) {
       notify(`Falha no upload: ${error.message}`, "error");
       return null;
     }
     const { data } = supabase.storage.from("media").getPublicUrl(path);
-    return { path, url: data.publicUrl, type: file.type.startsWith("video") ? "video" : "image" };
+    return { path, url: data.publicUrl, type };
   }
 
   async function listComments(postId) {
+    if (demo) return demoComments[postId] || [];
     const { data } = await supabase.from("post_comments").select("*").eq("post_id", postId).order("created_at");
     return data || [];
   }
 
   async function addComment(postId, body) {
+    if (demo) {
+      const c = { id: uid(), post_id: postId, author_type: "team", author_name: user.email, body, created_at: new Date().toISOString() };
+      setDemoComments((m) => ({ ...m, [postId]: [...(m[postId] || []), c] }));
+      return c;
+    }
     const { data, error } = await supabase
       .from("post_comments")
       .insert({ post_id: postId, workspace_id: workspace.id, author_type: "team", author_name: user.email, body })
@@ -152,6 +195,8 @@ export default function WorkspaceProvider({ workspace, user, children }) {
     workspace,
     user,
     supabase,
+    demo: Boolean(demo),
+    href: (path) => `${base}${path === "/" && base ? "" : path}`,
     loading,
     clients,
     clientById,
@@ -176,8 +221,8 @@ export default function WorkspaceProvider({ workspace, user, children }) {
       {editing && <PostEditor initial={editing} onClose={() => setEditing(null)} />}
       {toast && (
         <div
-          className={`fixed bottom-6 right-6 z-[60] rounded-lg px-4 py-3 text-sm font-medium text-white shadow-lg ${
-            toast.kind === "error" ? "bg-rose-600" : "bg-ink"
+          className={`fixed bottom-6 right-6 z-[60] rounded-xl px-4 py-3 text-sm font-medium text-white shadow-float ${
+            toast.kind === "error" ? "bg-rose-600" : "bg-navy"
           }`}
         >
           {toast.message}

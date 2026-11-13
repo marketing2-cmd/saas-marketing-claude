@@ -10,7 +10,7 @@ import { FORMATS, formatDateTime, fromLocalInput, toLocalInput } from "@/lib/pos
 const CAPTION_LIMIT = 2200;
 
 export default function PostEditor({ initial, onClose }) {
-  const { clients, clientById, savePost, setPostStatus, deletePost, uploadMedia, listComments, addComment, notify } = useWorkspace();
+  const { href, clients, clientById, savePost, setPostStatus, deletePost, uploadMedia, listComments, addComment, notify } = useWorkspace();
   const [post, setPost] = useState(() => ({
     client_id: clients[0]?.id || "",
     title: "",
@@ -49,7 +49,7 @@ export default function PostEditor({ initial, onClose }) {
         <div className="p-8 text-center">
           <h2 className="text-lg font-bold">Cadastre um cliente primeiro</h2>
           <p className="mt-2 text-sm text-ink-soft">Cada post pertence a um cliente. Vá em <b>Clientes</b> e crie o primeiro.</p>
-          <a href="/clientes" className="btn-primary mt-6">Ir para Clientes</a>
+          <a href={href("/clientes")} className="btn-primary mt-6">Ir para Clientes</a>
         </div>
       </Modal>
     );
@@ -110,15 +110,15 @@ export default function PostEditor({ initial, onClose }) {
 
   return (
     <Modal onClose={onClose}>
-      <div className="flex items-center justify-between border-b border-line px-5 py-4">
+      <div className="flex items-center justify-between border-b border-line px-6 py-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-base font-bold">{post.id ? "Editar post" : "Novo post"}</h2>
+          <h2 className="text-lg font-bold">{post.id ? "Editar post" : "Novo post"}</h2>
           {post.id && <StatusBadge status={post.status} />}
         </div>
         <button onClick={onClose} className="rounded-lg p-1.5 hover:bg-paper" aria-label="Fechar"><X size={18} /></button>
       </div>
 
-      <div className="grid gap-6 overflow-y-auto p-5 md:grid-cols-[1fr_320px]">
+      <div className="grid gap-6 overflow-y-auto p-6 md:grid-cols-[1fr_320px]">
         <div className="space-y-4">
           {post.status === "failed" && post.publish_error && (
             <div className="flex gap-2 rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
@@ -158,7 +158,7 @@ export default function PostEditor({ initial, onClose }) {
             <label className="label">Mídia</label>
             <div className="flex flex-wrap gap-2">
               {post.media.map((m, i) => (
-                <div key={m.path} className="group relative h-24 w-24 overflow-hidden rounded-lg border border-line">
+                <div key={m.path} className="group relative h-24 w-24 overflow-hidden rounded-xl border border-line">
                   <MediaView item={m} className="h-full w-full object-cover" />
                   {!locked && (
                     <div className="absolute inset-0 flex items-end justify-between bg-gradient-to-t from-black/60 to-transparent p-1 opacity-0 transition group-hover:opacity-100">
@@ -173,7 +173,7 @@ export default function PostEditor({ initial, onClose }) {
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
-                  className="flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-line text-xs text-ink-mute hover:border-brand hover:text-brand"
+                  className="flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-line bg-paper text-xs font-semibold text-ink-mute hover:border-brand-ring hover:text-brand"
                 >
                   {uploading ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
                   {uploading ? "Enviando…" : "Adicionar"}
@@ -205,7 +205,7 @@ export default function PostEditor({ initial, onClose }) {
           {post.id && (
             <div>
               <label className="label">Comentários</label>
-              <div className="space-y-2 rounded-lg border border-line bg-paper p-3">
+              <div className="space-y-2 rounded-2xl border border-line bg-paper p-3">
                 {comments.length === 0 && <p className="text-xs text-ink-mute">Nenhum comentário ainda.</p>}
                 {comments.map((c) => (
                   <div key={c.id} className={`rounded-lg px-3 py-2 text-sm ${c.author_type === "client" ? "bg-amber-50" : "bg-white"}`}>
@@ -230,7 +230,7 @@ export default function PostEditor({ initial, onClose }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-5 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line bg-paper/60 px-6 py-4 sm:rounded-b-3xl">
         <div>
           {post.id && (
             <button onClick={remove} className="btn text-rose-600 hover:bg-rose-50"><Trash2 size={16} /> Excluir</button>
@@ -254,8 +254,8 @@ export default function PostEditor({ initial, onClose }) {
 
 function Modal({ children, onClose }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center sm:p-4" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="flex max-h-[95vh] w-full max-w-5xl flex-col rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl">{children}</div>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-navy/40 backdrop-blur-[2px] sm:items-center sm:p-4" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="flex max-h-[95vh] w-full max-w-5xl flex-col rounded-t-3xl bg-white shadow-float sm:rounded-3xl">{children}</div>
     </div>
   );
 }
