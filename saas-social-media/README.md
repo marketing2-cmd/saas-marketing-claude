@@ -45,15 +45,20 @@ npm run dev
 ### 4. Deploy na Vercel
 - Importe o repositório e defina **Root Directory = `saas-social-media`**.
 - Cadastre as variáveis do `.env.example` (com `NEXT_PUBLIC_APP_URL` = domínio de produção).
-- O `vercel.json` agenda o cron a cada minuto. **Cron por minuto exige o plano Pro da
-  Vercel**; no plano Hobby só roda 1x/dia. Alternativa gratuita: chamar a rota pelo
-  Supabase (pg_cron + pg_net):
+- O agendador roda no **Supabase** (pg_cron + pg_net), chamando `/api/cron/publish`
+  a cada minuto — funciona no plano Hobby da Vercel (o Vercel Cron só roda 1x/dia no Hobby).
+  Já está configurado no projeto Supabase; para recriar em outro projeto:
   ```sql
+  create extension if not exists pg_cron;
+  create extension if not exists pg_net;
+  select vault.create_secret('SEU_CRON_SECRET', 'cron_secret');
+  select vault.create_secret('https://SEU-DOMINIO', 'app_url');
   select cron.schedule('publicar-posts', '* * * * *', $$
     select net.http_get(
-      url := 'https://SEU-DOMINIO/api/cron/publish',
-      headers := jsonb_build_object('Authorization', 'Bearer SEU_CRON_SECRET')
-    );
+      url := (select decrypted_secret from vault.decrypted_secrets where name = 'app_url') || '/api/cron/publish',
+      headers := jsonb_build_object('Authorization', 'Bearer ' ||
+        (select decrypted_secret from vault.decrypted_secrets where name = 'cron_secret')),
+      timeout_milliseconds := 60000);
   $$);
   ```
 
