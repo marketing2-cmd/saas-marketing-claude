@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, ExternalLink, Instagram, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, BarChart3, CheckCircle2, ExternalLink, Instagram, Pencil, Plus, Trash2 } from "lucide-react";
 import { useWorkspace } from "@/components/WorkspaceProvider";
 import { Avatar } from "@/components/PostPreview";
 import FeedGrid from "@/components/FeedGrid";
@@ -70,6 +70,7 @@ export default function ClientPage() {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Link href={href(`/relatorios?client=${id}`)} className="btn-ghost"><BarChart3 size={16} /> Relatório</Link>
             <button onClick={() => setEditing(true)} className="btn-ghost"><Pencil size={16} /> Editar</button>
             <button onClick={() => openEditor({ client_id: id })} className="btn-primary"><Plus size={16} strokeWidth={2.5} /> Novo post</button>
           </div>

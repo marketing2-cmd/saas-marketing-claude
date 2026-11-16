@@ -36,3 +36,9 @@ body {
     @apply text-2xl font-bold tracking-tight md:text-[28px];
   }
 }
+
+@media print {
+  body { background: #fff; }
+  .card { box-shadow: none; break-inside: avoid; }
+  @page { margin: 12mm; }
+}

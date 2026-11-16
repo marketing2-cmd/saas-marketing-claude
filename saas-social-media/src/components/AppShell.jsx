@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Bell, CalendarDays, KanbanSquare, LayoutGrid, LogOut, Menu, Plus, Settings, ShieldCheck, Sparkles, Users, X } from "lucide-react";
+import { BarChart3, Bell, CalendarDays, KanbanSquare, LayoutGrid, LogOut, Menu, Plus, Settings, ShieldCheck, Sparkles, Users, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import WorkspaceProvider, { useWorkspace } from "./WorkspaceProvider";
 import Logo from "./Logo";
@@ -13,6 +13,7 @@ const NAV = [
   { href: "/calendario", label: "Calendário", icon: CalendarDays },
   { href: "/quadro", label: "Quadro de tarefas", icon: KanbanSquare },
   { href: "/clientes", label: "Clientes", icon: Users },
+  { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
 ];
 
 export default function AppShell({ user, workspace, demo = null, children }) {
@@ -131,17 +132,17 @@ function Shell({ children }) {
   );
 
   return (
-    <div className="min-h-screen lg:pl-[264px]">
+    <div className="min-h-screen lg:pl-[264px] print:pl-0">
       {demo && (
-        <div className="sticky top-0 z-40 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 bg-navy px-4 py-2 text-center text-xs text-white lg:-ml-[264px]">
+        <div className="sticky top-0 z-40 flex flex-wrap items-center justify-center print:hidden gap-x-3 gap-y-1 bg-navy px-4 py-2 text-center text-xs text-white lg:-ml-[264px]">
           <span><b>Modo demonstração</b> — os dados são fictícios e nada é salvo.</span>
           <Link href="/signup" className="rounded-full bg-brand px-3 py-1 font-semibold hover:bg-brand-dark">Criar minha conta grátis</Link>
         </div>
       )}
 
-      <aside className={`fixed bottom-0 left-0 hidden w-[264px] overflow-y-auto border-r border-line bg-white lg:block ${demo ? "top-[36px]" : "top-0"}`}>{sidebar}</aside>
+      <aside className={`fixed bottom-0 left-0 hidden w-[264px] print:!hidden overflow-y-auto border-r border-line bg-white lg:block ${demo ? "top-[36px]" : "top-0"}`}>{sidebar}</aside>
 
-      <header className={`sticky z-30 flex items-center justify-between gap-3 border-b border-line bg-white/85 px-4 py-3 backdrop-blur lg:px-8 ${demo ? "top-[52px] sm:top-[36px]" : "top-0"}`}>
+      <header className={`sticky z-30 flex print:hidden items-center justify-between gap-3 border-b border-line bg-white/85 px-4 py-3 backdrop-blur lg:px-8 ${demo ? "top-[52px] sm:top-[36px]" : "top-0"}`}>
         <div className="flex items-center gap-2 lg:hidden">
           <button onClick={() => setOpen(true)} aria-label="Abrir menu" className="rounded-xl p-2 hover:bg-paper"><Menu size={20} /></button>
           <Logo />

@@ -19,6 +19,7 @@ Stack: Next.js 14 (App Router) · Supabase (Postgres, Auth, Storage) · Tailwind
 | Portal do cliente | `/c/<token>`, sem login: o cliente vê os posts, **aprova ou pede ajuste com comentário**, vê a prévia do feed e o histórico. |
 | Agendamento | Ao aprovar um post com data, ele vira **Agendado**. O cron `/api/cron/publish` publica no horário via Instagram Graph API (imagem, carrossel, reels e story), com 3 tentativas e trava contra publicação duplicada. |
 | Instagram | Conexão via login da Meta por cliente (`/api/meta/connect`). O token fica numa tabela que só o servidor lê. |
+| Relatórios | `/relatorios`: alcance, visualizações, interações, curtidas, comentários, compartilhamentos, salvamentos, visitas ao perfil, cliques no link, novos seguidores e taxa de engajamento, com comparação ao período anterior; gráfico de alcance por dia; ranking de posts; filtros de 7/14/30/90 dias ou datas livres; exportação CSV e PDF. Requer a permissão `instagram_manage_insights`. |
 
 Ainda não feito (próximas etapas): Facebook e TikTok, convite de membros da
 equipe, cobrança/planos (Stripe ou Asaas), notificações por e-mail/WhatsApp,
@@ -76,7 +77,7 @@ vinculado a uma **Página do Facebook**.
 5. **Modo desenvolvimento:** já funciona para contas de quem tem papel no app
    (admin/desenvolvedor/testador) — dá para testar com as suas próprias contas.
 6. **Para outros usuários:** envie o app para **Revisão do app** pedindo
-   `instagram_basic`, `instagram_content_publish`, `pages_show_list`,
+   `instagram_basic`, `instagram_content_publish`, `instagram_manage_insights`, `pages_show_list`,
    `pages_read_engagement` e `business_management`, com vídeo mostrando o fluxo, e
    conclua a **Verificação da empresa**.
 

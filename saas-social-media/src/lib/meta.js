@@ -7,6 +7,7 @@ const GRAPH = `https://graph.facebook.com/${GRAPH_VERSION}`;
 export const META_SCOPES = [
   "instagram_basic",
   "instagram_content_publish",
+  "instagram_manage_insights",
   "pages_show_list",
   "pages_read_engagement",
   "business_management",
@@ -163,4 +164,213 @@ export async function publishToInstagram({ igUserId, token, post }) {
     params: { creation_id: creationId, access_token: token },
   });
   return published.id;
+}
+
+// ── Relatórios (Insights) ────────────────────────────────────
+// Docs: https://developers.facebook.com/docs/instagram-platform/api-reference/instagram-user/insights
+
+const DAY = 86400;
+const MAX_WINDOW = 30 * DAY; // a API aceita no máximo 30 dias por chamada
+
+// Métricas de conta com valor total no período (metric_type=total_value)
+export const ACCOUNT_TOTAL_METRICS = [
+  "reach",
+  "views",
+  "accounts_engaged",
+  "total_interactions",
+  "likes",
+  "comments",
+  "shares",
+  "saves",
+  "profile_views",
+  "profile_links_taps",
+];
+
+function windows(since, until) {
+  const out = [];
+  for (let start = since; start < until; start += MAX_WINDOW) {
+    out.push([start, Math.min(start + MAX_WINDOW, until)]);
+  }
+  return out;
+}
+
+async function totalFor(igUserId, token, metric, since, until) {
+  let sum = 0;
+  for (const [s, u] of windows(since, until)) {
+    const res = await graph(`${igUserId}/insights`, {
+      params: { metric, period: "day", metric_type: "total_value", since: String(s), until: String(u), access_token: token },
+    });
+    sum += res.data?.[0]?.total_value?.value || 0;
+  }
+  return sum;
+}
+
+async function followsFor(igUserId, token, since, until) {
+  const out = { follows: 0, unfollows: 0 };
+  for (const [s, u] of windows(since, until)) {
+    const res = await graph(`${igUserId}/insights`, {
+      params: {
+        metric: "follows_and_unfollows",
+        period: "day",
+        metric_type: "total_value",
+        breakdown: "follow_type",
+        since: String(s),
+        until: String(u),
+        access_token: token,
+      },
+    });
+    const results = res.data?.[0]?.total_value?.breakdowns?.[0]?.results || [];
+    for (const r of results) {
+      if (r.dimension_values?.[0] === "FOLLOWER") out.follows += r.value || 0;
+      if (r.dimension_values?.[0] === "NON_FOLLOWER") out.unfollows += r.value || 0;
+    }
+  }
+  return out;
+}
+
+async function reachSeries(igUserId, token, since, until) {
+  const points = [];
+  for (const [s, u] of windows(since, until)) {
+    const res = await graph(`${igUserId}/insights`, {
+      params: { metric: "reach", period: "day", since: String(s), until: String(u), access_token: token },
+    });
+    for (const v of res.data?.[0]?.values || []) {
+      // end_time marca o fim do dia → o dia medido é o anterior
+      const end = new Date(v.end_time);
+      const day = new Date(end.getTime() - DAY * 1000).toISOString().slice(0, 10);
+      points.push({ date: day, value: v.value || 0 });
+    }
+  }
+  return points;
+}
+
+async function settle(fn) {
+  try {
+    return { ok: true, value: await fn() };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+}
+
+async function mapLimit(items, limit, fn) {
+  const out = new Array(items.length);
+  let i = 0;
+  async function worker() {
+    while (i < items.length) {
+      const idx = i++;
+      out[idx] = await fn(items[idx]);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return out;
+}
+
+async function mediaInRange(igUserId, token, since, until) {
+  const fields = "id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count";
+  const list = [];
+  let next = null;
+  for (let page = 0; page < 4; page++) {
+    const res = next
+      ? await fetch(next).then((r) => r.json())
+      : await graph(`${igUserId}/media`, {
+          params: { fields, limit: "50", since: String(since), until: String(until), access_token: token },
+        });
+    if (res.error) throw new MetaError(res.error.message);
+    for (const m of res.data || []) {
+      const ts = new Date(m.timestamp).getTime() / 1000;
+      if (ts >= since && ts < until) list.push(m);
+    }
+    const last = res.data?.[res.data.length - 1];
+    next = res.paging?.next;
+    if (!next || !last || new Date(last.timestamp).getTime() / 1000 < since) break;
+  }
+  return list.slice(0, 60);
+}
+
+async function mediaInsights(mediaId, token) {
+  const tries = ["reach,saved,shares,total_interactions,views", "reach,saved,total_interactions"];
+  for (const metric of tries) {
+    try {
+      const res = await graph(`${mediaId}/insights`, { params: { metric, access_token: token } });
+      return Object.fromEntries((res.data || []).map((d) => [d.name, d.values?.[0]?.value ?? d.total_value?.value ?? 0]));
+    } catch {
+      // tenta o conjunto menor de métricas
+    }
+  }
+  return {};
+}
+
+// Relatório completo do período [since, until) — timestamps em segundos
+export async function getInstagramReport({ igUserId, token, since, until }) {
+  const length = until - since;
+  const prevSince = since - length;
+
+  const profile = await graph(igUserId, {
+    params: { fields: "username,name,profile_picture_url,followers_count,follows_count,media_count", access_token: token },
+  });
+
+  const [current, previous, follows, prevFollows, series, media] = await Promise.all([
+    Promise.all(ACCOUNT_TOTAL_METRICS.map((m) => settle(() => totalFor(igUserId, token, m, since, until)))),
+    Promise.all(ACCOUNT_TOTAL_METRICS.map((m) => settle(() => totalFor(igUserId, token, m, prevSince, since)))),
+    settle(() => followsFor(igUserId, token, since, until)),
+    settle(() => followsFor(igUserId, token, prevSince, since)),
+    settle(() => reachSeries(igUserId, token, since, until)),
+    settle(() => mediaInRange(igUserId, token, since, until)),
+  ]);
+
+  const totals = {};
+  const unavailable = [];
+  ACCOUNT_TOTAL_METRICS.forEach((m, i) => {
+    if (current[i].ok) totals[m] = { value: current[i].value, previous: previous[i].ok ? previous[i].value : null };
+    else unavailable.push(m);
+  });
+  if (follows.ok) {
+    totals.follows = { value: follows.value.follows, previous: prevFollows.ok ? prevFollows.value.follows : null };
+    totals.unfollows = { value: follows.value.unfollows, previous: prevFollows.ok ? prevFollows.value.unfollows : null };
+  } else {
+    unavailable.push("follows");
+  }
+
+  // Sem nenhuma métrica: quase sempre falta a permissão instagram_manage_insights
+  if (!Object.keys(totals).length) {
+    throw new MetaError(
+      `O Instagram não liberou os dados de insights (${current[0].error}). Reconecte o Instagram do cliente para conceder a permissão de relatórios.`
+    );
+  }
+
+  const posts = media.ok
+    ? await mapLimit(media.value, 5, async (m) => {
+        const ins = await mediaInsights(m.id, token);
+        return {
+          id: m.id,
+          caption: m.caption || "",
+          type: m.media_product_type === "REELS" ? "reels" : m.media_type === "CAROUSEL_ALBUM" ? "carousel" : m.media_type === "VIDEO" ? "video" : "image",
+          thumb: m.thumbnail_url || m.media_url || null,
+          permalink: m.permalink,
+          timestamp: m.timestamp,
+          likes: m.like_count ?? 0,
+          comments: m.comments_count ?? 0,
+          reach: ins.reach ?? null,
+          saves: ins.saved ?? null,
+          shares: ins.shares ?? null,
+          views: ins.views ?? null,
+          interactions: ins.total_interactions ?? null,
+        };
+      })
+    : [];
+
+  return {
+    account: {
+      username: profile.username,
+      name: profile.name,
+      picture: profile.profile_picture_url || null,
+      followers: profile.followers_count ?? null,
+      following: profile.follows_count ?? null,
+      mediaCount: profile.media_count ?? null,
+    },
+    totals,
+    unavailable,
+    series: { reach: series.ok ? series.value : [] },
+    posts,
+  };
 }
