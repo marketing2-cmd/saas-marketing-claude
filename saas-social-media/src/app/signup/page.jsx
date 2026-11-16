@@ -40,7 +40,7 @@ export default function SignupPage() {
 
   if (sent) {
     return (
-      <AuthCard title="Confira seu e-mail" subtitle={`Enviamos um link de confirmação para ${email}. Depois de confirmar, é só entrar.`}>
+      <AuthCard title="Confira seu e-mail" subtitle={`Enviamos um link de confirmação para ${email}. Depois de confirmar, seu cadastro passa por aprovação — você recebe acesso assim que for liberado.`}>
         <Link href="/login" className="btn-primary w-full">Ir para o login</Link>
       </AuthCard>
     );

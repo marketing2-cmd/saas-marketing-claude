@@ -48,9 +48,25 @@ export async function getSessionContext() {
     .limit(1)
     .maybeSingle();
 
+  const { data: profile } = await supabase
+    .from("platform_profiles")
+    .select("is_admin")
+    .eq("id", claims.sub)
+    .maybeSingle();
+
+  // Admin da plataforma: quantos cadastros aguardam aprovação (RLS libera a leitura)
+  let pendingSignups = 0;
+  if (profile?.is_admin) {
+    const { count } = await supabase
+      .from("platform_profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending");
+    pendingSignups = count || 0;
+  }
+
   return {
     supabase,
-    user: { id: claims.sub, email: claims.email },
+    user: { id: claims.sub, email: claims.email, isAdmin: Boolean(profile?.is_admin), pendingSignups },
     workspace: membership?.workspaces ? { ...membership.workspaces, role: membership.role } : null,
   };
 }

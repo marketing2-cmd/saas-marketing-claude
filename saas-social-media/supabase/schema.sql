@@ -27,6 +27,18 @@ create table public.workspace_members (
 );
 create index workspace_members_user_idx on public.workspace_members(user_id);
 
+-- Cadastros da plataforma: todo usuário novo nasce "pending" e só acessa depois
+-- que um admin aprovar. O PRIMEIRO usuário criado vira admin (já aprovado).
+create table public.platform_profiles (
+  id          uuid primary key references auth.users(id) on delete cascade,
+  email       text not null,
+  full_name   text not null default '',
+  status      text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
+  is_admin    boolean not null default false,
+  created_at  timestamptz not null default now(),
+  reviewed_at timestamptz
+);
+
 create table public.clients (
   id              uuid primary key default gen_random_uuid(),
   workspace_id    uuid not null references public.workspaces(id) on delete cascade,
@@ -120,10 +132,50 @@ security definer
 set search_path = ''
 as $$
   select exists (
-    select 1 from public.workspace_members m
-    where m.workspace_id = ws and m.user_id = (select auth.uid())
+    select 1
+    from public.workspace_members m
+    join public.platform_profiles p on p.id = m.user_id
+    where m.workspace_id = ws
+      and m.user_id = (select auth.uid())
+      and p.status = 'approved'
   );
 $$;
+
+create or replace function private.is_platform_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (select 1 from public.platform_profiles p where p.id = (select auth.uid()) and p.is_admin);
+$$;
+
+create or replace function private.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare first_user boolean;
+begin
+  perform pg_advisory_xact_lock(hashtext('platform_profiles_first_user'));
+  select not exists (select 1 from public.platform_profiles) into first_user;
+  insert into public.platform_profiles (id, email, full_name, status, is_admin, reviewed_at)
+  values (
+    new.id,
+    coalesce(new.email, ''),
+    coalesce(new.raw_user_meta_data ->> 'full_name', ''),
+    case when first_user then 'approved' else 'pending' end,
+    first_user,
+    case when first_user then now() end
+  );
+  return new;
+end;
+$$;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function private.handle_new_user();
 
 -- Cria o workspace do usuário logado e o adiciona como owner (onboarding)
 create or replace function public.create_workspace(ws_name text)
@@ -137,6 +189,12 @@ declare
 begin
   if (select auth.uid()) is null then
     raise exception 'not authenticated';
+  end if;
+  if not exists (
+    select 1 from public.platform_profiles p
+    where p.id = (select auth.uid()) and p.status = 'approved'
+  ) then
+    raise exception 'account not approved';
   end if;
   insert into public.workspaces (name, owner_id)
   values (ws_name, (select auth.uid()))
@@ -186,17 +244,28 @@ revoke execute on function private.check_post_client() from public, anon, authen
 
 revoke execute on function private.is_member(uuid) from public, anon;
 grant execute on function private.is_member(uuid) to authenticated;
+revoke execute on function private.is_platform_admin() from public, anon;
+grant execute on function private.is_platform_admin() to authenticated;
+revoke execute on function private.handle_new_user() from public, anon, authenticated;
 
 -- ─────────────────────────────────────────────────────────────
 -- RLS
 -- ─────────────────────────────────────────────────────────────
 
+alter table public.platform_profiles enable row level security;
 alter table public.workspaces        enable row level security;
 alter table public.workspace_members enable row level security;
 alter table public.clients           enable row level security;
 alter table public.posts             enable row level security;
 alter table public.post_comments     enable row level security;
 alter table public.social_accounts   enable row level security;
+
+-- platform_profiles: cada um lê o próprio; admin lê todos. Aprovação só pelo
+-- servidor (service role) — sem policies de escrita.
+create policy platform_profiles_select on public.platform_profiles
+  for select to authenticated
+  using (id = (select auth.uid()) or private.is_platform_admin());
+revoke insert, update, delete on public.platform_profiles from anon, authenticated;
 
 create policy workspaces_select on public.workspaces
   for select to authenticated using (private.is_member(id));

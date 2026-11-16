@@ -10,7 +10,7 @@ Stack: Next.js 14 (App Router) · Supabase (Postgres, Auth, Storage) · Tailwind
 
 | Área | Funcionalidade |
 |---|---|
-| Contas | Cadastro aberto (e-mail/senha). Cada conta cria um **espaço de trabalho** (agência); os dados ficam isolados por RLS. |
+| Contas | Cadastro com e-mail/senha e **aprovação manual**: quem se cadastra fica em `/aguardando` até um admin aprovar em `/admin`. O **primeiro usuário criado vira admin**. Cada conta aprovada cria um **espaço de trabalho** (agência); os dados ficam isolados por RLS. |
 | Clientes | Cadastro com cor, @ do Instagram e observações. Cada cliente tem um **link secreto de aprovação**. |
 | Posts | Editor com legenda (contador de 2.200), upload de imagens/vídeos, carrossel com reordenação, formato (feed, carrossel, reels, story), data/hora, tags, comentários internos e **prévia estilo Instagram**. |
 | Calendário | Visão mensal e semanal, filtro por cliente, criar post clicando no dia, lista de posts sem data. |

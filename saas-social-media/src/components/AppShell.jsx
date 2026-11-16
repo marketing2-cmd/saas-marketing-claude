@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Bell, CalendarDays, KanbanSquare, LayoutGrid, LogOut, Menu, Plus, Settings, Sparkles, Users, X } from "lucide-react";
+import { Bell, CalendarDays, KanbanSquare, LayoutGrid, LogOut, Menu, Plus, Settings, ShieldCheck, Sparkles, Users, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import WorkspaceProvider, { useWorkspace } from "./WorkspaceProvider";
 import Logo from "./Logo";
@@ -97,6 +97,21 @@ function Shell({ children }) {
         >
           <Settings size={18} /> Configurações
         </Link>
+        {user.isAdmin && (
+          <Link
+            href="/admin"
+            onClick={() => setOpen(false)}
+            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+              pathname.startsWith("/admin") ? "bg-brand-soft text-brand" : "text-ink-soft hover:bg-paper hover:text-ink"
+            }`}
+          >
+            <ShieldCheck size={18} />
+            <span className="flex-1">Aprovar cadastros</span>
+            {user.pendingSignups > 0 && (
+              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-700">{user.pendingSignups}</span>
+            )}
+          </Link>
+        )}
       </nav>
 
       <div className="mt-auto p-4">
