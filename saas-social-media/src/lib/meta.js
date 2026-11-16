@@ -24,6 +24,8 @@ export function metaAuthUrl(state) {
   url.searchParams.set("state", state);
   url.searchParams.set("scope", META_SCOPES);
   url.searchParams.set("response_type", "code");
+  // Pede de novo permissões negadas ou novas (ex.: instagram_manage_insights ao reconectar)
+  url.searchParams.set("auth_type", "rerequest");
   return url.toString();
 }
 
