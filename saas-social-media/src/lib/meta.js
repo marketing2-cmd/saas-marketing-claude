@@ -1,7 +1,7 @@
 // Integração com a Meta (Instagram Graph API via Facebook Login).
 // Docs: https://developers.facebook.com/docs/instagram-platform/content-publishing
 
-const GRAPH_VERSION = process.env.META_GRAPH_VERSION || "v21.0";
+const GRAPH_VERSION = process.env.META_GRAPH_VERSION || "v27.0";
 const GRAPH = `https://graph.facebook.com/${GRAPH_VERSION}`;
 
 export const META_SCOPES = [
