@@ -129,28 +129,34 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
     return data;
   }
 
+  // Otimista: a tela muda na hora; se o banco recusar, volta ao estado anterior
   async function setPostStatus(post, status) {
     const patch = { status };
     if (status === "approved" || status === "scheduled") patch.status = statusAfterApproval(post);
     if (patch.status === "scheduled") patch.publish_error = null;
-    let data;
-    if (demo) {
-      data = { ...post, ...patch };
-    } else {
-      const res = await supabase.from("posts").update(patch).eq("id", post.id).select().single();
-      if (res.error) return notify(res.error.message, "error");
-      data = res.data;
+    const optimistic = { ...post, ...patch };
+    setPosts((list) => list.map((x) => (x.id === post.id ? optimistic : x)));
+    if (demo) return optimistic;
+    const res = await supabase.from("posts").update(patch).eq("id", post.id).select().single();
+    if (res.error) {
+      setPosts((list) => list.map((x) => (x.id === post.id ? post : x)));
+      notify(res.error.message, "error");
+      return null;
     }
-    setPosts((list) => list.map((x) => (x.id === data.id ? data : x)));
-    return data;
+    setPosts((list) => list.map((x) => (x.id === res.data.id ? res.data : x)));
+    return res.data;
   }
 
   async function deletePost(id) {
+    const before = posts;
+    setPosts((list) => list.filter((x) => x.id !== id));
     if (!demo) {
       const { error } = await supabase.from("posts").delete().eq("id", id);
-      if (error) return notify(error.message, "error");
+      if (error) {
+        setPosts(before);
+        return notify(error.message, "error");
+      }
     }
-    setPosts((list) => list.filter((x) => x.id !== id));
     notify("Post excluído.");
   }
 

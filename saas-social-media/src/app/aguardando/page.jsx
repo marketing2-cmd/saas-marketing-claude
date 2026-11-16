@@ -12,9 +12,10 @@ export default async function PendingPage() {
 
   const { data: profile } = await supabase
     .from("platform_profiles")
-    .select("status, email")
+    .select("status, email, is_admin")
     .eq("id", data.claims.sub)
     .maybeSingle();
+  if (profile?.status === "approved" || profile?.is_admin) redirect("/");
 
   const rejected = profile?.status === "rejected";
 

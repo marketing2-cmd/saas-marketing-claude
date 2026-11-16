@@ -33,40 +33,37 @@ export function createServiceClient() {
   });
 }
 
-// Usuário logado + workspace dele (ou null)
+// Usuário logado + workspace + aprovação. As consultas rodam em paralelo para
+// reduzir o tempo de resposta (cada uma é uma ida ao banco).
 export async function getSessionContext() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
   if (!claims) return { supabase, user: null, workspace: null };
 
-  const { data: membership } = await supabase
-    .from("workspace_members")
-    .select("role, workspaces(id, name)")
-    .eq("user_id", claims.sub)
-    .order("created_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
+  const [{ data: membership }, { data: profile }, { count: pending }] = await Promise.all([
+    supabase
+      .from("workspace_members")
+      .select("role, workspaces(id, name)")
+      .eq("user_id", claims.sub)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle(),
+    supabase.from("platform_profiles").select("status, is_admin").eq("id", claims.sub).maybeSingle(),
+    // Só o admin enxerga perfis de terceiros (RLS); para os demais o resultado é 0
+    supabase.from("platform_profiles").select("id", { count: "exact", head: true }).eq("status", "pending"),
+  ]);
 
-  const { data: profile } = await supabase
-    .from("platform_profiles")
-    .select("is_admin")
-    .eq("id", claims.sub)
-    .maybeSingle();
-
-  // Admin da plataforma: quantos cadastros aguardam aprovação (RLS libera a leitura)
-  let pendingSignups = 0;
-  if (profile?.is_admin) {
-    const { count } = await supabase
-      .from("platform_profiles")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "pending");
-    pendingSignups = count || 0;
-  }
-
+  const isAdmin = Boolean(profile?.is_admin);
   return {
     supabase,
-    user: { id: claims.sub, email: claims.email, isAdmin: Boolean(profile?.is_admin), pendingSignups },
+    user: {
+      id: claims.sub,
+      email: claims.email,
+      isAdmin,
+      approved: isAdmin || profile?.status === "approved",
+      pendingSignups: isAdmin ? pending || 0 : 0,
+    },
     workspace: membership?.workspaces ? { ...membership.workspaces, role: membership.role } : null,
   };
 }

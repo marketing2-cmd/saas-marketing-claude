@@ -2,8 +2,10 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 
 const AUTH_PAGES = ["/login", "/signup"];
-const PENDING_PAGE = "/aguardando";
 
+// Middleware enxuto: renova a sessão e separa logado / não logado.
+// Aprovação e workspace são checados no servidor de cada área (layout do painel,
+// /onboarding, /aguardando, /admin), para não pesar em todo clique.
 export async function middleware(request) {
   let response = NextResponse.next({ request });
   const { pathname } = request.nextUrl;
@@ -32,31 +34,7 @@ export async function middleware(request) {
     if (AUTH_PAGES.includes(pathname)) return response;
     return redirectTo(request, "/login");
   }
-
-  // Cadastro precisa ser aprovado por um administrador da plataforma
-  const { data: profile } = await supabase
-    .from("platform_profiles")
-    .select("status, is_admin")
-    .eq("id", user.sub)
-    .maybeSingle();
-  const approved = profile?.status === "approved" || profile?.is_admin;
-
-  if (!approved) {
-    if (pathname === PENDING_PAGE) return response;
-    return redirectTo(request, PENDING_PAGE);
-  }
-  if (pathname.startsWith("/admin") && !profile?.is_admin) return redirectTo(request, "/");
-
-  const { count } = await supabase
-    .from("workspace_members")
-    .select("workspace_id", { count: "exact", head: true })
-    .eq("user_id", user.sub);
-  const hasWorkspace = (count || 0) > 0;
-
-  if (AUTH_PAGES.includes(pathname) || pathname === PENDING_PAGE) return redirectTo(request, hasWorkspace ? "/" : "/onboarding");
-  if (!hasWorkspace && pathname !== "/onboarding") return redirectTo(request, "/onboarding");
-  if (hasWorkspace && pathname === "/onboarding") return redirectTo(request, "/");
-
+  if (AUTH_PAGES.includes(pathname)) return redirectTo(request, "/");
   return response;
 }
 

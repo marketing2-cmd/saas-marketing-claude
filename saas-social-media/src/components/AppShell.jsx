@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BarChart3, Bell, CalendarDays, KanbanSquare, LayoutGrid, LogOut, Menu, Plus, Settings, ShieldCheck, Sparkles, Users, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import WorkspaceProvider, { useWorkspace } from "./WorkspaceProvider";
@@ -29,6 +29,20 @@ function Shell({ children }) {
   const router = useRouter();
   const { workspace, user, openEditor, href, demo, posts } = useWorkspace();
   const [open, setOpen] = useState(false);
+  // Navegação otimista: o item clicado acende na hora e uma barra no topo
+  // indica o carregamento até a nova página chegar
+  const [pendingPath, setPendingPath] = useState(null);
+  useEffect(() => setPendingPath(null), [pathname]);
+  useEffect(() => {
+    if (!pendingPath) return;
+    const t = setTimeout(() => setPendingPath(null), 8000); // segurança se a navegação não ocorrer
+    return () => clearTimeout(t);
+  }, [pendingPath]);
+
+  function go(path) {
+    setOpen(false);
+    if (path !== pathname) setPendingPath(path);
+  }
 
   async function logout() {
     if (demo) return router.push("/signup");
@@ -39,7 +53,8 @@ function Shell({ children }) {
 
   const isActive = (path) => {
     const full = href(path);
-    return path === "/" ? pathname === full : pathname.startsWith(full);
+    const current = pendingPath || pathname;
+    return path === "/" ? current === full : current.startsWith(full);
   };
   const pendingReview = posts.filter((p) => p.status === "in_review").length;
   const initials = (user.email || "?").slice(0, 2).toUpperCase();
@@ -72,7 +87,7 @@ function Shell({ children }) {
             <Link
               key={path}
               href={href(path)}
-              onClick={() => setOpen(false)}
+              onClick={() => go(href(path))}
               className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                 active ? "bg-brand-soft text-brand" : "text-ink-soft hover:bg-paper hover:text-ink"
               }`}
@@ -91,7 +106,7 @@ function Shell({ children }) {
       <nav className="mt-2 space-y-1 px-3">
         <Link
           href={href("/configuracoes")}
-          onClick={() => setOpen(false)}
+          onClick={() => go(href("/configuracoes"))}
           className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
             isActive("/configuracoes") ? "bg-brand-soft text-brand" : "text-ink-soft hover:bg-paper hover:text-ink"
           }`}
@@ -101,9 +116,9 @@ function Shell({ children }) {
         {user.isAdmin && (
           <Link
             href="/admin"
-            onClick={() => setOpen(false)}
+            onClick={() => go("/admin")}
             className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-              pathname.startsWith("/admin") ? "bg-brand-soft text-brand" : "text-ink-soft hover:bg-paper hover:text-ink"
+              (pendingPath || pathname).startsWith("/admin") ? "bg-brand-soft text-brand" : "text-ink-soft hover:bg-paper hover:text-ink"
             }`}
           >
             <ShieldCheck size={18} />
@@ -133,6 +148,11 @@ function Shell({ children }) {
 
   return (
     <div className="min-h-screen lg:pl-[264px] print:pl-0">
+      {pendingPath && (
+        <div className="fixed inset-x-0 top-0 z-[70] h-[3px] overflow-hidden bg-brand-soft print:hidden" role="progressbar" aria-label="Carregando página">
+          <div className="h-full w-1/3 animate-[navbar_1s_ease-in-out_infinite] rounded-full bg-brand" />
+        </div>
+      )}
       {demo && (
         <div className="sticky top-0 z-40 flex flex-wrap items-center justify-center print:hidden gap-x-3 gap-y-1 bg-navy px-4 py-2 text-center text-xs text-white lg:-ml-[264px]">
           <span><b>Modo demonstração</b> — os dados são fictícios e nada é salvo.</span>
