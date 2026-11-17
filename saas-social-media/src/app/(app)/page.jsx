@@ -8,6 +8,8 @@ import PostMini from "@/components/PostMini";
 import ClientCard from "@/components/ClientCard";
 import Loading from "@/components/Loading";
 import { STATUSES, sameDay } from "@/lib/posts";
+import SegmentedBar from "@/components/SegmentedBar";
+import ActivityFeed from "@/components/ActivityFeed";
 
 const COUNTERS = [
   { key: "draft", label: "Rascunho", color: "#CBD5E1" },
@@ -63,6 +65,29 @@ export default function DashboardPage() {
           ))}
         </div>
       </div>
+
+      {/* Status dos conteúdos */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <SegmentedBar
+          title="Status de aprovação"
+          segments={[
+            { label: "Rascunho", value: posts.filter((p) => p.status === "draft").length, color: "#94A3B8" },
+            { label: "Em aprovação", value: posts.filter((p) => p.status === "in_review").length, color: "#F5A524" },
+            { label: "Ajuste", value: posts.filter((p) => p.status === "changes_requested").length, color: "#F2557A" },
+            { label: "Aprovado", value: posts.filter((p) => ["approved", "scheduled", "publishing", "published"].includes(p.status)).length, color: "#22B07D" },
+          ]}
+        />
+        <SegmentedBar
+          title="Status de veiculação"
+          segments={[
+            { label: "Não programado", value: posts.filter((p) => !["scheduled", "publishing", "published"].includes(p.status)).length, color: "#94A3B8" },
+            { label: "Programado", value: posts.filter((p) => ["scheduled", "publishing"].includes(p.status)).length, color: "#7C5CFC" },
+            { label: "Publicado", value: posts.filter((p) => p.status === "published").length, color: "#0EA5E9" },
+          ]}
+        />
+      </div>
+
+      <ActivityFeed />
 
       {/* Semana */}
       <section className="card p-5">

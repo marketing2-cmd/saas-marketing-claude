@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -14,6 +14,16 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [invited, setInvited] = useState(false);
+
+  // Link de convite: /signup?email=... já preenche o e-mail
+  useEffect(() => {
+    const e = new URLSearchParams(window.location.search).get("email");
+    if (e) {
+      setEmail(e);
+      setInvited(true);
+    }
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -47,7 +57,10 @@ export default function SignupPage() {
   }
 
   return (
-    <AuthCard title="Criar conta" subtitle="Organize clientes, aprovações e agendamentos em um só lugar.">
+    <AuthCard
+      title={invited ? "Você foi convidado(a)! 🎉" : "Criar conta"}
+      subtitle={invited ? "Crie sua senha para entrar na equipe. Use o mesmo e-mail do convite." : "Organize clientes, aprovações e agendamentos em um só lugar."}
+    >
       <form onSubmit={handleSubmit}>
         {error && <div className="mb-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div>}
         <label className="label">Seu nome</label>

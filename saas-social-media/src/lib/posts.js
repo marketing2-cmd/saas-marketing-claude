@@ -82,8 +82,27 @@ export function getStages(post) {
   return Object.fromEntries(STAGES.map(({ key }) => [key, stored[key]?.status || fallback]));
 }
 
-export function stagesToJson(stages) {
-  return Object.fromEntries(Object.entries(stages).map(([k, v]) => [k, { status: v }]));
+// Responsável de cada etapa (user_id ou null)
+export function getAssignees(post) {
+  const stored = post?.stages || {};
+  return Object.fromEntries(STAGES.map(({ key }) => [key, stored[key]?.assignee || null]));
+}
+
+export function stagesToJson(stages, assignees = {}) {
+  return Object.fromEntries(
+    Object.entries(stages).map(([k, v]) => [k, assignees[k] ? { status: v, assignee: assignees[k] } : { status: v }])
+  );
+}
+
+// Onde o post está parado: primeira etapa com trabalho a fazer (rascunho/ajuste);
+// se só falta o cliente → "review"; tudo aprovado → "done"
+export function currentStage(post) {
+  if (["published", "publishing"].includes(post.status)) return "published";
+  const stages = getStages(post);
+  const work = STAGES.find(({ key }) => stages[key] === "draft" || stages[key] === "changes_requested");
+  if (work) return work.key;
+  if (STAGES.some(({ key }) => stages[key] === "in_review")) return "review";
+  return "done";
 }
 
 // Status geral do post a partir das etapas

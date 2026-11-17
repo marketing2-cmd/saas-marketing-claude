@@ -2,14 +2,17 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { BarChart3, Bell, CalendarDays, KanbanSquare, LayoutGrid, LogOut, Menu, Plus, Settings, ShieldCheck, Sparkles, Users, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { BarChart3, Bell, CalendarDays, ListChecks, KanbanSquare, LayoutGrid, LogOut, Menu, Plus, Settings, ShieldCheck, Sparkles, Users, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { buildTasks } from "@/lib/tasks";
 import WorkspaceProvider, { useWorkspace } from "./WorkspaceProvider";
+import { NotificationItem } from "./notifications";
 import Logo from "./Logo";
 
 const NAV = [
   { href: "/", label: "Visão geral", icon: LayoutGrid },
+  { href: "/tarefas", label: "Minhas tarefas", icon: ListChecks },
   { href: "/calendario", label: "Calendário", icon: CalendarDays },
   { href: "/quadro", label: "Quadro de tarefas", icon: KanbanSquare },
   { href: "/clientes", label: "Clientes", icon: Users },
@@ -27,7 +30,16 @@ export default function AppShell({ user, workspace, demo = null, children }) {
 function Shell({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { workspace, user, openEditor, href, demo, posts } = useWorkspace();
+  const { workspace, user, openEditor, href, demo, posts, deadlines, notifications, unreadCount, markRead, openNotification } = useWorkspace();
+  const [bellOpen, setBellOpen] = useState(false);
+  const bellRef = useRef(null);
+  useEffect(() => {
+    if (!bellOpen) return;
+    const close = (e) => !bellRef.current?.contains(e.target) && setBellOpen(false);
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, [bellOpen]);
+  const myTasks = buildTasks(posts, deadlines).filter((t) => t.assignee === user.id && (t.status === "draft" || t.status === "changes_requested") && !t.blockedBy).length;
   const [open, setOpen] = useState(false);
   // Navegação otimista: o item clicado acende na hora e uma barra no topo
   // indica o carregamento até a nova página chegar
@@ -96,6 +108,9 @@ function Shell({ children }) {
               <span className="flex-1">{label}</span>
               {path === "/quadro" && pendingReview > 0 && (
                 <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-700">{pendingReview}</span>
+              )}
+              {path === "/tarefas" && myTasks > 0 && (
+                <span className="rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-bold text-brand">{myTasks}</span>
               )}
             </Link>
           );
@@ -171,10 +186,27 @@ function Shell({ children }) {
           {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
         </div>
         <div className="flex items-center gap-2">
-          <Link href={href("/quadro")} className="relative rounded-xl border border-line bg-white p-2 text-ink-soft hover:text-ink" aria-label="Posts em aprovação">
-            <Bell size={18} />
-            {pendingReview > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#F2557A] px-1 text-[10px] font-bold text-white">{pendingReview}</span>}
-          </Link>
+          <div ref={bellRef} className="relative">
+            <button onClick={() => setBellOpen((o) => !o)} className={`relative rounded-xl border p-2 transition ${bellOpen ? "border-brand-ring bg-brand-soft text-brand" : "border-line bg-white text-ink-soft hover:text-ink"}`} aria-label={`Notificações${unreadCount ? `, ${unreadCount} não lidas` : ""}`} aria-expanded={bellOpen}>
+              <Bell size={18} />
+              {unreadCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#F2557A] px-1 text-[10px] font-bold text-white">{unreadCount > 99 ? "99+" : unreadCount}</span>}
+            </button>
+            {bellOpen && (
+              <div className="absolute right-0 top-12 z-50 w-[min(380px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-line bg-white shadow-float">
+                <div className="flex items-center justify-between border-b border-line px-4 py-3">
+                  <span className="font-bold">Notificações</span>
+                  {unreadCount > 0 && <button onClick={() => markRead()} className="text-xs font-semibold text-brand hover:underline">Marcar todas como lidas</button>}
+                </div>
+                <div className="max-h-[60vh] space-y-0.5 overflow-y-auto p-2">
+                  {notifications.length === 0 && <p className="p-6 text-center text-sm text-ink-mute">Nenhuma notificação ainda.</p>}
+                  {notifications.slice(0, 15).map((n) => (
+                    <NotificationItem key={n.id} n={n} compact onOpen={(x) => { setBellOpen(false); if (!openNotification(x) && x.client_id) router.push(href(`/clientes/${x.client_id}`)); }} />
+                  ))}
+                </div>
+                <Link href={`${href("/")}#atividade`} onClick={() => setBellOpen(false)} className="block border-t border-line px-4 py-2.5 text-center text-xs font-semibold text-brand hover:bg-paper">Ver toda a atividade</Link>
+              </div>
+            )}
+          </div>
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#FFB48F] to-[#F2557A] text-xs font-bold text-white" title={user.email}>
             {initials}
           </div>

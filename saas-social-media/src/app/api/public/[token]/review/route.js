@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
-import { STAGES, derivePostStatus, getStages, sanitizeForClient, skipEmptyStages, stagesToJson } from "@/lib/posts";
+import { STAGES, derivePostStatus, getAssignees, getStages, sanitizeForClient, skipEmptyStages, stagesToJson } from "@/lib/posts";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const STAGE_KEYS = STAGES.map((s) => s.key);
@@ -53,7 +53,7 @@ export async function POST(request, { params }) {
   // Trava otimista: só grava se ninguém alterou o post desde a leitura
   const { data: updated, error } = await db
     .from("posts")
-    .update({ stages: stagesToJson(next), status, ...(status === "scheduled" ? { publish_error: null } : {}) })
+    .update({ stages: stagesToJson(next, getAssignees(post)), status, ...(status === "scheduled" ? { publish_error: null } : {}) })
     .eq("id", post.id)
     .eq("updated_at", post.updated_at)
     .select("id, status, scheduled_at, stages, title, caption, format, media, published_at, theme, reference_links, content_text")

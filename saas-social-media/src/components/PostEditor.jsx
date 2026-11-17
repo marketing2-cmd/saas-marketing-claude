@@ -20,7 +20,9 @@ import {
 import { useWorkspace } from "./WorkspaceProvider";
 import PostPreview, { Avatar, MediaView } from "./PostPreview";
 import StatusBadge from "./StatusBadge";
-import { FORMATS, STAGES, STAGE_STATUSES, derivePostStatus, formatDateTime, fromLocalInput, getStages, isStageEmpty, skipEmptyStages, toLocalInput } from "@/lib/posts";
+import MemberAvatar from "./MemberAvatar";
+import { memberName, membersForStage, stageDue } from "@/lib/team";
+import { FORMATS, STAGES, STAGE_STATUSES, derivePostStatus, formatDateTime, fromLocalInput, getAssignees, getStages, isStageEmpty, skipEmptyStages, toLocalInput } from "@/lib/posts";
 
 const CAPTION_LIMIT = 2200;
 const NETWORKS = [
@@ -29,12 +31,12 @@ const NETWORKS = [
   ["tiktok", "TikTok"],
 ];
 
-const snapshot = (p, st) => JSON.stringify({ ...p, stagesState: st });
+const snapshot = (p, st, as) => JSON.stringify({ ...p, _stage: undefined, stagesState: st, assigneesState: as });
 
 // Editor de conteúdo em tela cheia: prévia à esquerda e as etapas
 // Tema → Conteúdo → Mídia → Legenda, cada uma com status próprio.
 export default function PostEditor({ initial, onClose }) {
-  const { href, clients, clientById, savePost, deletePost, uploadMedia, listComments, addComment, notify } = useWorkspace();
+  const { href, clients, clientById, savePost, deletePost, uploadMedia, listComments, addComment, notify, members, memberById, deadlines } = useWorkspace();
   const [post, setPost] = useState(() => ({
     client_id: clients[0]?.id || "",
     title: "",
@@ -52,15 +54,22 @@ export default function PostEditor({ initial, onClose }) {
     ...initial,
   }));
   const [stages, setStages] = useState(() => getStages({ status: "draft", ...initial }));
-  const [savedSnap, setSavedSnap] = useState(() => (initial.id ? snapshot({ ...post }, getStages(initial)) : null));
-  const [active, setActive] = useState("theme");
+  // Responsáveis: do post, ou o time padrão do cliente para conteúdos novos
+  const [assignees, setAssignees] = useState(() => {
+    const own = getAssignees(initial);
+    if (initial.id) return own;
+    const team = clientById[initial.client_id || clients[0]?.id]?.default_team || {};
+    return Object.fromEntries(STAGES.map(({ key }) => [key, own[key] || team[key] || null]));
+  });
+  const [savedSnap, setSavedSnap] = useState(() => (initial.id ? snapshot({ ...post }, getStages(initial), getAssignees(initial)) : null));
+  const [active, setActive] = useState(initial._stage && STAGES.some((s) => s.key === initial._stage) ? initial._stage : "theme");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
   const fileRef = useRef(null);
 
-  const dirty = savedSnap === null ? true : snapshot(post, stages) !== savedSnap;
+  const dirty = savedSnap === null ? true : snapshot(post, stages, assignees) !== savedSnap;
   const locked = post.status === "published" || post.status === "publishing";
   const client = clientById[post.client_id];
   const overall = derivePostStatus({ status: post.status, scheduled_at: post.scheduled_at }, stages);
@@ -109,14 +118,16 @@ export default function PostEditor({ initial, onClose }) {
   async function save(nextStages = stages, message = "Conteúdo salvo.") {
     if (!post.client_id) return notify("Escolha um cliente.", "error");
     setSaving(true);
-    const saved = await savePost({ ...post, stagesState: nextStages });
+    const saved = await savePost({ ...post, stagesState: nextStages, assigneesState: assignees });
     setSaving(false);
     if (!saved) return null;
     const fresh = { ...post, ...saved };
     const st = getStages(saved);
+    const as = getAssignees(saved);
     setPost(fresh);
     setStages(st);
-    setSavedSnap(snapshot(fresh, st));
+    setAssignees(as);
+    setSavedSnap(snapshot(fresh, st, as));
     notify(message);
     return saved;
   }
@@ -216,7 +227,17 @@ export default function PostEditor({ initial, onClose }) {
                   <div className="truncate text-sm font-bold">{client?.instagram_handle?.replace(/^@/, "") || client?.name}</div>
                   <div className="truncate text-xs text-ink-mute">{client?.name}</div>
                 </div>
-                <select className="input w-auto max-w-[150px] py-1.5 text-xs" value={post.client_id} onChange={(e) => set({ client_id: e.target.value })} disabled={locked || Boolean(post.id)} aria-label="Cliente">
+                <select
+                  className="input w-auto max-w-[150px] py-1.5 text-xs"
+                  value={post.client_id}
+                  onChange={(e) => {
+                    set({ client_id: e.target.value });
+                    const team = clientById[e.target.value]?.default_team || {};
+                    setAssignees((a) => Object.fromEntries(STAGES.map(({ key }) => [key, team[key] || a[key] || null])));
+                  }}
+                  disabled={locked || Boolean(post.id)}
+                  aria-label="Cliente"
+                >
                   {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
@@ -257,13 +278,37 @@ export default function PostEditor({ initial, onClose }) {
                     className={`flex flex-col items-center gap-1.5 rounded-2xl border bg-white px-3 py-3 transition active:scale-[0.98] ${on ? "border-brand shadow-[0_0_0_3px_rgba(124,92,252,.15)]" : "border-line hover:border-brand-ring"}`}
                   >
                     <span className={`text-sm font-semibold ${on ? "text-brand" : "text-ink"}`}><span className="mr-1 text-ink-mute">{i + 1}.</span>{s.label}</span>
-                    <span className={`chip ${ss.color}`}><span className={`h-1.5 w-1.5 rounded-full ${ss.dot}`} />{ss.label}</span>
+                    <span className="flex items-center gap-1.5">
+                      <span className={`chip ${ss.color}`}><span className={`h-1.5 w-1.5 rounded-full ${ss.dot}`} />{ss.label}</span>
+                      {members.length > 0 && <MemberAvatar member={memberById[assignees[s.key]]} size={20} />}
+                    </span>
                   </button>
                 );
               })}
             </div>
 
             <section className="card p-5">
+              {members.length > 0 && (
+                <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl bg-paper/70 px-3 py-2 ring-1 ring-line">
+                  <MemberAvatar member={memberById[assignees[active]]} size={28} />
+                  <label className="text-xs font-semibold text-ink-soft" htmlFor="pe-assignee">Responsável</label>
+                  <select
+                    id="pe-assignee"
+                    className="input w-auto min-w-[180px] bg-white py-1.5 text-sm"
+                    value={assignees[active] || ""}
+                    onChange={(e) => setAssignees((a) => ({ ...a, [active]: e.target.value || null }))}
+                    disabled={locked}
+                  >
+                    <option value="">Sem responsável</option>
+                    {membersForStage(members, active).map((m) => <option key={m.user_id} value={m.user_id}>{memberName(m)}</option>)}
+                  </select>
+                  {stageDue(post, active, deadlines) && (
+                    <span className={`ml-auto text-xs font-medium ${stageDue(post, active, deadlines) < new Date() && stages[active] !== "approved" ? "text-rose-600" : "text-ink-mute"}`}>
+                      Prazo: {stageDue(post, active, deadlines).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+                    </span>
+                  )}
+                </div>
+              )}
               {active === "theme" && (
                 <div className="space-y-4">
                   <div>

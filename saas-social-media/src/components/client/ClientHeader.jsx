@@ -9,6 +9,9 @@ import ClientCover from "../ClientCover";
 import CopyLink from "../CopyLink";
 import { AvatarControls, CoverControls } from "../ClientImageControls";
 import { CONTRACT_STATUSES, daysUntil, formatBRL, formatDate, whatsappLink } from "@/lib/clients";
+import MemberAvatar from "../MemberAvatar";
+import { STAGES } from "@/lib/posts";
+import { memberName, membersForStage } from "@/lib/team";
 
 function IconButton({ label, onClick, href, danger, children }) {
   const cls = `flex h-10 w-10 items-center justify-center rounded-xl border transition active:scale-95 ${
@@ -28,7 +31,7 @@ function Detail({ label, children }) {
 }
 
 export default function ClientHeader({ client, account, onEdit, onDelete, onDisconnect }) {
-  const { href, demo, notify, uploadContract, removeContract, contractUrl } = useWorkspace();
+  const { href, demo, notify, uploadContract, removeContract, contractUrl, members, memberById, saveClient } = useWorkspace();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const status = CONTRACT_STATUSES[client.contract_status] || CONTRACT_STATUSES.active;
@@ -93,6 +96,36 @@ export default function ClientHeader({ client, account, onEdit, onDelete, onDisc
           </button>
         </div>
       </div>
+
+      {open && members.length > 0 && (
+        <div className="border-t border-line bg-white px-5 py-4">
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="text-sm font-bold">Equipe deste cliente</h3>
+            <span className="text-xs text-ink-mute">Responsáveis padrão para os novos conteúdos</span>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {STAGES.map((st) => {
+              const current = client.default_team?.[st.key] || "";
+              return (
+                <label key={st.key} className="flex items-center gap-2 rounded-xl border border-line px-3 py-2">
+                  <MemberAvatar member={memberById[current]} size={26} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[11px] font-semibold uppercase tracking-wider text-ink-mute">{st.label}</span>
+                    <select
+                      className="w-full bg-transparent text-sm font-medium outline-none"
+                      value={current}
+                      onChange={(e) => saveClient({ ...client, default_team: { ...(client.default_team || {}), [st.key]: e.target.value || null } }, { silent: true }).then((ok) => ok && notify("Equipe do cliente atualizada."))}
+                    >
+                      <option value="">Sem responsável</option>
+                      {membersForStage(members, st.key).map((m) => <option key={m.user_id} value={m.user_id}>{memberName(m)}</option>)}
+                    </select>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {open && (
         <div className="grid gap-5 border-t border-line bg-paper/50 px-5 py-5 sm:grid-cols-2 xl:grid-cols-4">

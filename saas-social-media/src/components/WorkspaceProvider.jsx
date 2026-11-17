@@ -2,7 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { STAGES, derivePostStatus, getStages, stagesToJson, statusAfterApproval } from "@/lib/posts";
+import { STAGES, derivePostStatus, getAssignees, getStages, stagesToJson, statusAfterApproval } from "@/lib/posts";
+import { DEFAULT_DEADLINES } from "@/lib/team";
 import PostEditor from "./PostEditor";
 import { resizeImage } from "@/lib/image";
 import { demoPlanning, emptyMonthlyPlan, emptyStrategy } from "@/lib/planning";
@@ -16,7 +17,11 @@ export function useWorkspace() {
 const uid = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2));
 
 // demo: objeto com dados fictícios → nada vai para o Supabase (modo demonstração /demo)
-export default function WorkspaceProvider({ workspace, user, demo = null, children }) {
+export default function WorkspaceProvider({ workspace: initialWorkspace, user, demo = null, children }) {
+  const [workspace, setWorkspace] = useState(initialWorkspace);
+  const [members, setMembers] = useState(demo?.members || []);
+  const [invites, setInvites] = useState([]);
+  const [notifications, setNotifications] = useState(demo?.notifications || []);
   const supabase = useMemo(() => (demo ? null : createClient()), [demo]);
   const [clients, setClients] = useState([]);
   const [posts, setPosts] = useState([]);
@@ -46,6 +51,7 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
       setLoading(false);
       return;
     }
+    loadTeam();
     const [c, p, a] = await Promise.all([
       supabase.from("clients").select("*").eq("workspace_id", workspace.id).order("name"),
       supabase.from("posts").select("*").eq("workspace_id", workspace.id).order("scheduled_at", { ascending: true, nullsFirst: false }),
@@ -64,10 +70,102 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
 
   const sortClients = (list) => [...list].sort((a, b) => a.name.localeCompare(b.name));
 
+  // ── Equipe ─────────────────────────────────────────────────
+  const loadTeam = useCallback(async () => {
+    if (demo) return;
+    const [m, i] = await Promise.all([
+      supabase.rpc("workspace_member_list", { ws: workspace.id }),
+      supabase.from("workspace_invites").select("*").eq("workspace_id", workspace.id).is("accepted_at", null).order("created_at", { ascending: false }),
+    ]);
+    if (!m.error) setMembers(m.data || []);
+    if (!i.error) setInvites(i.data || []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supabase, workspace.id, demo]);
+
+  async function inviteMember(email, functions) {
+    if (demo) {
+      setMembers((list) => [...list, { user_id: uid(), email, full_name: "", role: "member", functions }]);
+      notify("Membro adicionado (demonstração).");
+      return "added";
+    }
+    const { data, error } = await supabase.rpc("invite_member", { ws: workspace.id, invite_email: email, member_functions: functions });
+    if (error) {
+      notify(error.message, "error");
+      return null;
+    }
+    await loadTeam();
+    notify(data === "added" ? "Pessoa adicionada à equipe." : "Convite criado. Envie o link para a pessoa se cadastrar.");
+    return data;
+  }
+
+  async function cancelInvite(id) {
+    if (!demo) {
+      const { error } = await supabase.from("workspace_invites").delete().eq("id", id);
+      if (error) return notify(error.message, "error");
+    }
+    setInvites((list) => list.filter((x) => x.id !== id));
+  }
+
+  async function updateMemberFunctions(userId, functions) {
+    setMembers((list) => list.map((m) => (m.user_id === userId ? { ...m, functions } : m)));
+    if (demo) return;
+    const { error } = await supabase.from("workspace_members").update({ functions }).eq("workspace_id", workspace.id).eq("user_id", userId);
+    if (error) {
+      notify(error.message, "error");
+      loadTeam();
+    }
+  }
+
+  async function removeMember(userId) {
+    if (!demo) {
+      const { error } = await supabase.from("workspace_members").delete().eq("workspace_id", workspace.id).eq("user_id", userId);
+      if (error) return notify(error.message, "error");
+    }
+    setMembers((list) => list.filter((m) => m.user_id !== userId));
+    notify("Pessoa removida da equipe.");
+  }
+
+  async function saveDeadlines(deadlines) {
+    if (!demo) {
+      const { error } = await supabase.from("workspaces").update({ stage_deadlines: deadlines }).eq("id", workspace.id);
+      if (error) return notify(error.message, "error");
+    }
+    setWorkspace((w) => ({ ...w, stage_deadlines: deadlines }));
+    notify("Prazos salvos.");
+  }
+
+  // ── Notificações ───────────────────────────────────────────
+  const loadNotifications = useCallback(async () => {
+    if (demo) return;
+    const { data } = await supabase.from("notifications").select("*").order("created_at", { ascending: false }).limit(80);
+    if (data) setNotifications(data);
+  }, [supabase, demo]);
+
+  useEffect(() => {
+    if (demo) return;
+    loadNotifications();
+    const t = setInterval(loadNotifications, 45000);
+    const onFocus = () => loadNotifications();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(t);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [loadNotifications, demo]);
+
+  async function markRead(ids) {
+    const now = new Date().toISOString();
+    const target = ids || notifications.filter((n) => !n.read_at).map((n) => n.id);
+    if (!target.length) return;
+    setNotifications((list) => list.map((n) => (target.includes(n.id) ? { ...n, read_at: n.read_at || now } : n)));
+    if (demo) return;
+    await supabase.from("notifications").update({ read_at: now }).in("id", target).is("read_at", null);
+  }
+
   // ── Clientes ───────────────────────────────────────────────
   const CLIENT_FIELDS = [
     "name", "instagram_handle", "color", "notes", "niche", "contact_name", "contact_phone", "contact_email", "document",
-    "contract_status", "monthly_fee", "billing_day", "payment_method", "contract_start", "contract_end", "services", "contract_path",
+    "contract_status", "monthly_fee", "billing_day", "payment_method", "contract_start", "contract_end", "services", "contract_path", "default_team",
   ];
 
   async function saveClient(client, { silent = false } = {}) {
@@ -79,6 +177,7 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
     }
     payload.name = (client.name || "").trim();
     payload.services = client.services || [];
+    if ("default_team" in client) payload.default_team = client.default_team || {};
     payload.contract_status = client.contract_status || "active";
     let data;
     if (demo) {
@@ -316,6 +415,10 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
   // Cria rascunhos em lote (ex.: a partir do cronograma semanal)
   async function createDraftPosts(drafts) {
     const rows = drafts.map((d) => ({
+      stages: stagesToJson(
+        Object.fromEntries(STAGES.map(({ key }) => [key, "draft"])),
+        clients.find((c) => c.id === d.client_id)?.default_team || {}
+      ),
       workspace_id: workspace.id,
       client_id: d.client_id,
       title: d.title || "",
@@ -361,7 +464,7 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
       reference_links: (post.reference_links || []).map((l) => (l || "").trim()).filter(Boolean).slice(0, 3),
       content_text: post.content_text || "",
       designer_notes: post.designer_notes || "",
-      stages: stagesToJson(stages),
+      stages: stagesToJson(stages, post.assigneesState || getAssignees(post)),
     };
     payload.status = derivePostStatus({ status: post.status || "draft", scheduled_at: payload.scheduled_at }, stages);
     if (payload.status === "scheduled") payload.publish_error = null;
@@ -370,6 +473,7 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
     if (demo) {
       data = { ...post, ...payload, id: post.id || uid() };
       delete data.stagesState;
+      delete data.assigneesState;
     } else {
       if (!post.id) payload.created_by = user.id;
       const query = post.id
@@ -406,7 +510,7 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
     const patch = { status };
     if (status === "approved" || status === "scheduled") patch.status = statusAfterApproval(post);
     if (patch.status === "scheduled") patch.publish_error = null;
-    patch.stages = stagesToJson(stagesForStatus(post, patch.status));
+    patch.stages = stagesToJson(stagesForStatus(post, patch.status), getAssignees(post));
     const optimistic = { ...post, ...patch };
     setPosts((list) => list.map((x) => (x.id === post.id ? optimistic : x)));
     if (demo) return optimistic;
@@ -470,8 +574,34 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
 
   const clientById = useMemo(() => Object.fromEntries(clients.map((c) => [c.id, c])), [clients]);
 
+  // Abre o conteúdo da notificação (na etapa certa) e marca como lida
+  function openNotification(n) {
+    markRead([n.id]);
+    const post = posts.find((p) => p.id === n.post_id);
+    if (post) setEditing({ ...post, ...(n.stage ? { _stage: n.stage } : {}) });
+    return Boolean(post);
+  }
+
+  const memberById = useMemo(() => Object.fromEntries(members.map((m) => [m.user_id, m])), [members]);
+  const deadlines = { ...DEFAULT_DEADLINES, ...(workspace.stage_deadlines || {}) };
+
   const value = {
     workspace,
+    members,
+    memberById,
+    invites,
+    deadlines,
+    loadTeam,
+    inviteMember,
+    cancelInvite,
+    updateMemberFunctions,
+    removeMember,
+    saveDeadlines,
+    notifications,
+    unreadCount: notifications.filter((n) => !n.read_at).length,
+    loadNotifications,
+    markRead,
+    openNotification,
     user,
     supabase,
     demo: Boolean(demo),

@@ -44,7 +44,7 @@ export async function getSessionContext() {
   const [{ data: membership }, { data: profile }, { count: pending }] = await Promise.all([
     supabase
       .from("workspace_members")
-      .select("role, workspaces(id, name)")
+      .select("role, workspaces(id, name, stage_deadlines)")
       .eq("user_id", claims.sub)
       .order("created_at", { ascending: true })
       .limit(1)
