@@ -1,4 +1,6 @@
-# SaaS Social Media
+# Post Lover
+
+> Gerencie, crie e publique suas postagens nas redes sociais.
 
 Plataforma para social medias e agências: **clientes, calendário de conteúdo,
 quadro de produção, aprovação pelo cliente via link e publicação automática no

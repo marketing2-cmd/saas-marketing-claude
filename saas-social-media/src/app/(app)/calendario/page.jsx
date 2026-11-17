@@ -86,7 +86,7 @@ export default function CalendarPage() {
                 return (
                   <div key={day.toISOString()} className={`group border-b border-r border-line p-2 ${view === "week" ? "min-h-[420px]" : "min-h-[124px]"} ${outside ? "bg-paper/70" : ""}`}>
                     <div className="mb-1 flex items-center justify-between">
-                      <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${sameDay(day, today) ? "bg-brand text-white shadow-[0_4px_10px_-4px_rgba(124,92,252,.8)]" : outside ? "text-ink-mute/60" : "text-ink"}`}>
+                      <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${sameDay(day, today) ? "bg-brand text-white shadow-[0_4px_10px_-4px_rgba(8,43,135,.8)]" : outside ? "text-ink-mute/60" : "text-ink"}`}>
                         {day.getDate()}
                       </span>
                       <button onClick={() => newOn(day)} className="rounded p-0.5 text-ink-mute opacity-0 hover:bg-brand-soft hover:text-brand group-hover:opacity-100" aria-label="Novo post neste dia">

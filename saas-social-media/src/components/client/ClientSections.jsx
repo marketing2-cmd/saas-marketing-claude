@@ -27,7 +27,7 @@ export default function ClientSections({ value, onChange }) {
               onClick={() => onChange(key)}
               aria-current={active ? "page" : undefined}
               className={`relative flex h-[84px] flex-col items-center justify-center gap-2 rounded-2xl border text-xs font-semibold transition active:scale-[0.97] ${
-                active ? "border-brand bg-brand text-white shadow-[0_8px_20px_-8px_rgba(124,92,252,.7)]" : "border-line bg-white text-ink-soft hover:border-brand-ring hover:text-ink"
+                active ? "border-brand bg-brand text-white shadow-[0_8px_20px_-8px_rgba(8,43,135,.7)]" : "border-line bg-white text-ink-soft hover:border-brand-ring hover:text-ink"
               }`}
             >
               <Icon size={19} />

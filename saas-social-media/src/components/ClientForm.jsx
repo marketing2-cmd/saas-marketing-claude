@@ -6,7 +6,7 @@ import { useWorkspace } from "./WorkspaceProvider";
 import CurrencyInput from "./CurrencyInput";
 import { CONTRACT_STATUSES, NICHES, PAYMENT_METHODS, SERVICES } from "@/lib/clients";
 
-const COLORS = ["#7C5CFC", "#F25C54", "#F7A928", "#2BB673", "#1E90FF", "#E84393", "#16151D", "#00B8A9"];
+const COLORS = ["#082B87", "#FF573C", "#F5B82E", "#2BB673", "#1E90FF", "#E84393", "#242329", "#00B8A9"];
 
 function Section({ title, children }) {
   return (

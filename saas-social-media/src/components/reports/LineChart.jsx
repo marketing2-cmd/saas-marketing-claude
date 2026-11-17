@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatNumber, shortDate } from "@/lib/reports";
 
-const SERIES = "#7C5CFC";
+const SERIES = "#1E4FD8"; // tom de cobalto validado para dados (o #082B87 é escuro demais)
 const GRID = "#ECEAF4";
 const PAD = { top: 16, right: 16, bottom: 28, left: 48 };
 

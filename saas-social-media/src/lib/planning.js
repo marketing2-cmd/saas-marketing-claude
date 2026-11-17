@@ -10,7 +10,7 @@ export const WEEKDAYS = [
   { n: 0, short: "Dom", long: "Domingo" },
 ];
 
-export const PILLAR_COLORS = ["#7C5CFC", "#F2557A", "#F5A524", "#22B07D", "#3B82F6", "#E879F9", "#14B8A6", "#64748B"];
+export const PILLAR_COLORS = ["#1E4FD8", "#FF573C", "#F5A524", "#22B07D", "#8B5CF6", "#E879F9", "#14B8A6", "#64748B"];
 
 export const NOTE_KINDS = {
   idea: { label: "Ideia", color: "bg-brand-soft text-brand" },

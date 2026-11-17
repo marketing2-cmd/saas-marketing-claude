@@ -292,7 +292,7 @@ function NoteDialog({ note, pillars, onClose, onSave }) {
           </div>
         </div>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={Boolean(draft.pinned)} onChange={(e) => set({ pinned: e.target.checked })} className="h-4 w-4 accent-[#7C5CFC]" /> Fixar no topo
+          <input type="checkbox" checked={Boolean(draft.pinned)} onChange={(e) => set({ pinned: e.target.checked })} className="h-4 w-4 accent-[#082B87]" /> Fixar no topo
         </label>
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onClose} className="btn-ghost">Cancelar</button>

@@ -11,7 +11,7 @@ const WEEK = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const COUNTERS = [
   { key: "draft", label: "Rascunho", color: "#94A3B8" },
   { key: "in_review", label: "Em aprovação", color: "#F5A524" },
-  { key: "changes_requested", label: "Ajuste", color: "#F2557A" },
+  { key: "changes_requested", label: "Ajuste", color: "#FF573C" },
   { key: "approved", label: "Aprovado", color: "#22B07D", also: ["scheduled", "publishing", "published"] },
 ];
 const NETWORKS = { instagram: "Instagram", facebook: "Facebook", tiktok: "TikTok" };
@@ -134,7 +134,7 @@ export default function ClientContent({ client }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex gap-2">
           {[["week", "Semanal", LayoutList], ["calendar", "Calendário", CalendarDays], ["feed", "Feed", Grid3x3]].map(([k, l, Icon]) => (
-            <button key={k} onClick={() => setView(k)} className={`btn px-4 py-2 ${view === k ? "bg-brand text-white shadow-[0_6px_16px_-6px_rgba(124,92,252,.6)]" : "border border-line bg-white text-ink-soft hover:text-ink"}`}>
+            <button key={k} onClick={() => setView(k)} className={`btn px-4 py-2 ${view === k ? "bg-brand text-white shadow-[0_6px_16px_-6px_rgba(8,43,135,.6)]" : "border border-line bg-white text-ink-soft hover:text-ink"}`}>
               <Icon size={16} /> {l}
             </button>
           ))}

@@ -10,11 +10,12 @@ import Loading from "@/components/Loading";
 import { STATUSES, sameDay } from "@/lib/posts";
 import SegmentedBar from "@/components/SegmentedBar";
 import ActivityFeed from "@/components/ActivityFeed";
+import { HeartMascot, Spark, Star } from "@/components/brand";
 
 const COUNTERS = [
   { key: "draft", label: "Rascunho", color: "#CBD5E1" },
-  { key: "in_review", label: "Em aprovação", color: "#F5A524" },
-  { key: "changes_requested", label: "Ajuste", color: "#FF7A99" },
+  { key: "in_review", label: "Em aprovação", color: "#F8D85C" },
+  { key: "changes_requested", label: "Ajuste", color: "#FF8A73" },
   { key: "scheduled", label: "Aprovado / agendado", color: "#4ADE9B", also: ["approved"] },
 ];
 
@@ -42,7 +43,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="page-title">Olá, {name} 👋</h1>
+          <h1 className="page-title flex items-center gap-2">Olá, {name}! <Spark size={26} color="#FF573C" /></h1>
           <p className="mt-1 text-sm text-ink-soft">Aqui está o resumo da sua operação de conteúdo.</p>
         </div>
         <div className="flex gap-2">
@@ -53,7 +54,8 @@ export default function DashboardPage() {
 
       {/* Barra de status */}
       <div className="relative overflow-hidden rounded-3xl bg-navy p-5 text-white shadow-float sm:p-6">
-        <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-brand/40 blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 opacity-[.07]" style={{ backgroundImage: "radial-gradient(#FFF4E1 1.5px, transparent 1.5px)", backgroundSize: "22px 22px" }} />
+        <Star size={20} className="absolute right-6 top-3 hidden rotate-12 sm:block" />
         <div className="relative grid grid-cols-2 gap-4 sm:grid-cols-4">
           {COUNTERS.map((c) => (
             <Link key={c.key} href={href("/quadro")} className="rounded-2xl bg-white/[.06] p-4 ring-1 ring-white/10 transition hover:bg-white/10">
@@ -73,7 +75,7 @@ export default function DashboardPage() {
           segments={[
             { label: "Rascunho", value: posts.filter((p) => p.status === "draft").length, color: "#94A3B8" },
             { label: "Em aprovação", value: posts.filter((p) => p.status === "in_review").length, color: "#F5A524" },
-            { label: "Ajuste", value: posts.filter((p) => p.status === "changes_requested").length, color: "#F2557A" },
+            { label: "Ajuste", value: posts.filter((p) => p.status === "changes_requested").length, color: "#FF573C" },
             { label: "Aprovado", value: posts.filter((p) => ["approved", "scheduled", "publishing", "published"].includes(p.status)).length, color: "#22B07D" },
           ]}
         />
@@ -81,7 +83,7 @@ export default function DashboardPage() {
           title="Status de veiculação"
           segments={[
             { label: "Não programado", value: posts.filter((p) => !["scheduled", "publishing", "published"].includes(p.status)).length, color: "#94A3B8" },
-            { label: "Programado", value: posts.filter((p) => ["scheduled", "publishing"].includes(p.status)).length, color: "#7C5CFC" },
+            { label: "Programado", value: posts.filter((p) => ["scheduled", "publishing"].includes(p.status)).length, color: "#1E4FD8" },
             { label: "Publicado", value: posts.filter((p) => p.status === "published").length, color: "#0EA5E9" },
           ]}
         />

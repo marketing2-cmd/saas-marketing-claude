@@ -9,6 +9,7 @@ import { buildTasks } from "@/lib/tasks";
 import WorkspaceProvider, { useWorkspace } from "./WorkspaceProvider";
 import { NotificationItem } from "./notifications";
 import Logo from "./Logo";
+import { HeartMascot } from "./brand";
 
 const NAV = [
   { href: "/", label: "Visão geral", icon: LayoutGrid },
@@ -146,8 +147,9 @@ function Shell({ children }) {
       </nav>
 
       <div className="mt-auto p-4">
-        <div className="overflow-hidden rounded-2xl bg-navy p-4 text-white">
-          <Sparkles size={18} className="text-[#B9A6FF]" />
+        <div className="relative overflow-hidden rounded-2xl bg-navy p-4 text-white">
+          <HeartMascot size={54} className="absolute -right-2 -top-1 rotate-12" />
+          <Sparkles size={18} className="text-butter" />
           <div className="mt-2 text-sm font-semibold">Publicação automática</div>
           <p className="mt-1 text-xs text-white/60">Conecte o Instagram dos clientes e publique assim que eles aprovarem.</p>
           <Link href={href("/clientes")} onClick={() => setOpen(false)} className="mt-3 inline-block rounded-lg bg-white/10 px-3 py-1.5 text-xs font-semibold hover:bg-white/20">
@@ -171,7 +173,7 @@ function Shell({ children }) {
       {demo && (
         <div className="sticky top-0 z-40 flex flex-wrap items-center justify-center print:hidden gap-x-3 gap-y-1 bg-navy px-4 py-2 text-center text-xs text-white lg:-ml-[264px]">
           <span><b>Modo demonstração</b> — os dados são fictícios e nada é salvo.</span>
-          <Link href="/signup" className="rounded-full bg-brand px-3 py-1 font-semibold hover:bg-brand-dark">Criar minha conta grátis</Link>
+          <Link href="/signup" className="rounded-full bg-coral px-3 py-1 font-semibold text-white hover:bg-coral-dark">Criar minha conta grátis</Link>
         </div>
       )}
 
@@ -189,7 +191,7 @@ function Shell({ children }) {
           <div ref={bellRef} className="relative">
             <button onClick={() => setBellOpen((o) => !o)} className={`relative rounded-xl border p-2 transition ${bellOpen ? "border-brand-ring bg-brand-soft text-brand" : "border-line bg-white text-ink-soft hover:text-ink"}`} aria-label={`Notificações${unreadCount ? `, ${unreadCount} não lidas` : ""}`} aria-expanded={bellOpen}>
               <Bell size={18} />
-              {unreadCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#F2557A] px-1 text-[10px] font-bold text-white">{unreadCount > 99 ? "99+" : unreadCount}</span>}
+              {unreadCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-coral px-1 text-[10px] font-bold text-white">{unreadCount > 99 ? "99+" : unreadCount}</span>}
             </button>
             {bellOpen && (
               <div className="absolute right-0 top-12 z-50 w-[min(380px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-line bg-white shadow-float">
@@ -207,7 +209,7 @@ function Shell({ children }) {
               </div>
             )}
           </div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#FFB48F] to-[#F2557A] text-xs font-bold text-white" title={user.email}>
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-butter to-coral text-xs font-bold text-white" title={user.email}>
             {initials}
           </div>
         </div>

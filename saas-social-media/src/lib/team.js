@@ -27,7 +27,7 @@ export function memberInitials(m) {
   return memberName(m).split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
 }
 
-const AVATAR_COLORS = ["#7C5CFC", "#F2557A", "#F5A524", "#22B07D", "#3B82F6", "#E879F9", "#14B8A6"];
+const AVATAR_COLORS = ["#082B87", "#FF573C", "#E59E0B", "#22B07D", "#1E4FD8", "#D946EF", "#0D9488"];
 export function memberColor(m) {
   const key = m?.user_id || m?.email || "";
   let h = 0;

@@ -1,4 +1,12 @@
 import Logo from "./Logo";
+import { HeartMascot, Spark, Star, Sticker } from "./brand";
+
+const TILT = [-5, 3, -2, 5, -3, 2, -4, 4, -2];
+function Big({ text, offset = 0 }) {
+  return text.split("").map((ch, i) => (
+    <span key={i} className="inline-block" style={{ transform: `rotate(${TILT[(i + offset) % TILT.length]}deg)` }}>{ch}</span>
+  ));
+}
 
 export default function AuthCard({ title, subtitle, children }) {
   return (
@@ -6,32 +14,46 @@ export default function AuthCard({ title, subtitle, children }) {
       <div className="flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-sm">
           <Logo className="mb-10" />
-          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-brand">{title}</h1>
           {subtitle && <p className="mb-8 mt-2 text-sm text-ink-soft">{subtitle}</p>}
           {children}
         </div>
       </div>
-      <div className="relative hidden overflow-hidden bg-navy lg:flex lg:flex-col lg:justify-center lg:px-16">
-        <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-brand/40 blur-3xl" />
-        <div className="absolute -bottom-40 left-10 h-96 w-96 rounded-full bg-[#F2557A]/20 blur-3xl" />
+
+      <div className="relative hidden overflow-hidden bg-brand lg:flex lg:flex-col lg:justify-center lg:px-14">
+        {/* padrão de fundo */}
+        <div className="pointer-events-none absolute inset-0 opacity-[.07]" style={{ backgroundImage: "radial-gradient(#FFF4E1 1.5px, transparent 1.5px)", backgroundSize: "22px 22px" }} />
+        <Star size={34} className="absolute left-14 top-16 rotate-12" />
+        <Star size={22} className="absolute bottom-24 right-20 -rotate-12" color="#FF573C" stroke="#FFF4E1" />
+
         <div className="relative">
-          <div className="mb-6 flex flex-wrap gap-2">
-            {["Aprovação de conteúdo", "Calendário", "Agendamento automático"].map((t) => (
-              <span key={t} className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/80">{t}</span>
-            ))}
+          <div className="flex items-start">
+            <div className="font-display text-[clamp(64px,7.5vw,112px)] font-extrabold uppercase leading-[.82] tracking-tight text-cream">
+              <div><Big text="POST" /></div>
+              <div><Big text="LOVER" offset={4} /></div>
+            </div>
+            <div className="relative -ml-2 -mt-4">
+              <Spark size={36} className="absolute -right-6 -top-4" />
+              <HeartMascot size={120} fill="#FFF4E1" stroke="#082B87" className="drop-shadow-[0_0_0_#FFF4E1]" />
+            </div>
           </div>
-          <h2 className="max-w-md text-3xl font-bold leading-tight text-white">
-            O cliente aprova e o conteúdo é <span className="text-[#B9A6FF]">agendado automaticamente.</span>
-          </h2>
-          <p className="mt-4 max-w-md text-white/60">Chega de briefing no WhatsApp, print de conversa e planilha perdida. Tudo num lugar só.</p>
-          <div className="mt-10 grid max-w-md grid-cols-4 gap-2 rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
-            {[["5", "Rascunho", "#94A3B8"], ["10", "Aprovação", "#F5A524"], ["4", "Ajuste", "#F2557A"], ["12", "Aprovado", "#22B07D"]].map(([n, l, c]) => (
-              <div key={l} className="text-center">
-                <div className="text-2xl font-bold" style={{ color: c }}>{n}</div>
-                <div className="text-[11px] text-white/60">{l}</div>
-              </div>
-            ))}
+
+          <p className="mt-8 max-w-md text-xl font-medium leading-snug text-cream">
+            Gerencie, crie e publique suas postagens nas redes sociais.
+          </p>
+          <svg viewBox="0 0 220 14" className="mt-1 h-3 w-56" aria-hidden="true">
+            <path d="M3 9 C60 3 140 3 217 8" stroke="#F8D85C" strokeWidth="5" fill="none" strokeLinecap="round" />
+          </svg>
+
+          <div className="mt-10 flex flex-wrap items-center gap-3">
+            <Sticker color="coral" rotate={-8}>Novo</Sticker>
+            <Sticker color="butter" rotate={4}>Agende</Sticker>
+            <Sticker color="cream" rotate={-3}>Publique</Sticker>
           </div>
+
+          <p className="mt-10 max-w-md text-sm text-cream/75">
+            O cliente aprova e o conteúdo é <span className="font-semibold text-butter">agendado automaticamente</span>. Chega de briefing no WhatsApp e print de conversa.
+          </p>
         </div>
       </div>
     </div>

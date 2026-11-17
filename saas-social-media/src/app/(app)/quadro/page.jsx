@@ -9,7 +9,7 @@ import { BOARD_COLUMNS, STAGES, STAGE_STATUSES, STATUSES, currentStage, formatDa
 import { memberName } from "@/lib/team";
 
 const STAGE_COLUMNS = [
-  ...STAGES.map((s) => ({ key: s.key, label: s.label, color: "#7C5CFC" })),
+  ...STAGES.map((s) => ({ key: s.key, label: s.label, color: "#1E4FD8" })),
   { key: "review", label: "Aguardando cliente", color: "#F5A524" },
   { key: "done", label: "Pronto para publicar", color: "#22B07D" },
   { key: "published", label: "Publicado", color: "#0EA5E9" },

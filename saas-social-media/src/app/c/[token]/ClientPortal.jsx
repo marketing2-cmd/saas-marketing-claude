@@ -168,7 +168,7 @@ export default function ClientPortal({ token, client, agency, initialPosts, init
           </div>
         )}
       </main>
-      <footer className="flex justify-center pb-10 pt-4 opacity-70"><Logo /></footer>
+      <footer className="flex flex-col items-center gap-1 pb-10 pt-4"><Logo size="sm" /><span className="text-[11px] text-ink-mute">Feito com Post Lover</span></footer>
 
       {livePost && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-navy/50 p-3 sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && setOpenPost(null)}>

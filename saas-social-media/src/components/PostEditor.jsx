@@ -275,7 +275,7 @@ export default function PostEditor({ initial, onClose }) {
                   <button
                     key={s.key}
                     onClick={() => setActive(s.key)}
-                    className={`flex flex-col items-center gap-1.5 rounded-2xl border bg-white px-3 py-3 transition active:scale-[0.98] ${on ? "border-brand shadow-[0_0_0_3px_rgba(124,92,252,.15)]" : "border-line hover:border-brand-ring"}`}
+                    className={`flex flex-col items-center gap-1.5 rounded-2xl border bg-white px-3 py-3 transition active:scale-[0.98] ${on ? "border-brand shadow-[0_0_0_3px_rgba(8,43,135,.15)]" : "border-line hover:border-brand-ring"}`}
                   >
                     <span className={`text-sm font-semibold ${on ? "text-brand" : "text-ink"}`}><span className="mr-1 text-ink-mute">{i + 1}.</span>{s.label}</span>
                     <span className="flex items-center gap-1.5">
