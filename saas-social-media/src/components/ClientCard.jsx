@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Instagram } from "lucide-react";
 import { Avatar, MediaView } from "./PostPreview";
 import ClientCover from "./ClientCover";
+import { CONTRACT_STATUSES, formatBRL } from "@/lib/clients";
 
 // Card de cliente com banner em degradê pastel
 export default function ClientCard({ client, posts, account, href, footer }) {
@@ -20,7 +21,19 @@ export default function ClientCard({ client, posts, account, href, footer }) {
       </ClientCover>
       <div className="relative -mt-7 px-4 pb-4">
         <div className="inline-block rounded-full bg-white p-1 shadow-soft"><Avatar client={client} size={46} /></div>
-        <div className="mt-1.5 font-bold">{client.name}</div>
+        <div className="mt-1.5 flex items-center gap-2">
+          <span className="truncate font-bold">{client.name}</span>
+          {client.contract_status && client.contract_status !== "active" && (
+            <span className={`chip shrink-0 ${CONTRACT_STATUSES[client.contract_status]?.color}`}>{CONTRACT_STATUSES[client.contract_status]?.label}</span>
+          )}
+        </div>
+        {(client.niche || client.monthly_fee != null) && (
+          <div className="mt-0.5 flex items-center gap-1.5 text-xs text-ink-soft">
+            {client.niche && <span>{client.niche}</span>}
+            {client.niche && client.monthly_fee != null && <span className="text-ink-mute">·</span>}
+            {client.monthly_fee != null && <span className="font-semibold text-ink">{formatBRL(client.monthly_fee)}/mês</span>}
+          </div>
+        )}
         <div className="mt-0.5 flex items-center gap-1 text-xs text-ink-mute">
           <Instagram size={12} />
           {account ? <span className="font-medium text-emerald-600">@{account.username} conectado</span> : client.instagram_handle || "Instagram não conectado"}

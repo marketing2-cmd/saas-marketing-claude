@@ -28,7 +28,21 @@ export const NOTE_STATUSES = {
 export const uid = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2));
 
 export function emptyStrategy() {
-  return { goals: "", audience: "", tone: "", dos: "", donts: "", pillars: [], weekly_schedule: [] };
+  return {
+    goals: "",
+    audience: "",
+    tone: "",
+    dos: "",
+    donts: "",
+    pillars: [],
+    weekly_schedule: [],
+    value_proposition: "",
+    differentials: "",
+    diagnosis: { summary: "", current_situation: "", strengths: "", weaknesses: "", opportunities: "", threats: "" },
+    personas: [],
+    competitors: [],
+    products: [],
+  };
 }
 
 export function emptyMonthlyPlan() {
@@ -97,6 +111,27 @@ export function demoPlanning() {
       dos: "Fotos com luz natural\nMostrar mãos preparando\nSempre CTA para o direct",
       donts: "Falar de dieta ou calorias\nFotos com fundo bagunçado\nPreço em letras miúdas",
       pillars,
+      value_proposition: "Doces artesanais feitos no dia, para transformar qualquer data em uma lembrança gostosa.",
+      differentials: "Receitas da família desde 1998\nEntrega no mesmo dia na região central\nCaixas personalizadas para presente",
+      diagnosis: {
+        summary: "Perfil com boa estética, mas pouca frequência e quase nenhum vídeo. Engajamento concentrado em posts de produto.",
+        current_situation: "8,2 mil seguidores · 2 posts por semana · alcance médio de 1,5 mil por post",
+        strengths: "Fotos bonitas\nClientes fiéis que marcam o perfil\nProduto muito fotogênico",
+        weaknesses: "Pouco Reels\nLegendas sem chamada para ação\nStories irregulares",
+        opportunities: "Datas comemorativas (Páscoa, Dia das Mães)\nParcerias com floriculturas\nConteúdo de bastidores",
+        threats: "Novas confeitarias no bairro com preço menor\nApps de delivery com promoções agressivas",
+      },
+      personas: [
+        { id: "pe1", name: "Mariana, a presenteadora", age: "32 anos", occupation: "Analista de RH", pains: "Não tem tempo de pensar em presentes criativos; tem medo de errar no presente.", desires: "Surpreender amigas e família com algo bonito e especial sem esforço.", objections: "Preço acima do supermercado; prazo de entrega.", channels: "Instagram, WhatsApp, Pinterest", quote: "Quero algo bonito que chegue hoje ainda." },
+      ],
+      competitors: [
+        { id: "co1", name: "Doce Ponto", handle: "@doceponto", link: "", strengths: "Reels frequentes e bem editados; preço menor.", weaknesses: "Fotos com pouca qualidade; atendimento demorado.", notes: "Postam todos os dias às 18h." },
+        { id: "co2", name: "Ateliê do Açúcar", handle: "@ateliedoacucar", link: "", strengths: "Estética impecável e embalagens premium.", weaknesses: "Pouca interação com seguidores.", notes: "" },
+      ],
+      products: [
+        { id: "pr1", name: "Caixa presente 12 doces", price: 89.9, description: "Brigadeiros gourmet sortidos em caixa com laço.", differential: "Personalização com cartão escrito à mão", link: "" },
+        { id: "pr2", name: "Bolo de pote", price: 18, description: "Sabores ninho com morango, chocolate belga e red velvet.", differential: "Feito no dia", link: "" },
+      ],
       weekly_schedule: [
         { id: "s1", weekday: 1, time: "11:00", format: "feed", pillar_id: "pl1", note: "Destaque da semana" },
         { id: "s2", weekday: 3, time: "18:00", format: "reels", pillar_id: "pl2", note: "Processo de preparo" },

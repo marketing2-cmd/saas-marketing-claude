@@ -65,14 +65,21 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
   const sortClients = (list) => [...list].sort((a, b) => a.name.localeCompare(b.name));
 
   // ── Clientes ───────────────────────────────────────────────
-  async function saveClient(client) {
-    const payload = {
-      name: client.name,
-      instagram_handle: client.instagram_handle || null,
-      color: client.color,
-      notes: client.notes || null,
-      workspace_id: workspace.id,
-    };
+  const CLIENT_FIELDS = [
+    "name", "instagram_handle", "color", "notes", "niche", "contact_name", "contact_phone", "contact_email", "document",
+    "contract_status", "monthly_fee", "billing_day", "payment_method", "contract_start", "contract_end", "services", "contract_path",
+  ];
+
+  async function saveClient(client, { silent = false } = {}) {
+    const payload = { workspace_id: workspace.id };
+    for (const f of CLIENT_FIELDS) {
+      if (!(f in client)) continue;
+      const v = client[f];
+      payload[f] = typeof v === "string" ? v.trim() || null : v ?? null;
+    }
+    payload.name = (client.name || "").trim();
+    payload.services = client.services || [];
+    payload.contract_status = client.contract_status || "active";
     let data;
     if (demo) {
       data = { ...client, ...payload, id: client.id || uid(), approval_token: client.approval_token || uid() };
@@ -88,8 +95,53 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
       data = res.data;
     }
     setClients((list) => sortClients([...list.filter((x) => x.id !== data.id), data]));
-    notify(client.id ? "Cliente atualizado." : "Cliente criado.");
+    if (!silent) notify(client.id ? "Cliente atualizado." : "Cliente criado.");
     return data;
+  }
+
+  // Contrato (PDF/imagem) no bucket privado "contracts"
+  async function uploadContract(client, file) {
+    const okType = ["application/pdf", "image/jpeg", "image/png"].includes(file.type);
+    if (!okType) {
+      notify("Envie o contrato em PDF, JPG ou PNG.", "error");
+      return null;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      notify("Arquivo muito grande (máx. 20 MB).", "error");
+      return null;
+    }
+    if (demo) {
+      const path = URL.createObjectURL(file);
+      return saveClient({ ...client, contract_path: path }, { silent: true });
+    }
+    const ext = file.type === "application/pdf" ? "pdf" : file.type === "image/png" ? "png" : "jpg";
+    const path = `${workspace.id}/${client.id}/contrato-${uid()}.${ext}`;
+    const { error } = await supabase.storage.from("contracts").upload(path, file, { contentType: file.type });
+    if (error) {
+      notify(`Falha ao enviar o contrato: ${error.message}`, "error");
+      return null;
+    }
+    const old = client.contract_path;
+    const saved = await saveClient({ ...client, contract_path: path }, { silent: true });
+    if (saved && old && !old.startsWith("blob:")) await supabase.storage.from("contracts").remove([old]);
+    return saved;
+  }
+
+  async function removeContract(client) {
+    if (!demo && client.contract_path) await supabase.storage.from("contracts").remove([client.contract_path]);
+    return saveClient({ ...client, contract_path: null }, { silent: true });
+  }
+
+  // Link temporário (5 min) para abrir o contrato privado
+  async function contractUrl(path) {
+    if (!path) return null;
+    if (demo || path.startsWith("blob:")) return path;
+    const { data, error } = await supabase.storage.from("contracts").createSignedUrl(path, 300);
+    if (error) {
+      notify("Não foi possível abrir o contrato.", "error");
+      return null;
+    }
+    return data.signedUrl;
   }
 
   async function deleteClient(id) {
@@ -162,6 +214,12 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
       donts: strategy.donts || "",
       pillars: strategy.pillars || [],
       weekly_schedule: strategy.weekly_schedule || [],
+      value_proposition: strategy.value_proposition || "",
+      differentials: strategy.differentials || "",
+      diagnosis: strategy.diagnosis || {},
+      personas: strategy.personas || [],
+      competitors: strategy.competitors || [],
+      products: strategy.products || [],
     };
     if (demo) {
       demoStore.current.strategy[clientId] = payload;
@@ -403,6 +461,9 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
     saveClient,
     deleteClient,
     setClientImage,
+    uploadContract,
+    removeContract,
+    contractUrl,
     getStrategy,
     saveStrategy,
     getMonthlyPlan,

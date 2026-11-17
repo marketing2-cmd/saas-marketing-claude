@@ -11,7 +11,7 @@ Stack: Next.js 14 (App Router) · Supabase (Postgres, Auth, Storage) · Tailwind
 | Área | Funcionalidade |
 |---|---|
 | Contas | Cadastro com e-mail/senha e **aprovação manual**: quem se cadastra fica em `/aguardando` até um admin aprovar em `/admin`. O **primeiro usuário criado vira admin**. Cada conta aprovada cria um **espaço de trabalho** (agência); os dados ficam isolados por RLS. |
-| Clientes | Cadastro com cor, @ do Instagram e observações. Cada cliente tem um **link secreto de aprovação**. |
+| Clientes | Cadastro com perfil (nome, @, nicho, cor, foto e capa), contato (responsável, WhatsApp, e-mail, CPF/CNPJ) e **contrato/financeiro** (status, valor mensal, vencimento, forma de pagamento, vigência, serviços e arquivo do contrato em bucket privado). A lista mostra receita mensal, clientes ativos, ticket médio e contratos vencendo. Cada cliente tem um **link secreto de aprovação**. |
 | Posts | Editor com legenda (contador de 2.200), upload de imagens/vídeos, carrossel com reordenação, formato (feed, carrossel, reels, story), data/hora, tags, comentários internos e **prévia estilo Instagram**. |
 | Calendário | Visão mensal e semanal, filtro por cliente, criar post clicando no dia, lista de posts sem data. |
 | Quadro | Kanban por status com arrastar e soltar (Rascunho → Em aprovação → Ajuste pedido → Aprovado → Agendado → Publicado). |
@@ -19,6 +19,7 @@ Stack: Next.js 14 (App Router) · Supabase (Postgres, Auth, Storage) · Tailwind
 | Portal do cliente | `/c/<token>`, sem login: o cliente vê os posts, **aprova ou pede ajuste com comentário**, vê a prévia do feed e o histórico. |
 | Agendamento | Ao aprovar um post com data, ele vira **Agendado**. O cron `/api/cron/publish` publica no horário via Instagram Graph API (imagem, carrossel, reels e story), com 3 tentativas e trava contra publicação duplicada. |
 | Instagram | Conexão via login da Meta por cliente (`/api/meta/connect`). O token fica numa tabela que só o servidor lê. |
+| Página do cliente | Cabeçalho compacto com detalhes recolhíveis e seções: **Conteúdo** (mês com contadores por status, filtros, visões semanal/calendário/feed), **Diagnóstico** (resumo + SWOT), **Persona**, **Concorrência**, **Posicionamento**, **Produtos**, **Cronograma**, **Ideias** e **IA** (em breve). |
 | Planejamento | Na página de cada cliente: **Linha editorial** (objetivos, público, tom de voz, pode/evitar, pilares com meta de %), **Cronograma** semanal (rotina fixa por dia/horário/formato/pilar, com geração automática dos rascunhos do mês) e mensal (tema, objetivos, foco por semana, datas importantes), e **Ideias e insights** (mural com tipos, status, fixar, link, pilar e "Criar post"). |
 | Relatórios | `/relatorios`: alcance, visualizações, interações, curtidas, comentários, compartilhamentos, salvamentos, visitas ao perfil, cliques no link, novos seguidores e taxa de engajamento, com comparação ao período anterior; gráfico de alcance por dia; ranking de posts; filtros de 7/14/30/90 dias ou datas livres; exportação CSV e PDF. Requer a permissão `instagram_manage_insights`. |
 

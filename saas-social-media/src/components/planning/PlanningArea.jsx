@@ -2,29 +2,40 @@
 
 import { useState } from "react";
 import useStrategy from "./useStrategy";
-import EditorialLine from "./EditorialLine";
+import Diagnosis from "./Diagnosis";
+import Personas from "./Personas";
+import Competitors from "./Competitors";
+import Positioning from "./Positioning";
+import Products from "./Products";
 import ScheduleTab from "./ScheduleTab";
 import IdeasBoard from "./IdeasBoard";
 import SaveBar from "./SaveBar";
 import Loading from "../Loading";
 
-// Abas de planejamento do cliente. Fica montado mesmo na aba "Visão geral"
-// para não perder edições ao alternar entre as abas.
-export default function PlanningArea({ client, tab }) {
+const STRATEGY_SECTIONS = ["diagnosis", "persona", "competitors", "positioning", "products", "schedule", "ideas"];
+
+// Seções de planejamento do cliente. Fica montado em todas as seções para não
+// perder edições ao alternar; a barra de salvar aparece sempre que houver mudança.
+export default function PlanningArea({ client, section }) {
   const strategyState = useStrategy(client.id);
   const [scheduleView, setScheduleView] = useState("weekly");
-  if (!["editorial", "schedule", "ideas"].includes(tab)) {
-    return <SaveBar dirty={strategyState.dirty} saving={strategyState.saving} onSave={strategyState.save} onDiscard={strategyState.discard} />;
-  }
-  if (!strategyState.loaded) return <Loading />;
+  const { strategy, update } = strategyState;
+  const bar = <SaveBar dirty={strategyState.dirty} saving={strategyState.saving} onSave={strategyState.save} onDiscard={strategyState.discard} />;
 
-  const showStrategyBar = tab === "editorial" || (tab === "schedule" && scheduleView === "weekly") || tab === "ideas";
+  if (!STRATEGY_SECTIONS.includes(section)) return bar;
+  if (!strategyState.loaded) return <Loading />;
+  const hideBar = section === "schedule" && scheduleView === "monthly" && !strategyState.dirty;
+
   return (
     <>
-      {tab === "editorial" && <EditorialLine strategy={strategyState.strategy} update={strategyState.update} />}
-      {tab === "schedule" && <ScheduleTab client={client} strategyState={strategyState} view={scheduleView} setView={setScheduleView} />}
-      {tab === "ideas" && <IdeasBoard client={client} pillars={strategyState.strategy.pillars} />}
-      {showStrategyBar && <SaveBar dirty={strategyState.dirty} saving={strategyState.saving} onSave={strategyState.save} onDiscard={strategyState.discard} />}
+      {section === "diagnosis" && <Diagnosis strategy={strategy} update={update} />}
+      {section === "persona" && <Personas strategy={strategy} update={update} />}
+      {section === "competitors" && <Competitors strategy={strategy} update={update} />}
+      {section === "positioning" && <Positioning strategy={strategy} update={update} />}
+      {section === "products" && <Products strategy={strategy} update={update} />}
+      {section === "schedule" && <ScheduleTab client={client} strategyState={strategyState} view={scheduleView} setView={setScheduleView} />}
+      {section === "ideas" && <IdeasBoard client={client} pillars={strategy.pillars} />}
+      {!hideBar && bar}
     </>
   );
 }

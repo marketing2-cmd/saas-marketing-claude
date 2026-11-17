@@ -14,12 +14,12 @@ export function buildDemoData() {
   const user = { id: "demo-user", email: "ana@agenciaaurora.com.br" };
 
   const clients = [
-    { id: "c1", name: "Bella Doceria", instagram_handle: "@belladoceria", color: "#F2557A", notes: "Tom leve e divertido. Evitar falar de dieta.", approval_token: "00000000-0000-4000-8000-000000000001" },
-    { id: "c2", name: "Studio Fit", instagram_handle: "@studiofit", color: "#F5A524", notes: "Foco em resultado e comunidade.", approval_token: "00000000-0000-4000-8000-000000000002" },
-    { id: "c3", name: "Clínica Sorriso", instagram_handle: "@clinicasorriso", color: "#7C5CFC", notes: "Linguagem acolhedora, sem termos técnicos.", approval_token: "00000000-0000-4000-8000-000000000003" },
-    { id: "c4", name: "Café Grão", instagram_handle: "@cafegrao", color: "#22B07D", notes: "", approval_token: "00000000-0000-4000-8000-000000000004" },
-    { id: "c5", name: "Lumen Arquitetura", instagram_handle: "@lumen.arq", color: "#3B82F6", notes: "", approval_token: "00000000-0000-4000-8000-000000000005" },
-    { id: "c6", name: "Pet Amigo", instagram_handle: "@petamigo", color: "#E879F9", notes: "", approval_token: "00000000-0000-4000-8000-000000000006" },
+    { id: "c1", name: "Bella Doceria", instagram_handle: "@belladoceria", color: "#F2557A", notes: "Tom leve e divertido. Evitar falar de dieta.", niche: "Alimentação", contact_name: "Júlia Martins", contact_phone: "(11) 98765-4321", contact_email: "contato@belladoceria.com.br", contract_status: "active", monthly_fee: 1800, billing_day: 10, payment_method: "Pix", contract_start: "2026-03-01", contract_end: "2026-12-10", services: ["Gestão de redes sociais", "Feed", "Reels", "Stories", "Design"], approval_token: "00000000-0000-4000-8000-000000000001" },
+    { id: "c2", name: "Studio Fit", instagram_handle: "@studiofit", color: "#F5A524", notes: "Foco em resultado e comunidade.", niche: "Fitness", contact_name: "Rafa Lima", contract_status: "active", monthly_fee: 1500, billing_day: 5, payment_method: "Boleto", contract_start: "2026-01-15", contract_end: "2027-01-15", services: ["Feed", "Reels", "Tráfego pago"], approval_token: "00000000-0000-4000-8000-000000000002" },
+    { id: "c3", name: "Clínica Sorriso", instagram_handle: "@clinicasorriso", color: "#7C5CFC", notes: "Linguagem acolhedora, sem termos técnicos.", niche: "Odontologia", contract_status: "active", monthly_fee: 2500, billing_day: 20, payment_method: "Pix", contract_start: "2026-05-01", services: ["Gestão de redes sociais", "Feed", "Stories", "Relatórios"], approval_token: "00000000-0000-4000-8000-000000000003" },
+    { id: "c4", name: "Café Grão", instagram_handle: "@cafegrao", color: "#22B07D", notes: "", niche: "Gastronomia", contract_status: "negotiation", monthly_fee: 1200, services: ["Feed", "Stories"], approval_token: "00000000-0000-4000-8000-000000000004" },
+    { id: "c5", name: "Lumen Arquitetura", instagram_handle: "@lumen.arq", color: "#3B82F6", notes: "", niche: "Arquitetura", contract_status: "active", monthly_fee: 2200, billing_day: 15, payment_method: "Transferência", contract_start: "2026-06-01", contract_end: "2026-12-01", services: ["Feed", "Design", "Captação de foto/vídeo"], approval_token: "00000000-0000-4000-8000-000000000005" },
+    { id: "c6", name: "Pet Amigo", instagram_handle: "@petamigo", color: "#E879F9", notes: "", niche: "Pet", contract_status: "paused", monthly_fee: 900, services: ["Feed"], approval_token: "00000000-0000-4000-8000-000000000006" },
   ];
 
   const p = (id, client_id, title, status, scheduled_at, media, format = "feed", tags = [], caption) => ({

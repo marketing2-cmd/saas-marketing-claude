@@ -48,6 +48,19 @@ create table public.clients (
   notes           text,
   avatar_url      text,   -- foto de perfil (Storage: <workspace>/clients/<id>/...)
   cover_url       text,   -- imagem de capa
+  niche           text,
+  contact_name    text,
+  contact_phone   text,
+  contact_email   text,
+  document        text,   -- CPF/CNPJ
+  contract_status text not null default 'active' check (contract_status in ('active', 'negotiation', 'paused', 'ended')),
+  monthly_fee     numeric(12,2) check (monthly_fee is null or monthly_fee >= 0),
+  billing_day     smallint check (billing_day is null or billing_day between 1 and 31),
+  payment_method  text,
+  contract_start  date,
+  contract_end    date,
+  services        text[] not null default '{}',
+  contract_path   text,   -- arquivo no bucket PRIVADO "contracts"
   -- Token do link público de aprovação (portal do cliente: /c/<token>)
   approval_token  uuid not null unique default gen_random_uuid(),
   created_at      timestamptz not null default now()
@@ -350,6 +363,12 @@ create table public.client_strategy (
   donts           text not null default '',
   pillars         jsonb not null default '[]'::jsonb,          -- [{ id, name, description, color, share }]
   weekly_schedule jsonb not null default '[]'::jsonb,          -- [{ id, weekday, time, format, pillar_id, note }]
+  value_proposition text not null default '',
+  differentials   text not null default '',
+  diagnosis       jsonb not null default '{}'::jsonb,          -- { summary, current_situation, strengths, weaknesses, opportunities, threats }
+  personas        jsonb not null default '[]'::jsonb,          -- [{ id, name, age, occupation, pains, desires, objections, channels, quote }]
+  competitors     jsonb not null default '[]'::jsonb,          -- [{ id, name, handle, link, strengths, weaknesses, notes }]
+  products        jsonb not null default '[]'::jsonb,          -- [{ id, name, price, description, differential, link }]
   updated_at      timestamptz not null default now()
 );
 
@@ -410,3 +429,17 @@ create policy client_monthly_plans_all on public.client_monthly_plans for all to
   using (private.is_member(workspace_id)) with check (private.is_member(workspace_id));
 create policy client_notes_all on public.client_notes for all to authenticated
   using (private.is_member(workspace_id)) with check (private.is_member(workspace_id));
+
+-- Contratos: bucket PRIVADO. Arquivos em <workspace_id>/<client_id>/<arquivo>.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('contracts', 'contracts', false, 20971520, array['application/pdf', 'image/jpeg', 'image/png'])
+on conflict (id) do nothing;
+
+create policy contracts_select on storage.objects for select to authenticated
+  using (bucket_id = 'contracts' and private.is_member(((storage.foldername(name))[1])::uuid));
+create policy contracts_insert on storage.objects for insert to authenticated
+  with check (bucket_id = 'contracts' and private.is_member(((storage.foldername(name))[1])::uuid));
+create policy contracts_update on storage.objects for update to authenticated
+  using (bucket_id = 'contracts' and private.is_member(((storage.foldername(name))[1])::uuid));
+create policy contracts_delete on storage.objects for delete to authenticated
+  using (bucket_id = 'contracts' and private.is_member(((storage.foldername(name))[1])::uuid));
