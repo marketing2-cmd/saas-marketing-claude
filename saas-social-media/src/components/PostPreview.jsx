@@ -61,6 +61,17 @@ export function MediaView({ item, className = "", controls = false }) {
 
 export function Avatar({ client, size = 32 }) {
   const initials = (client?.name || "?").split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+  if (client?.avatar_url) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={client.avatar_url}
+        alt=""
+        className="inline-block shrink-0 rounded-full bg-paper object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
   return (
     <span
       className="inline-flex shrink-0 items-center justify-center rounded-full font-bold text-white"

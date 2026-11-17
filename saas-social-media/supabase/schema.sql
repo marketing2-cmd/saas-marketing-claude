@@ -46,6 +46,8 @@ create table public.clients (
   instagram_handle text,
   color           text not null default '#6D4AFF',
   notes           text,
+  avatar_url      text,   -- foto de perfil (Storage: <workspace>/clients/<id>/...)
+  cover_url       text,   -- imagem de capa
   -- Token do link público de aprovação (portal do cliente: /c/<token>)
   approval_token  uuid not null unique default gen_random_uuid(),
   created_at      timestamptz not null default now()

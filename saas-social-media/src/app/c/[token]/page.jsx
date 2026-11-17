@@ -12,7 +12,7 @@ export default async function PortalPage({ params }) {
   return (
     <ClientPortal
       token={params.token}
-      client={{ name: client.name, instagram_handle: client.instagram_handle, color: client.color }}
+      client={{ name: client.name, instagram_handle: client.instagram_handle, color: client.color, avatar_url: client.avatar_url, cover_url: client.cover_url }}
       agency={client.workspaces?.name}
       initialPosts={posts}
       initialComments={comments}

@@ -8,7 +8,7 @@ export async function loadPortal(token) {
   const db = createServiceClient();
   const { data: client } = await db
     .from("clients")
-    .select("id, name, instagram_handle, color, workspace_id, workspaces(name)")
+    .select("id, name, instagram_handle, color, avatar_url, cover_url, workspace_id, workspaces(name)")
     .eq("approval_token", token)
     .maybeSingle();
   if (!client) return null;

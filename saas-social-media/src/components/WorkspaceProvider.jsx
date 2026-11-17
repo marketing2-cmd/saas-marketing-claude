@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { createClient } from "@/lib/supabase/client";
 import { statusAfterApproval } from "@/lib/posts";
 import PostEditor from "./PostEditor";
+import { resizeImage } from "@/lib/image";
 
 const WorkspaceContext = createContext(null);
 
@@ -92,6 +93,47 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
     setClients((list) => list.filter((x) => x.id !== id));
     setPosts((list) => list.filter((x) => x.client_id !== id));
     notify("Cliente removido.");
+  }
+
+  // Foto de perfil ou capa do cliente. kind: "avatar" | "cover"; file null = remover
+  async function setClientImage(client, kind, file) {
+    const column = kind === "avatar" ? "avatar_url" : "cover_url";
+    let url = null;
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        notify("Escolha um arquivo de imagem (JPG, PNG ou WebP).", "error");
+        return null;
+      }
+      const resized = await resizeImage(file, kind === "avatar" ? 480 : 1800);
+      if (resized.size > 8 * 1024 * 1024) {
+        notify("Imagem muito grande (máx. 8 MB).", "error");
+        return null;
+      }
+      if (demo) {
+        url = URL.createObjectURL(resized);
+      } else {
+        const ext = resized.type === "image/png" ? "png" : resized.type === "image/webp" ? "webp" : "jpg";
+        const path = `${workspace.id}/clients/${client.id}/${kind}-${uid()}.${ext}`;
+        const { error } = await supabase.storage.from("media").upload(path, resized, { contentType: resized.type });
+        if (error) {
+          notify(`Falha no upload: ${error.message}`, "error");
+          return null;
+        }
+        url = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
+      }
+    }
+    let updated = { ...client, [column]: url };
+    if (!demo) {
+      const res = await supabase.from("clients").update({ [column]: url }).eq("id", client.id).select().single();
+      if (res.error) {
+        notify(res.error.message, "error");
+        return null;
+      }
+      updated = res.data;
+    }
+    setClients((list) => list.map((c) => (c.id === client.id ? updated : c)));
+    notify(file ? (kind === "avatar" ? "Foto de perfil atualizada." : "Capa atualizada.") : kind === "avatar" ? "Foto removida." : "Capa removida.");
+    return updated;
   }
 
   // ── Posts ──────────────────────────────────────────────────
@@ -212,6 +254,7 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
     notify,
     saveClient,
     deleteClient,
+    setClientImage,
     savePost,
     setPostStatus,
     deletePost,

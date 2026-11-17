@@ -6,6 +6,7 @@ import PostPreview, { Avatar } from "@/components/PostPreview";
 import FeedGrid from "@/components/FeedGrid";
 import StatusBadge from "@/components/StatusBadge";
 import Logo from "@/components/Logo";
+import ClientCover from "@/components/ClientCover";
 import { FORMATS, clientGradient, formatDateTime, statusAfterApproval } from "@/lib/posts";
 
 export default function ClientPortal({ token, client, agency, initialPosts, initialComments, demo = false }) {
@@ -55,10 +56,10 @@ export default function ClientPortal({ token, client, agency, initialPosts, init
         </div>
       )}
       <header className="border-b border-line bg-white">
-        <div className="h-24" style={{ background: clientGradient(client.color) }} />
+        <ClientCover client={client} className="h-28 sm:h-40" />
         <div className="mx-auto max-w-3xl px-4">
-          <div className="-mt-9 flex items-end gap-3">
-            <div className="rounded-full bg-white p-1 shadow-soft"><Avatar client={client} size={64} /></div>
+          <div className="relative -mt-9 flex items-end gap-3">
+            <div className="rounded-full bg-white p-1 shadow-soft"><Avatar client={client} size={68} /></div>
             <div className="pb-1">
               <div className="text-lg font-bold">{client.name}</div>
               <div className="text-xs text-ink-mute">Aprovação de conteúdo{agency ? ` · ${agency}` : ""}</div>

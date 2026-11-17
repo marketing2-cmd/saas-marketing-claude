@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Instagram } from "lucide-react";
 import { Avatar, MediaView } from "./PostPreview";
-import { clientGradient } from "@/lib/posts";
+import ClientCover from "./ClientCover";
 
 // Card de cliente com banner em degradê pastel
 export default function ClientCard({ client, posts, account, href, footer }) {
@@ -11,15 +11,14 @@ export default function ClientCard({ client, posts, account, href, footer }) {
   const thumbs = posts.filter((p) => p.media?.[0] && p.format !== "story").slice(0, 3);
   return (
     <Link href={href} className="card group overflow-hidden transition hover:-translate-y-0.5 hover:shadow-float">
-      <div className="relative h-20" style={{ background: clientGradient(client.color) }}>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_20%,rgba(255,255,255,.7),transparent_45%)]" />
+      <ClientCover client={client} className="h-20">
         {pending > 0 && (
           <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold text-amber-700 shadow-sm">
             {pending} em aprovação
           </span>
         )}
-      </div>
-      <div className="-mt-7 px-4 pb-4">
+      </ClientCover>
+      <div className="relative -mt-7 px-4 pb-4">
         <div className="inline-block rounded-full bg-white p-1 shadow-soft"><Avatar client={client} size={46} /></div>
         <div className="mt-1.5 font-bold">{client.name}</div>
         <div className="mt-0.5 flex items-center gap-1 text-xs text-ink-mute">

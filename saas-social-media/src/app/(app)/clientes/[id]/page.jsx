@@ -12,7 +12,8 @@ import CopyLink from "@/components/CopyLink";
 import Dialog from "@/components/Dialog";
 import PostMini from "@/components/PostMini";
 import Loading from "@/components/Loading";
-import { clientGradient } from "@/lib/posts";
+import ClientCover from "@/components/ClientCover";
+import { AvatarControls, CoverControls } from "@/components/ClientImageControls";
 
 export default function ClientPage() {
   const { id } = useParams();
@@ -58,12 +59,15 @@ export default function ClientPage() {
       <Link href={href("/clientes")} className="inline-flex items-center gap-1 text-sm font-medium text-ink-soft hover:text-ink"><ArrowLeft size={14} /> Todos os clientes</Link>
 
       <div className="card mt-4 overflow-hidden">
-        <div className="relative h-28" style={{ background: clientGradient(client.color) }}>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(255,255,255,.75),transparent_45%)]" />
-        </div>
+        <ClientCover client={client} className="group h-36 sm:h-48">
+          <CoverControls client={client} />
+        </ClientCover>
         <div className="flex flex-wrap items-end justify-between gap-4 px-5 pb-5">
-          <div className="-mt-10 flex items-end gap-4">
-            <div className="rounded-full bg-white p-1.5 shadow-soft"><Avatar client={client} size={76} /></div>
+          <div className="-mt-12 flex items-end gap-4">
+            <div className="relative rounded-full bg-white p-1.5 shadow-soft">
+              <Avatar client={client} size={88} />
+              <AvatarControls client={client} />
+            </div>
             <div className="pb-1">
               <h1 className="text-2xl font-bold tracking-tight">{client.name}</h1>
               <div className="text-sm text-ink-soft">{client.instagram_handle}</div>
