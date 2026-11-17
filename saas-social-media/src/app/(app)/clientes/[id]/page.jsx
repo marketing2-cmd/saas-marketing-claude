@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, BarChart3, CheckCircle2, ExternalLink, Instagram, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, BarChart3, CalendarRange, CheckCircle2, LayoutGrid, Lightbulb, Compass, ExternalLink, Instagram, Pencil, Plus, Trash2 } from "lucide-react";
 import { useWorkspace } from "@/components/WorkspaceProvider";
 import { Avatar } from "@/components/PostPreview";
 import FeedGrid from "@/components/FeedGrid";
@@ -12,6 +12,7 @@ import CopyLink from "@/components/CopyLink";
 import Dialog from "@/components/Dialog";
 import PostMini from "@/components/PostMini";
 import Loading from "@/components/Loading";
+import PlanningArea from "@/components/planning/PlanningArea";
 import ClientCover from "@/components/ClientCover";
 import { AvatarControls, CoverControls } from "@/components/ClientImageControls";
 
@@ -22,6 +23,15 @@ export default function ClientPage() {
   const { loading, clientById, posts, accounts, openEditor, deleteClient, reload, notify, href, demo } = useWorkspace();
   const [editing, setEditing] = useState(false);
   const [tab, setTab] = useState("feed");
+  const [section, setSectionState] = useState(() => params.get("aba") || "overview");
+  function setSection(next) {
+    setSectionState(next);
+    // Atualiza a URL sem recarregar (permite voltar direto para a aba)
+    const url = new URL(window.location.href);
+    if (next === "overview") url.searchParams.delete("aba");
+    else url.searchParams.set("aba", next);
+    window.history.replaceState(null, "", url);
+  }
 
   if (loading) return <Loading />;
   const client = clientById[id];
@@ -89,6 +99,28 @@ export default function ClientPage() {
         </div>
       </div>
 
+      <nav className="mt-5 flex gap-1 overflow-x-auto border-b border-line" aria-label="Seções do cliente">
+        {[
+          ["overview", "Visão geral", LayoutGrid],
+          ["editorial", "Linha editorial", Compass],
+          ["schedule", "Cronograma", CalendarRange],
+          ["ideas", "Ideias e insights", Lightbulb],
+        ].map(([k, l, Icon]) => (
+          <button
+            key={k}
+            onClick={() => setSection(k)}
+            className={`-mb-px flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition ${section === k ? "border-brand text-brand" : "border-transparent text-ink-soft hover:text-ink"}`}
+          >
+            <Icon size={16} /> {l}
+          </button>
+        ))}
+      </nav>
+
+      <div className={section === "overview" ? "" : "mt-6"}>
+        <PlanningArea client={client} tab={section} />
+      </div>
+
+      {section === "overview" && (<>
       {connected && <div className="mt-4 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">Instagram conectado! Posts aprovados com data serão publicados automaticamente.</div>}
       {metaError && <div className="mt-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-700">Não foi possível conectar o Instagram: {metaError}</div>}
 
@@ -153,6 +185,8 @@ export default function ClientPage() {
           <button onClick={remove} className="btn w-full text-rose-600 hover:bg-rose-50"><Trash2 size={16} /> Excluir cliente</button>
         </aside>
       </div>
+
+      </>)}
 
       {editing && (
         <Dialog title="Editar cliente" onClose={() => setEditing(false)}>

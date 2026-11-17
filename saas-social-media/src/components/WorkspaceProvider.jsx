@@ -1,10 +1,11 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { statusAfterApproval } from "@/lib/posts";
 import PostEditor from "./PostEditor";
 import { resizeImage } from "@/lib/image";
+import { demoPlanning, emptyMonthlyPlan, emptyStrategy } from "@/lib/planning";
 
 const WorkspaceContext = createContext(null);
 
@@ -25,6 +26,12 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
   const [editing, setEditing] = useState(null);
   const [toast, setToast] = useState(null);
   const base = demo ? "/demo" : "";
+  // Modo demonstração: planejamento guardado só na memória da página
+  const demoStore = useRef(null);
+  if (demo && !demoStore.current) {
+    const seed = demoPlanning();
+    demoStore.current = { strategy: { c1: seed.strategy }, plans: {}, notes: { c1: seed.notes } };
+  }
 
   const notify = useCallback((message, kind = "ok") => {
     setToast({ message, kind });
@@ -134,6 +141,147 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
     setClients((list) => list.map((c) => (c.id === client.id ? updated : c)));
     notify(file ? (kind === "avatar" ? "Foto de perfil atualizada." : "Capa atualizada.") : kind === "avatar" ? "Foto removida." : "Capa removida.");
     return updated;
+  }
+
+  // ── Planejamento ───────────────────────────────────────────
+  async function getStrategy(clientId) {
+    if (demo) return { ...emptyStrategy(), ...(demoStore.current.strategy[clientId] || {}) };
+    const { data, error } = await supabase.from("client_strategy").select("*").eq("client_id", clientId).maybeSingle();
+    if (error) notify(error.message, "error");
+    return { ...emptyStrategy(), ...(data || {}) };
+  }
+
+  async function saveStrategy(clientId, strategy) {
+    const payload = {
+      client_id: clientId,
+      workspace_id: workspace.id,
+      goals: strategy.goals || "",
+      audience: strategy.audience || "",
+      tone: strategy.tone || "",
+      dos: strategy.dos || "",
+      donts: strategy.donts || "",
+      pillars: strategy.pillars || [],
+      weekly_schedule: strategy.weekly_schedule || [],
+    };
+    if (demo) {
+      demoStore.current.strategy[clientId] = payload;
+      return payload;
+    }
+    const { data, error } = await supabase.from("client_strategy").upsert(payload, { onConflict: "client_id" }).select().single();
+    if (error) {
+      notify(error.message, "error");
+      return null;
+    }
+    return data;
+  }
+
+  async function getMonthlyPlan(clientId, month) {
+    if (demo) return { ...emptyMonthlyPlan(), ...(demoStore.current.plans[`${clientId}:${month}`] || {}) };
+    const { data, error } = await supabase.from("client_monthly_plans").select("*").eq("client_id", clientId).eq("month", month).maybeSingle();
+    if (error) notify(error.message, "error");
+    return { ...emptyMonthlyPlan(), ...(data || {}) };
+  }
+
+  async function saveMonthlyPlan(clientId, month, plan) {
+    const payload = {
+      client_id: clientId,
+      workspace_id: workspace.id,
+      month,
+      theme: plan.theme || "",
+      goals: plan.goals || "",
+      weeks: plan.weeks || [],
+      key_dates: plan.key_dates || [],
+    };
+    if (demo) {
+      demoStore.current.plans[`${clientId}:${month}`] = payload;
+      return payload;
+    }
+    const { data, error } = await supabase.from("client_monthly_plans").upsert(payload, { onConflict: "client_id,month" }).select().single();
+    if (error) {
+      notify(error.message, "error");
+      return null;
+    }
+    return data;
+  }
+
+  async function listNotes(clientId) {
+    if (demo) return [...(demoStore.current.notes[clientId] || [])];
+    const { data, error } = await supabase.from("client_notes").select("*").eq("client_id", clientId).order("created_at", { ascending: false });
+    if (error) notify(error.message, "error");
+    return data || [];
+  }
+
+  async function saveNote(clientId, note) {
+    const payload = {
+      client_id: clientId,
+      workspace_id: workspace.id,
+      kind: note.kind || "idea",
+      title: note.title || "",
+      body: note.body || "",
+      link: note.link || null,
+      pillar_id: note.pillar_id || null,
+      status: note.status || "new",
+      pinned: Boolean(note.pinned),
+    };
+    if (demo) {
+      const list = demoStore.current.notes[clientId] || [];
+      const saved = { ...note, ...payload, id: note.id || uid(), created_at: note.created_at || new Date().toISOString() };
+      demoStore.current.notes[clientId] = [saved, ...list.filter((n) => n.id !== saved.id)];
+      return saved;
+    }
+    if (!note.id) payload.created_by = user.id;
+    const query = note.id
+      ? supabase.from("client_notes").update(payload).eq("id", note.id).select().single()
+      : supabase.from("client_notes").insert(payload).select().single();
+    const { data, error } = await query;
+    if (error) {
+      notify(error.message, "error");
+      return null;
+    }
+    return data;
+  }
+
+  async function deleteNote(clientId, id) {
+    if (demo) {
+      demoStore.current.notes[clientId] = (demoStore.current.notes[clientId] || []).filter((n) => n.id !== id);
+      return true;
+    }
+    const { error } = await supabase.from("client_notes").delete().eq("id", id);
+    if (error) {
+      notify(error.message, "error");
+      return false;
+    }
+    return true;
+  }
+
+  // Cria rascunhos em lote (ex.: a partir do cronograma semanal)
+  async function createDraftPosts(drafts) {
+    const rows = drafts.map((d) => ({
+      workspace_id: workspace.id,
+      client_id: d.client_id,
+      title: d.title || "",
+      caption: d.caption || "",
+      format: d.format || "feed",
+      networks: ["instagram"],
+      tags: d.tags || [],
+      media: [],
+      status: "draft",
+      scheduled_at: d.scheduled_at,
+      ...(demo ? {} : { created_by: user.id }),
+    }));
+    let created;
+    if (demo) {
+      created = rows.map((r) => ({ ...r, id: uid() }));
+    } else {
+      const { data, error } = await supabase.from("posts").insert(rows).select();
+      if (error) {
+        notify(error.message, "error");
+        return [];
+      }
+      created = data;
+    }
+    setPosts((list) => [...list, ...created]);
+    return created;
   }
 
   // ── Posts ──────────────────────────────────────────────────
@@ -255,6 +403,14 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
     saveClient,
     deleteClient,
     setClientImage,
+    getStrategy,
+    saveStrategy,
+    getMonthlyPlan,
+    saveMonthlyPlan,
+    listNotes,
+    saveNote,
+    deleteNote,
+    createDraftPosts,
     savePost,
     setPostStatus,
     deletePost,

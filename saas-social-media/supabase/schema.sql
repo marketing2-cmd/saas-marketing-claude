@@ -334,3 +334,79 @@ create policy media_delete on storage.objects
     bucket_id = 'media'
     and private.is_member(((storage.foldername(name))[1])::uuid)
   );
+
+-- ─────────────────────────────────────────────────────────────
+-- Planejamento por cliente: linha editorial, cronograma, planos
+-- mensais e mural de ideias/insights
+-- ─────────────────────────────────────────────────────────────
+
+create table public.client_strategy (
+  client_id       uuid primary key references public.clients(id) on delete cascade,
+  workspace_id    uuid not null references public.workspaces(id) on delete cascade,
+  goals           text not null default '',
+  audience        text not null default '',
+  tone            text not null default '',
+  dos             text not null default '',
+  donts           text not null default '',
+  pillars         jsonb not null default '[]'::jsonb,          -- [{ id, name, description, color, share }]
+  weekly_schedule jsonb not null default '[]'::jsonb,          -- [{ id, weekday, time, format, pillar_id, note }]
+  updated_at      timestamptz not null default now()
+);
+
+create table public.client_monthly_plans (
+  id           uuid primary key default gen_random_uuid(),
+  client_id    uuid not null references public.clients(id) on delete cascade,
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  month        date not null check (extract(day from month) = 1),
+  theme        text not null default '',
+  goals        text not null default '',
+  weeks        jsonb not null default '[]'::jsonb,             -- ["foco semana 1", ...]
+  key_dates    jsonb not null default '[]'::jsonb,             -- [{ id, date, title }]
+  updated_at   timestamptz not null default now(),
+  unique (client_id, month)
+);
+
+create table public.client_notes (
+  id           uuid primary key default gen_random_uuid(),
+  client_id    uuid not null references public.clients(id) on delete cascade,
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  kind         text not null default 'idea' check (kind in ('idea', 'insight', 'reference')),
+  title        text not null default '',
+  body         text not null default '',
+  link         text,
+  pillar_id    text,
+  status       text not null default 'new' check (status in ('new', 'approved', 'used', 'discarded')),
+  pinned       boolean not null default false,
+  created_by   uuid references auth.users(id) on delete set null,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+create index client_notes_client_idx on public.client_notes(client_id, created_at desc);
+create index client_monthly_plans_ws_idx on public.client_monthly_plans(workspace_id);
+create index client_notes_ws_idx on public.client_notes(workspace_id);
+create index client_strategy_ws_idx on public.client_strategy(workspace_id);
+
+create trigger client_strategy_check_client before insert or update of client_id, workspace_id on public.client_strategy
+  for each row execute function private.check_post_client();
+create trigger client_monthly_plans_check_client before insert or update of client_id, workspace_id on public.client_monthly_plans
+  for each row execute function private.check_post_client();
+create trigger client_notes_check_client before insert or update of client_id, workspace_id on public.client_notes
+  for each row execute function private.check_post_client();
+
+create trigger client_strategy_touch before update on public.client_strategy
+  for each row execute function public.touch_updated_at();
+create trigger client_monthly_plans_touch before update on public.client_monthly_plans
+  for each row execute function public.touch_updated_at();
+create trigger client_notes_touch before update on public.client_notes
+  for each row execute function public.touch_updated_at();
+
+alter table public.client_strategy      enable row level security;
+alter table public.client_monthly_plans enable row level security;
+alter table public.client_notes         enable row level security;
+
+create policy client_strategy_all on public.client_strategy for all to authenticated
+  using (private.is_member(workspace_id)) with check (private.is_member(workspace_id));
+create policy client_monthly_plans_all on public.client_monthly_plans for all to authenticated
+  using (private.is_member(workspace_id)) with check (private.is_member(workspace_id));
+create policy client_notes_all on public.client_notes for all to authenticated
+  using (private.is_member(workspace_id)) with check (private.is_member(workspace_id));
