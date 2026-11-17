@@ -38,7 +38,19 @@ export default function ClientCard({ client, posts, account, href, footer }) {
           <Instagram size={12} />
           {account ? <span className="font-medium text-emerald-600">@{account.username} conectado</span> : client.instagram_handle || "Instagram não conectado"}
         </div>
-        <div className="mt-3 grid grid-cols-3 gap-1.5">
+        <div className="mt-3 grid grid-cols-2 gap-1.5 text-[11px] font-semibold">
+          {[
+            ["Rascunho", posts.filter((p) => p.status === "draft").length, "bg-slate-50 text-slate-600 ring-slate-200", "bg-slate-400"],
+            ["Ajuste", posts.filter((p) => p.status === "changes_requested").length, "bg-rose-50 text-rose-600 ring-rose-100", "bg-rose-500"],
+            ["Aprovação", posts.filter((p) => p.status === "in_review").length, "bg-amber-50 text-amber-700 ring-amber-100", "bg-amber-400"],
+            ["Aprovados", posts.filter((p) => ["approved", "scheduled", "publishing", "published"].includes(p.status)).length, "bg-emerald-50 text-emerald-700 ring-emerald-100", "bg-emerald-500"],
+          ].map(([l, n, cls, dot]) => (
+            <span key={l} className={`flex items-center gap-1.5 rounded-lg px-2 py-1.5 ring-1 ${cls}`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />{n} {l}
+            </span>
+          ))}
+        </div>
+        <div className="mt-2 grid grid-cols-3 gap-1.5">
           {[0, 1, 2].map((i) => (
             <div key={i} className="aspect-[4/5] overflow-hidden rounded-lg bg-paper">
               {thumbs[i] && <MediaView item={thumbs[i].media[0]} className="h-full w-full object-cover transition group-hover:scale-105" />}

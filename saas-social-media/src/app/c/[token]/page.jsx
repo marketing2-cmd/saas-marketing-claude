@@ -8,7 +8,7 @@ export const metadata = { title: "Aprovação de conteúdo", robots: { index: fa
 export default async function PortalPage({ params }) {
   const data = await loadPortal(params.token);
   if (!data) notFound();
-  const { client, posts, comments } = data;
+  const { client, posts, comments, shared } = data;
   return (
     <ClientPortal
       token={params.token}
@@ -16,6 +16,7 @@ export default async function PortalPage({ params }) {
       agency={client.workspaces?.name}
       initialPosts={posts}
       initialComments={comments}
+      shared={shared}
     />
   );
 }

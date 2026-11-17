@@ -39,19 +39,28 @@ export default function useStrategy(clientId) {
 
   const update = useCallback((patch) => setStrategy((s) => ({ ...s, ...(typeof patch === "function" ? patch(s) : patch) })), []);
 
-  async function save() {
+  async function save(override, message = "Planejamento salvo.") {
+    const next = override || strategy;
     setSaving(true);
-    const res = await saveStrategy(clientId, strategy);
+    const res = await saveStrategy(clientId, next);
     setSaving(false);
     if (res) {
-      setSaved(JSON.stringify(strategy));
-      notify("Planejamento salvo.");
+      setStrategy(next);
+      setSaved(JSON.stringify(next));
+      notify(message);
     }
+    return res;
+  }
+
+  // Liberar/ocultar uma seção para o cliente salva na hora
+  function setVisibility(section, shared) {
+    const next = { ...strategy, section_visibility: { ...(strategy.section_visibility || {}), [section]: shared ? "shared" : "draft" } };
+    return save(next, shared ? "Seção liberada para o cliente." : "Seção voltou para rascunho.");
   }
 
   function discard() {
     setStrategy(JSON.parse(saved));
   }
 
-  return { strategy, update, dirty, saving, save, discard, loaded: strategy !== null };
+  return { strategy, update, dirty, saving, save, discard, setVisibility, loaded: strategy !== null };
 }

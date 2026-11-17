@@ -42,8 +42,19 @@ export function emptyStrategy() {
     personas: [],
     competitors: [],
     products: [],
+    section_visibility: {},
   };
 }
+
+// Seções do planejamento que podem ser liberadas para o cliente
+export const SHAREABLE_SECTIONS = {
+  diagnosis: "Diagnóstico",
+  persona: "Persona",
+  competitors: "Concorrência",
+  positioning: "Posicionamento",
+  products: "Produtos",
+  schedule: "Cronograma",
+};
 
 export function emptyMonthlyPlan() {
   return { theme: "", goals: "", weeks: ["", "", "", "", ""], key_dates: [] };

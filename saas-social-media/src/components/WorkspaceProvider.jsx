@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { statusAfterApproval } from "@/lib/posts";
+import { STAGES, derivePostStatus, getStages, stagesToJson, statusAfterApproval } from "@/lib/posts";
 import PostEditor from "./PostEditor";
 import { resizeImage } from "@/lib/image";
 import { demoPlanning, emptyMonthlyPlan, emptyStrategy } from "@/lib/planning";
@@ -220,6 +220,7 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
       personas: strategy.personas || [],
       competitors: strategy.competitors || [],
       products: strategy.products || [],
+      section_visibility: strategy.section_visibility || {},
     };
     if (demo) {
       demoStore.current.strategy[clientId] = payload;
@@ -343,7 +344,9 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
   }
 
   // ── Posts ──────────────────────────────────────────────────
+  // Salva o post. Se "stages" vier preenchido, o status geral é calculado a partir das etapas.
   async function savePost(post) {
+    const stages = post.stagesState || getStages(post);
     const payload = {
       workspace_id: workspace.id,
       client_id: post.client_id,
@@ -353,14 +356,20 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
       networks: post.networks?.length ? post.networks : ["instagram"],
       tags: post.tags || [],
       media: post.media || [],
-      status: post.status || "draft",
       scheduled_at: post.scheduled_at || null,
+      theme: post.theme || "",
+      reference_links: (post.reference_links || []).map((l) => (l || "").trim()).filter(Boolean).slice(0, 3),
+      content_text: post.content_text || "",
+      designer_notes: post.designer_notes || "",
+      stages: stagesToJson(stages),
     };
-    if (["approved", "scheduled"].includes(payload.status)) payload.status = statusAfterApproval(payload);
+    payload.status = derivePostStatus({ status: post.status || "draft", scheduled_at: payload.scheduled_at }, stages);
+    if (payload.status === "scheduled") payload.publish_error = null;
 
     let data;
     if (demo) {
       data = { ...post, ...payload, id: post.id || uid() };
+      delete data.stagesState;
     } else {
       if (!post.id) payload.created_by = user.id;
       const query = post.id
@@ -377,11 +386,27 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
     return data;
   }
 
+  // Ao mover o card no quadro, as etapas acompanham o novo status
+  function stagesForStatus(post, status) {
+    const current = getStages(post);
+    const out = {};
+    for (const { key } of STAGES) {
+      const v = current[key];
+      if (status === "draft") out[key] = "draft";
+      else if (status === "approved" || status === "scheduled") out[key] = "approved";
+      else if (status === "in_review") out[key] = v === "approved" ? "approved" : "in_review";
+      else if (status === "changes_requested") out[key] = v === "approved" ? "approved" : "changes_requested";
+      else out[key] = v;
+    }
+    return out;
+  }
+
   // Otimista: a tela muda na hora; se o banco recusar, volta ao estado anterior
   async function setPostStatus(post, status) {
     const patch = { status };
     if (status === "approved" || status === "scheduled") patch.status = statusAfterApproval(post);
     if (patch.status === "scheduled") patch.publish_error = null;
+    patch.stages = stagesToJson(stagesForStatus(post, patch.status));
     const optimistic = { ...post, ...patch };
     setPosts((list) => list.map((x) => (x.id === post.id ? optimistic : x)));
     if (demo) return optimistic;
@@ -428,15 +453,15 @@ export default function WorkspaceProvider({ workspace, user, demo = null, childr
     return data || [];
   }
 
-  async function addComment(postId, body) {
+  async function addComment(postId, body, stage = null) {
     if (demo) {
-      const c = { id: uid(), post_id: postId, author_type: "team", author_name: user.email, body, created_at: new Date().toISOString() };
+      const c = { id: uid(), post_id: postId, author_type: "team", author_name: user.email, body, stage, created_at: new Date().toISOString() };
       setDemoComments((m) => ({ ...m, [postId]: [...(m[postId] || []), c] }));
       return c;
     }
     const { data, error } = await supabase
       .from("post_comments")
-      .insert({ post_id: postId, workspace_id: workspace.id, author_type: "team", author_name: user.email, body })
+      .insert({ post_id: postId, workspace_id: workspace.id, author_type: "team", author_name: user.email, body, stage })
       .select()
       .single();
     if (error) notify(error.message, "error");

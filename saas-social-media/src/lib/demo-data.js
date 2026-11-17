@@ -31,7 +31,13 @@ export function buildDemoData() {
   const posts = [
     p("p1", "c1", "Lançamento bolo de pote", "scheduled", at(1, 11), [img(1)], "feed", ["lançamento"]),
     p("p2", "c1", "Bastidores da cozinha", "in_review", at(2, 18), [img(6)], "reels", ["bastidores"]),
-    p("p3", "c1", "Promo dia dos namorados", "draft", at(5, 10), [img(10)], "carousel", ["promoção"]),
+    {
+      ...p("p3", "c1", "Promo dia dos namorados", "in_review", at(5, 10), [img(10), img(6), img(1)], "carousel", ["promoção"]),
+      theme: "Carrossel com 3 opções de caixa presente para o Dia dos Namorados, com preço e prazo de encomenda.",
+      reference_links: ["https://instagram.com/p/exemplo1", "https://instagram.com/p/exemplo2"],
+      content_text: "Slide 1: Surpreenda quem você ama 💘\nSlide 2: Caixa 6 doces — R$ 49,90\nSlide 3: Caixa 12 doces — R$ 89,90",
+      stages: { theme: { status: "in_review" }, content: { status: "draft" }, media: { status: "draft" }, caption: { status: "draft" } },
+    },
     p("p4", "c1", "Depoimento cliente", "published", at(-3, 12), [img(12)]),
     p("p5", "c2", "Desafio 30 dias", "in_review", at(1, 7, 30), [img(2), img(7)], "carousel", ["desafio"]),
     p("p6", "c2", "Treino de 15 min", "changes_requested", at(3, 6), [img(9)], "reels"),

@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Heart, ImageIcon, MessageCircle, Send } from "lucide-react";
 
 // Simulação de um post do Instagram (usada no editor e no portal do cliente)
 export default function PostPreview({ client, post }) {
   const [index, setIndex] = useState(0);
+  const touch = useRef(null);
   const media = post.media || [];
+  const go = (dir) => setIndex((i) => Math.min(media.length - 1, Math.max(0, i + dir)));
   const current = media[Math.min(index, media.length - 1)];
   const handle = client?.instagram_handle?.replace(/^@/, "") || client?.name?.toLowerCase().replace(/\s+/g, "") || "perfil";
   const aspect = post.format === "reels" || post.format === "story" ? "aspect-[9/16]" : "aspect-[4/5]";
@@ -17,7 +19,16 @@ export default function PostPreview({ client, post }) {
         <span className="rounded-full bg-gradient-to-tr from-[#FEDA75] via-[#D62976] to-[#4F5BD5] p-[2px]"><span className="block rounded-full bg-white p-[1.5px]"><Avatar client={client} size={26} /></span></span>
         <span className="text-sm font-semibold">{handle}</span>
       </div>
-      <div className={`relative ${aspect} max-h-[520px] w-full bg-paper`}>
+      <div
+        className={`relative ${aspect} max-h-[520px] w-full touch-pan-y bg-paper`}
+        onTouchStart={(e) => (touch.current = e.touches[0].clientX)}
+        onTouchEnd={(e) => {
+          if (touch.current === null) return;
+          const dx = e.changedTouches[0].clientX - touch.current;
+          if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+          touch.current = null;
+        }}
+      >
         {current ? <MediaView item={current} className="h-full w-full object-cover" controls /> : (
           <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-ink-mute">
             <ImageIcon size={32} />
@@ -26,15 +37,16 @@ export default function PostPreview({ client, post }) {
         )}
         {media.length > 1 && (
           <>
-            <button type="button" onClick={() => setIndex((i) => Math.max(0, i - 1))} className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/85 p-1 shadow" aria-label="Anterior">
+            <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[11px] font-semibold text-white">{Math.min(index, media.length - 1) + 1}/{media.length}</span>
+            <button type="button" onClick={() => go(-1)} disabled={index === 0} className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/85 p-1 shadow disabled:opacity-0" aria-label="Anterior">
               <ChevronLeft size={16} />
             </button>
-            <button type="button" onClick={() => setIndex((i) => Math.min(media.length - 1, i + 1))} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/85 p-1 shadow" aria-label="Próxima">
+            <button type="button" onClick={() => go(1)} disabled={index >= media.length - 1} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/85 p-1 shadow disabled:opacity-0" aria-label="Próxima">
               <ChevronRight size={16} />
             </button>
             <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1">
               {media.map((_, i) => (
-                <span key={i} className={`h-1.5 w-1.5 rounded-full ${i === index ? "bg-white" : "bg-white/50"}`} />
+                <button type="button" key={i} onClick={() => setIndex(i)} aria-label={`Mídia ${i + 1}`} className={`h-1.5 w-1.5 rounded-full ${i === index ? "bg-white" : "bg-white/50"}`} />
               ))}
             </div>
           </>

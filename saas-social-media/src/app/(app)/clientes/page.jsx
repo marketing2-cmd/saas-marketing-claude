@@ -20,7 +20,7 @@ export default function ClientsPage() {
   if (loading) return <Loading />;
   const visible = clients.filter(
     (c) =>
-      c.name.toLowerCase().includes(query.toLowerCase()) &&
+      [c.name, c.instagram_handle, c.niche, c.contact_email, c.contact_name].filter(Boolean).join(" ").toLowerCase().includes(query.trim().toLowerCase()) &&
       (!statusFilter || (c.contract_status || "active") === statusFilter) &&
       (!niche || c.niche === niche)
   );
@@ -43,7 +43,7 @@ export default function ClientsPage() {
         <div className="flex flex-wrap gap-2">
           <div className="relative">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute" />
-            <input className="input w-56 pl-9" placeholder="Buscar cliente…" value={query} onChange={(e) => setQuery(e.target.value)} />
+            <input className="input w-72 max-w-full pl-9" placeholder="Buscar por nome, @, nicho ou e-mail…" value={query} onChange={(e) => setQuery(e.target.value)} />
           </div>
           <button onClick={() => setCreating(true)} className="btn-primary"><Plus size={16} strokeWidth={2.5} /> Novo cliente</button>
         </div>

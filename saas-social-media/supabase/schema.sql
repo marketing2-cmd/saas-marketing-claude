@@ -95,6 +95,11 @@ create table public.posts (
   external_id   text,
   publish_error text,
   publish_attempts int not null default 0,
+  theme           text not null default '',          -- etapa "Tema": ideia/tema da publicação
+  reference_links text[] not null default '{}',      -- até 3 links de referência
+  content_text    text not null default '',          -- etapa "Conteúdo": texto da arte / roteiro
+  designer_notes  text not null default '',
+  stages          jsonb not null default '{}'::jsonb, -- { theme|content|media|caption: { status } }
   created_by    uuid references auth.users(id) on delete set null,
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()
@@ -109,6 +114,7 @@ create table public.post_comments (
   workspace_id uuid not null references public.workspaces(id) on delete cascade,
   author_type  text not null check (author_type in ('team', 'client')),
   author_name  text not null default '',
+  stage        text,   -- etapa a que o comentário se refere (theme, content, media, caption)
   body         text not null check (char_length(body) between 1 and 4000),
   created_at   timestamptz not null default now()
 );
@@ -369,6 +375,7 @@ create table public.client_strategy (
   personas        jsonb not null default '[]'::jsonb,          -- [{ id, name, age, occupation, pains, desires, objections, channels, quote }]
   competitors     jsonb not null default '[]'::jsonb,          -- [{ id, name, handle, link, strengths, weaknesses, notes }]
   products        jsonb not null default '[]'::jsonb,          -- [{ id, name, price, description, differential, link }]
+  section_visibility jsonb not null default '{}'::jsonb,       -- seções visíveis no portal: { diagnosis: "shared", ... }
   updated_at      timestamptz not null default now()
 );
 

@@ -11,6 +11,8 @@ import ScheduleTab from "./ScheduleTab";
 import IdeasBoard from "./IdeasBoard";
 import SaveBar from "./SaveBar";
 import Loading from "../Loading";
+import VisibilityToggle from "./VisibilityToggle";
+import { SHAREABLE_SECTIONS } from "@/lib/planning";
 
 const STRATEGY_SECTIONS = ["diagnosis", "persona", "competitors", "positioning", "products", "schedule", "ideas"];
 
@@ -26,8 +28,13 @@ export default function PlanningArea({ client, section }) {
   if (!strategyState.loaded) return <Loading />;
   const hideBar = section === "schedule" && scheduleView === "monthly" && !strategyState.dirty;
 
+  const shareKey = section === "persona" ? "persona" : section;
+  const shareable = shareKey in SHAREABLE_SECTIONS;
+  const shared = strategy.section_visibility?.[shareKey] === "shared";
+
   return (
     <>
+      {shareable && <VisibilityToggle shared={shared} dirty={strategyState.dirty} onChange={(v) => strategyState.setVisibility(shareKey, v)} />}
       {section === "diagnosis" && <Diagnosis strategy={strategy} update={update} />}
       {section === "persona" && <Personas strategy={strategy} update={update} />}
       {section === "competitors" && <Competitors strategy={strategy} update={update} />}
