@@ -22,6 +22,7 @@ import PostPreview, { Avatar, MediaView } from "./PostPreview";
 import StatusBadge from "./StatusBadge";
 import MemberAvatar from "./MemberAvatar";
 import { memberName, membersForStage, stageDue } from "@/lib/team";
+import { FORMAT_RULES, validatePost } from "@/lib/formats";
 import { FORMATS, STAGES, STAGE_STATUSES, derivePostStatus, formatDateTime, fromLocalInput, getAssignees, getStages, isStageEmpty, skipEmptyStages, toLocalInput } from "@/lib/posts";
 
 const CAPTION_LIMIT = 2200;
@@ -51,6 +52,8 @@ export default function PostEditor({ initial, onClose }) {
     reference_links: [],
     content_text: "",
     designer_notes: "",
+    reels_share_to_feed: true,
+    reels_cover: null,
     ...initial,
   }));
   const [stages, setStages] = useState(() => getStages({ status: "draft", ...initial }));
@@ -169,6 +172,14 @@ export default function PostEditor({ initial, onClose }) {
     set({ media, format: media.length > 1 && post.format === "feed" ? "carousel" : post.format });
   }
 
+  async function uploadCover(file) {
+    if (!file.type.startsWith("image/")) return notify("A capa precisa ser uma imagem (JPG ou PNG).", "error");
+    setUploading(true);
+    const item = await uploadMedia(file);
+    setUploading(false);
+    if (item) set({ reels_cover: item });
+  }
+
   function moveMedia(i, dir) {
     const media = [...post.media];
     const j = i + dir;
@@ -188,6 +199,8 @@ export default function PostEditor({ initial, onClose }) {
     if (c) setComments((list) => [...list, c]);
   }
 
+  const problems = validatePost(post);
+  const blocking = problems.filter((p) => p.level === "error");
   const stageIndex = STAGES.findIndex((s) => s.key === active);
   const st = stages[active];
   const stageComments = comments.filter((c) => c.stage === active);
@@ -264,6 +277,13 @@ export default function PostEditor({ initial, onClose }) {
             {post.status === "failed" && post.publish_error && (
               <div className="flex gap-2 rounded-xl bg-rose-50 p-3 text-sm text-rose-700">
                 <AlertTriangle size={18} className="shrink-0" /> <span><b>Falha ao publicar:</b> {post.publish_error}</span>
+              </div>
+            )}
+
+            {post.scheduled_at && blocking.length > 0 && !locked && (
+              <div className="flex gap-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-800 ring-1 ring-amber-200">
+                <AlertTriangle size={18} className="shrink-0" />
+                <span><b>Antes de publicar:</b> {blocking.map((b) => b.msg).join(" ")}</span>
               </div>
             )}
 
@@ -429,7 +449,50 @@ export default function PostEditor({ initial, onClose }) {
                     )}
                     <input ref={fileRef} type="file" accept="image/jpeg,image/png,video/mp4,video/quicktime" multiple hidden onChange={(e) => { handleFiles([...e.target.files]); e.target.value = ""; }} />
                   </div>
-                  <p className="mt-3 text-xs text-ink-mute">Arraste arquivos para o quadro ou clique em Adicionar. JPG/PNG para imagens, MP4/MOV para vídeos. Instagram: prefira 1080×1350 (feed) ou 1080×1920 (Reels e Stories).</p>
+                  <div className="mt-3 rounded-xl bg-paper/80 px-3 py-2 text-xs text-ink-soft ring-1 ring-line">
+                    <b className="text-ink">{FORMATS[post.format]}:</b> {FORMAT_RULES[post.format]} Arraste arquivos para o quadro ou clique em Adicionar.
+                  </div>
+
+                  {problems.length > 0 && (
+                    <ul className="mt-3 space-y-1.5">
+                      {problems.map((p, i) => (
+                        <li key={i} className={`flex gap-2 rounded-lg px-3 py-2 text-xs ${p.level === "error" ? "bg-rose-50 text-rose-700" : "bg-amber-50 text-amber-800"}`}>
+                          <AlertTriangle size={14} className="mt-0.5 shrink-0" /> {p.msg}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {post.format === "reels" && (
+                    <div className="mt-5 grid gap-4 rounded-2xl border border-line p-4 sm:grid-cols-[auto_1fr]">
+                      <div>
+                        <span className="label">Capa do Reels</span>
+                        {post.reels_cover ? (
+                          <div className="group relative h-40 w-[90px] overflow-hidden rounded-xl border border-line">
+                            <MediaView item={post.reels_cover} className="h-full w-full object-cover" />
+                            {!locked && (
+                              <button type="button" onClick={() => set({ reels_cover: null })} className="absolute right-1 top-1 rounded bg-white/90 p-1 text-rose-600 opacity-0 transition group-hover:opacity-100" aria-label="Remover capa"><Trash2 size={12} /></button>
+                            )}
+                          </div>
+                        ) : (
+                          <label className={`flex h-40 w-[90px] flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-line bg-paper text-center text-[11px] font-semibold text-ink-mute ${locked ? "" : "cursor-pointer hover:border-brand-ring hover:text-brand"}`}>
+                            <ImagePlus size={18} /> Enviar capa
+                            <input type="file" accept="image/jpeg,image/png" hidden disabled={locked} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) uploadCover(f); }} />
+                          </label>
+                        )}
+                      </div>
+                      <div className="space-y-3 text-sm">
+                        <p className="text-xs text-ink-mute">Opcional. Imagem vertical 9:16 que aparece no perfil e na grade. Sem capa, o Instagram usa um quadro do vídeo.</p>
+                        <label className="flex items-start gap-3 rounded-xl bg-paper/70 p-3 ring-1 ring-line">
+                          <input type="checkbox" className="mt-0.5 h-4 w-4 accent-[#082B87]" checked={post.reels_share_to_feed !== false} disabled={locked} onChange={(e) => set({ reels_share_to_feed: e.target.checked })} />
+                          <span>
+                            <b>Mostrar também no feed</b>
+                            <span className="block text-xs text-ink-mute">Desmarcado, o Reels aparece só na aba Reels do perfil.</span>
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -441,7 +504,10 @@ export default function PostEditor({ initial, onClose }) {
                       {post.caption.length}/{CAPTION_LIMIT} · {(post.caption.match(/#[\p{L}\d_]+/gu) || []).length} hashtags
                     </span>
                   </div>
-                  <textarea id="pe-caption" className="input min-h-[260px] resize-y" placeholder="Escreva a legenda do post…" value={post.caption} onChange={(e) => set({ caption: e.target.value })} disabled={locked} />
+                  {post.format === "story" && (
+                    <p className="mb-2 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800 ring-1 ring-amber-200">Stories não têm legenda no Instagram. Use este campo só como anotação interna — ou deixe em branco e aprove a etapa.</p>
+                  )}
+                  <textarea id="pe-caption" className="input min-h-[260px] resize-y" placeholder={post.format === "story" ? "Anotação interna (não aparece no Story)" : "Escreva a legenda do post…"} value={post.caption} onChange={(e) => set({ caption: e.target.value })} disabled={locked} />
                   {(post.caption.match(/#[\p{L}\d_]+/gu) || []).length > 30 && <p className="mt-1 text-xs font-medium text-rose-600">O Instagram aceita no máximo 30 hashtags.</p>}
                 </div>
               )}

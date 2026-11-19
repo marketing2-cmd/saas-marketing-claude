@@ -1,6 +1,8 @@
 // Integração com a Meta (Instagram Graph API via Facebook Login).
 // Docs: https://developers.facebook.com/docs/instagram-platform/content-publishing
 
+import { validatePost } from "./formats";
+
 const GRAPH_VERSION = process.env.META_GRAPH_VERSION || "v27.0";
 const GRAPH = `https://graph.facebook.com/${GRAPH_VERSION}`;
 
@@ -112,52 +114,66 @@ async function waitUntilReady(containerId, token, timeoutMs = 45000) {
     }
     await sleep(3000);
   }
-  throw new MetaError("O Instagram ainda está processando o vídeo. Nova tentativa no próximo ciclo.", { retryable: true });
+  const e = new MetaError("O Instagram ainda está processando o vídeo. A publicação continua no próximo minuto.", { retryable: true });
+  e.processing = true;
+  throw e;
 }
 
 function mediaParams(item, extra = {}) {
   return item.type === "video" ? { video_url: item.url, ...extra } : { image_url: item.url, ...extra };
 }
 
-// Publica um post no Instagram. Retorna o ID da mídia publicada.
-export async function publishToInstagram({ igUserId, token, post }) {
+// Publica um post no Instagram e retorna o ID da mídia publicada.
+// containerId: container criado numa execução anterior que ainda estava
+// processando (vídeo) — a publicação continua dele em vez de recriar.
+// onContainer(id): chamado assim que o container é criado, para salvar.
+export async function publishToInstagram({ igUserId, token, post, containerId = null, onContainer }) {
+  const errors = validatePost(post).filter((p) => p.level === "error");
+  if (errors.length) throw new MetaError(errors[0].msg);
   const media = post.media || [];
-  if (!media.length) throw new MetaError("O post não tem imagem ou vídeo — o Instagram exige mídia.");
-  if ((post.caption || "").length > 2200) throw new MetaError("A legenda passa de 2.200 caracteres.");
+  let creationId = containerId;
 
-  let creationId;
-
-  if (post.format === "story") {
-    const item = media[0];
-    const res = await graph(`${igUserId}/media`, {
-      method: "POST",
-      params: { ...mediaParams(item), media_type: "STORIES", access_token: token },
-    });
-    creationId = res.id;
-  } else if (media.length > 1 || post.format === "carousel") {
-    if (media.length < 2) throw new MetaError("Carrossel precisa de pelo menos 2 mídias.");
-    if (media.length > 10) throw new MetaError("Carrossel aceita no máximo 10 mídias.");
-    const children = [];
-    for (const item of media) {
-      const params = item.type === "video"
-        ? { media_type: "VIDEO", video_url: item.url, is_carousel_item: "true", access_token: token }
-        : { image_url: item.url, is_carousel_item: "true", access_token: token };
-      const child = await graph(`${igUserId}/media`, { method: "POST", params });
-      children.push(child.id);
+  if (!creationId) {
+    if (post.format === "story") {
+      const res = await graph(`${igUserId}/media`, {
+        method: "POST",
+        params: { ...mediaParams(media[0]), media_type: "STORIES", access_token: token },
+      });
+      creationId = res.id;
+    } else if (media.length > 1 || post.format === "carousel") {
+      const children = [];
+      for (const item of media) {
+        const params = item.type === "video"
+          ? { media_type: "VIDEO", video_url: item.url, is_carousel_item: "true", access_token: token }
+          : { image_url: item.url, is_carousel_item: "true", access_token: token };
+        const child = await graph(`${igUserId}/media`, { method: "POST", params });
+        children.push(child.id);
+      }
+      for (const id of children) await waitUntilReady(id, token);
+      const res = await graph(`${igUserId}/media`, {
+        method: "POST",
+        params: { media_type: "CAROUSEL", children: children.join(","), caption: post.caption || "", access_token: token },
+      });
+      creationId = res.id;
+    } else if (post.format === "reels" || media[0].type === "video") {
+      const params = {
+        media_type: "REELS",
+        video_url: media[0].url,
+        caption: post.caption || "",
+        share_to_feed: post.reels_share_to_feed === false ? "false" : "true",
+        access_token: token,
+      };
+      if (post.reels_cover?.url) params.cover_url = post.reels_cover.url;
+      const res = await graph(`${igUserId}/media`, { method: "POST", params });
+      creationId = res.id;
+    } else {
+      const res = await graph(`${igUserId}/media`, {
+        method: "POST",
+        params: { image_url: media[0].url, caption: post.caption || "", access_token: token },
+      });
+      creationId = res.id;
     }
-    for (const id of children) await waitUntilReady(id, token);
-    const res = await graph(`${igUserId}/media`, {
-      method: "POST",
-      params: { media_type: "CAROUSEL", children: children.join(","), caption: post.caption || "", access_token: token },
-    });
-    creationId = res.id;
-  } else {
-    const item = media[0];
-    const params = item.type === "video" || post.format === "reels"
-      ? { media_type: "REELS", video_url: item.url, caption: post.caption || "", access_token: token }
-      : { image_url: item.url, caption: post.caption || "", access_token: token };
-    const res = await graph(`${igUserId}/media`, { method: "POST", params });
-    creationId = res.id;
+    if (onContainer) await onContainer(creationId);
   }
 
   await waitUntilReady(creationId, token);

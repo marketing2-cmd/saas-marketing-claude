@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 const MAX_ATTEMPTS = 3;
+const MAX_PROCESSING_MINUTES = 30; // vídeo ainda processando na Meta: espera até 30 min
 const BATCH = 5;
 
 // Publica os posts com status "scheduled" cujo horário já chegou.
@@ -66,18 +67,50 @@ async function publish(db, post) {
       .maybeSingle();
     if (!account) throw Object.assign(new Error("Instagram do cliente não está conectado."), { retryable: false });
 
-    const externalId = await publishToInstagram({ igUserId: account.external_user_id, token: account.access_token, post });
+    const externalId = await publishToInstagram({
+      igUserId: account.external_user_id,
+      token: account.access_token,
+      post,
+      containerId: post.publish_container_id,
+      onContainer: (id) =>
+        db.from("posts").update({ publish_container_id: id, publish_container_at: new Date().toISOString() }).eq("id", post.id),
+    });
 
     await db
       .from("posts")
-      .update({ status: "published", published_at: new Date().toISOString(), external_id: externalId, publish_error: null, publish_attempts: attempts })
+      .update({
+        status: "published",
+        published_at: new Date().toISOString(),
+        external_id: externalId,
+        publish_error: null,
+        publish_attempts: attempts,
+        publish_container_id: null,
+        publish_container_at: null,
+      })
       .eq("id", post.id);
     return { id: post.id, ok: true };
   } catch (e) {
+    // Vídeo ainda processando: volta para a fila sem gastar tentativa,
+    // até o limite de tempo; depois disso, falha
+    if (e.processing) {
+      const { data: fresh } = await db.from("posts").select("publish_container_at").eq("id", post.id).maybeSingle();
+      const since = fresh?.publish_container_at ? (Date.now() - new Date(fresh.publish_container_at).getTime()) / 60000 : 0;
+      if (since < MAX_PROCESSING_MINUTES) {
+        await db.from("posts").update({ status: "scheduled", publish_error: e.message }).eq("id", post.id);
+        return { id: post.id, ok: false, error: e.message, retry: true, processing: true };
+      }
+      e.message = "O Instagram não terminou de processar o vídeo em 30 minutos. Confira o arquivo (formato, duração e tamanho) e tente de novo.";
+      e.retryable = false;
+    }
     const retry = e.retryable && attempts < MAX_ATTEMPTS;
     await db
       .from("posts")
-      .update({ status: retry ? "scheduled" : "failed", publish_error: e.message, publish_attempts: attempts })
+      .update({
+        status: retry ? "scheduled" : "failed",
+        publish_error: e.message,
+        publish_attempts: attempts,
+        ...(retry ? {} : { publish_container_id: null, publish_container_at: null }),
+      })
       .eq("id", post.id);
     return { id: post.id, ok: false, error: e.message, retry };
   }

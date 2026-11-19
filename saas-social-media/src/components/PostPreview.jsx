@@ -1,10 +1,85 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Heart, ImageIcon, MessageCircle, Send } from "lucide-react";
+import { Bookmark, ChevronLeft, ChevronRight, Clapperboard, Heart, ImageIcon, MessageCircle, MoreHorizontal, Music2, Send } from "lucide-react";
 
 // Simulação de um post do Instagram (usada no editor e no portal do cliente)
 export default function PostPreview({ client, post }) {
+  if (post.format === "story") return <StoryPreview client={client} post={post} />;
+  if (post.format === "reels") return <ReelsPreview client={client} post={post} />;
+  return <FeedPreview client={client} post={post} />;
+}
+
+function handleOf(client) {
+  return client?.instagram_handle?.replace(/^@/, "") || client?.name?.toLowerCase().replace(/\s+/g, "") || "perfil";
+}
+
+function EmptyMedia({ dark = false }) {
+  return (
+    <div className={`flex h-full w-full flex-col items-center justify-center gap-2 ${dark ? "text-white/60" : "text-ink-mute"}`}>
+      <ImageIcon size={32} />
+      <span className="text-xs">Sem mídia</span>
+    </div>
+  );
+}
+
+// Story: tela vertical com barra de progresso no topo, sem legenda
+function StoryPreview({ client, post }) {
+  const item = post.media?.[0];
+  return (
+    <div className="mx-auto w-full max-w-[300px]">
+      <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[22px] bg-neutral-900 shadow-soft">
+        {item ? <MediaView item={item} className="h-full w-full object-cover" controls /> : <EmptyMedia dark />}
+        <div className="pointer-events-none absolute inset-x-0 top-0 bg-gradient-to-b from-black/50 to-transparent p-3">
+          <div className="h-[3px] w-full overflow-hidden rounded-full bg-white/40"><div className="h-full w-1/3 rounded-full bg-white" /></div>
+          <div className="mt-2.5 flex items-center gap-2 text-white">
+            <Avatar client={client} size={26} />
+            <span className="text-[13px] font-semibold">{handleOf(client)}</span>
+            <span className="text-[12px] text-white/70">agora</span>
+            <MoreHorizontal size={16} className="ml-auto" />
+          </div>
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center gap-2 p-3">
+          <div className="flex-1 rounded-full border border-white/60 px-3 py-1.5 text-[12px] text-white/80">Enviar mensagem</div>
+          <Heart size={20} className="text-white" />
+          <Send size={20} className="text-white" />
+        </div>
+      </div>
+      <p className="mt-2 text-center text-[11px] text-ink-mute">Prévia de Story — legenda não aparece no Instagram</p>
+    </div>
+  );
+}
+
+// Reels: vídeo vertical com legenda sobreposta e ações na lateral
+function ReelsPreview({ client, post }) {
+  const item = post.media?.[0];
+  return (
+    <div className="mx-auto w-full max-w-[300px]">
+      <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[22px] bg-neutral-900 shadow-soft">
+        {item ? <MediaView item={item} className="h-full w-full object-cover" controls /> : <EmptyMedia dark />}
+        <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-1.5 text-[14px] font-semibold text-white drop-shadow">
+          <Clapperboard size={16} /> Reels
+        </div>
+        <div className="pointer-events-none absolute bottom-16 right-3 flex flex-col items-center gap-4 text-white drop-shadow">
+          <Heart size={22} /><MessageCircle size={22} /><Send size={22} /><Bookmark size={22} />
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 pr-12 text-white">
+          <div className="flex items-center gap-2">
+            <Avatar client={client} size={24} />
+            <span className="text-[13px] font-semibold">{handleOf(client)}</span>
+          </div>
+          <p className="mt-1.5 line-clamp-2 text-[12px] leading-snug">{post.caption || "Legenda do Reels…"}</p>
+          <div className="mt-1.5 flex items-center gap-1 text-[11px] text-white/80"><Music2 size={12} /> Áudio original</div>
+        </div>
+      </div>
+      <p className="mt-2 text-center text-[11px] text-ink-mute">
+        Prévia de Reels{post.reels_share_to_feed === false ? " · só na aba Reels" : " · também aparece no feed"}
+      </p>
+    </div>
+  );
+}
+
+function FeedPreview({ client, post }) {
   const [index, setIndex] = useState(0);
   const touch = useRef(null);
   const media = post.media || [];

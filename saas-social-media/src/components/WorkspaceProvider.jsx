@@ -464,9 +464,16 @@ export default function WorkspaceProvider({ workspace: initialWorkspace, user, d
       reference_links: (post.reference_links || []).map((l) => (l || "").trim()).filter(Boolean).slice(0, 3),
       content_text: post.content_text || "",
       designer_notes: post.designer_notes || "",
+      reels_share_to_feed: post.reels_share_to_feed !== false,
+      reels_cover: post.reels_cover || null,
       stages: stagesToJson(stages, post.assigneesState || getAssignees(post)),
     };
     payload.status = derivePostStatus({ status: post.status || "draft", scheduled_at: payload.scheduled_at }, stages);
+    // Post editado pela equipe: um vídeo que estava processando na Meta é descartado
+    if (!demo && post.id) {
+      payload.publish_container_id = null;
+      payload.publish_container_at = null;
+    }
     if (payload.status === "scheduled") payload.publish_error = null;
 
     let data;

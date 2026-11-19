@@ -103,6 +103,10 @@ create table public.posts (
   reference_links text[] not null default '{}',      -- até 3 links de referência
   content_text    text not null default '',          -- etapa "Conteúdo": texto da arte / roteiro
   designer_notes  text not null default '',
+  reels_share_to_feed boolean not null default true, -- Reels: também aparece no feed
+  reels_cover     jsonb,                             -- Reels: imagem de capa { path, url, type }
+  publish_container_id text,                         -- container da Meta ainda processando (vídeo)
+  publish_container_at timestamptz,
   stages          jsonb not null default '{}'::jsonb, -- { theme|content|media|caption: { status, assignee } }
   created_by    uuid references auth.users(id) on delete set null,
   created_at    timestamptz not null default now(),
