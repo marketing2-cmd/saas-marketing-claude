@@ -13,8 +13,8 @@ export function Button({ variant = "primary", size = "md", className, ...props }
   const variants = {
     primary: "bg-brand text-white hover:bg-brand-dark",
     ghost: "text-ink-2 hover:bg-hover",
-    outline: "border border-line bg-white text-ink hover:bg-hover",
-    danger: "text-red-600 hover:bg-red-50",
+    outline: "border border-line bg-surface text-ink hover:bg-hover",
+    danger: "text-red-400 hover:bg-red-500/10",
   };
   return <button className={cx(base, sizes[size], variants[variant], className)} {...props} />;
 }
@@ -41,7 +41,7 @@ export function Avatar({ member, size = 26 }) {
 }
 
 export function SectorDot({ sector, size = 8 }) {
-  return <span className="inline-block shrink-0 rounded-full" style={{ width: size, height: size, background: sector?.color || "#A9AEBB" }} />;
+  return <span className="inline-block shrink-0 rounded-full" style={{ width: size, height: size, background: sector?.color || "#6E6E68" }} />;
 }
 
 // Popover simples com fechamento por clique fora / Esc.
@@ -65,7 +65,7 @@ export function Popover({ trigger, children, align = "left", width = 220 }) {
       {open && (
         <div
           onClick={(e) => e.stopPropagation()}
-          className={cx("absolute z-40 mt-1 rounded-xl border border-line bg-white p-1 shadow-pop", align === "right" ? "right-0" : "left-0")}
+          className={cx("absolute z-40 mt-1 rounded-xl border border-line bg-surface p-1 shadow-pop", align === "right" ? "right-0" : "left-0")}
           style={{ width }}
         >
           {typeof children === "function" ? children(() => setOpen(false)) : children}
@@ -193,7 +193,7 @@ export function SectorPicker({ value, onChange, placeholder = "Escolher setor", 
 
 export function DueDate({ value, onChange, done }) {
   const diff = value ? daysFromToday(value) : null;
-  const tone = !value || done ? "text-ink-2" : diff < 0 ? "text-red-600 font-semibold" : diff === 0 ? "text-amber-600 font-semibold" : "text-ink-2";
+  const tone = !value || done ? "text-ink-2" : diff < 0 ? "text-red-400 font-semibold" : diff === 0 ? "text-amber-400 font-semibold" : "text-ink-2";
   const label = value ? formatDue(value) : "";
   const inner = (
     <span className={cx("inline-flex items-center gap-1.5 text-[13px]", tone)}>
@@ -222,8 +222,8 @@ export function Modal({ title, onClose, children, width = 480 }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-ink/30 p-4 pt-[10vh]" onMouseDown={onClose}>
-      <div className="w-full rounded-2xl bg-white shadow-pop" style={{ maxWidth: width }} onMouseDown={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 pt-[10vh]" onMouseDown={onClose}>
+      <div className="w-full rounded-2xl bg-surface shadow-pop" style={{ maxWidth: width }} onMouseDown={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
           <h3 className="text-[15px] font-bold text-ink">{title}</h3>
           <button onClick={onClose} className="rounded-md p-1 text-muted hover:bg-hover">
@@ -245,7 +245,7 @@ export function Field({ label, children }) {
   );
 }
 
-export const inputCls = "w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink outline-none focus:border-brand";
+export const inputCls = "w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-brand";
 
 export function Empty({ icon: Icon, title, children }) {
   return (

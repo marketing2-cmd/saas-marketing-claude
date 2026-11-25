@@ -35,7 +35,7 @@ export function demoSeed() {
   ];
 
   const projects = [
-    { id: "p1", sector_id: "marketing", name: "Campanha Black Friday", description: "Peças, mídia e e-mails da campanha de novembro.", color: "#0038FF", archived: false, created_at: ts(9000) },
+    { id: "p1", sector_id: "marketing", name: "Campanha Black Friday", description: "Peças, mídia e e-mails da campanha de novembro.", color: "#FF6A00", archived: false, created_at: ts(9000) },
     { id: "p2", sector_id: "marketing", name: "Novo site institucional", description: "Reformulação do site com foco em geração de leads.", color: "#7B3FF2", archived: false, created_at: ts(8000) },
     { id: "p3", sector_id: "comercial", name: "Feira do Varejo 2026", description: "Estande, materiais e agenda da equipe.", color: "#00A86B", archived: false, created_at: ts(7000) },
     { id: "p4", sector_id: "operacoes", name: "Mudança do estoque", description: "Transferência para o novo galpão.", color: "#F2A100", archived: false, created_at: ts(6000) },
@@ -123,7 +123,7 @@ export function demoSeed() {
 
   const messages = [
     { id: "msg1", channel_id: "geral", author_id: U.carla, author_name: "Carla Mendes", body: "Bom dia, pessoal! Lembrando que o fechamento do mês é dia 28.", source: "google_chat", created_at: ts(180) },
-    { id: "msg2", channel_id: "geral", author_id: U.bruno, author_name: "Bruno Lima", body: "Anotado! Já abri o pedido do banner da feira para o Marketing pelo space+.", source: "space", created_at: ts(150) },
+    { id: "msg2", channel_id: "geral", author_id: U.bruno, author_name: "Bruno Lima", body: "Anotado! Já abri o pedido do banner da feira para o Marketing pelo SpaceMais.", source: "space", created_at: ts(150) },
     { id: "msg3", channel_id: "geral", author_id: U.ana, author_name: "Ana Souza", body: "Recebemos, Bruno. Entra na nossa fila ainda essa semana 👍", source: "space", created_at: ts(120) },
     { id: "msg4", channel_id: "ch-marketing", author_id: U.ana, author_name: "Ana Souza", body: "Subi as artes de feed na pasta da campanha.", source: "space", created_at: ts(60) },
   ];

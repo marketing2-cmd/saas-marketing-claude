@@ -1,5 +1,5 @@
 -- ============================================================================
--- space mais — schema (rodar DEPOIS de supabase/schema.sql, que cria profiles,
+-- SpaceMais — schema (rodar DEPOIS de supabase/schema.sql, que cria profiles,
 -- o schema "private" e o fluxo de aprovação de cadastros).
 -- ============================================================================
 --
@@ -150,7 +150,7 @@ create index if not exists idx_sm_channels_sector on public.sm_channels (sector_
 
 create table if not exists public.sm_channel_integrations (
   channel_id text primary key references public.sm_channels (id) on delete cascade,
-  google_webhook_url text not null default '',   -- envio: space mais → Google Chat
+  google_webhook_url text not null default '',   -- envio: SpaceMais → Google Chat
   google_space_name text not null default '',    -- recebimento: "spaces/AAAA…" → este canal
   updated_at timestamptz not null default now()
 );

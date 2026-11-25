@@ -43,7 +43,7 @@ export default function ApprovalPanel({ initialProfiles }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <Link href="/" className="text-sm font-semibold text-[#0038FF]">
+        <Link href="/app" className="text-sm font-semibold text-[#0038FF]">
           ← Voltar ao app
         </Link>
         <button onClick={handleLogout} className="text-sm font-semibold text-[#8A8DA0]">

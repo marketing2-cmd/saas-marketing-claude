@@ -40,7 +40,7 @@ export async function POST(request) {
     let forwarded = false;
     if (integration?.google_webhook_url) {
       try {
-        await postToGoogleChat(integration.google_webhook_url, `*${authorName}* (space+): ${text}`);
+        await postToGoogleChat(integration.google_webhook_url, `*${authorName}* (SpaceMais): ${text}`);
         forwarded = true;
       } catch (e) {
         console.error("[space/chat/send] falha ao repassar ao Google Chat:", e.message);

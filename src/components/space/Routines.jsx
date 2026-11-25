@@ -16,7 +16,7 @@ export function RoutineItem({ routine, showSector }) {
   return (
     <div className="group flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-hover">
       <button onClick={() => actions.toggleCheck(routine, key, !check)} title={check ? "Desmarcar" : "Marcar como feita"}>
-        {check ? <CheckCircle2 size={21} className="text-[#00A86B]" /> : <Circle size={21} className="text-[#C3C7D2] hover:text-[#00A86B]" />}
+        {check ? <CheckCircle2 size={21} className="text-[#00A86B]" /> : <Circle size={21} className="text-faint hover:text-[#00A86B]" />}
       </button>
       <div className="min-w-0 flex-1">
         <p className={cx("truncate text-sm text-ink", check && "text-muted line-through")}>{routine.title}</p>
@@ -53,7 +53,7 @@ export function RoutinesPage({ sectorId = null, embedded = false }) {
               ["mine", "Minhas rotinas"],
               ["all", "Todas"],
             ].map(([id, label]) => (
-              <button key={id} onClick={() => setFilter(id)} className={cx("rounded-md px-3 py-1 font-medium", filter === id ? "bg-white text-ink shadow-card" : "text-muted")}>
+              <button key={id} onClick={() => setFilter(id)} className={cx("rounded-md px-3 py-1 font-medium", filter === id ? "bg-surface text-ink shadow-card" : "text-muted")}>
                 {label}
               </button>
             ))}
@@ -82,7 +82,7 @@ export function RoutinesPage({ sectorId = null, embedded = false }) {
           {groups
             .filter((g) => g.items.length)
             .map((g) => (
-              <section key={g.id} className="rounded-xl border border-line bg-white p-3">
+              <section key={g.id} className="rounded-xl border border-line bg-surface p-3">
                 <h3 className="mb-1 px-2 text-xs font-semibold uppercase tracking-wide text-muted">
                   {g.label} <span className="normal-case tracking-normal">· {g.hint}</span>
                 </h3>
@@ -91,7 +91,7 @@ export function RoutinesPage({ sectorId = null, embedded = false }) {
                     <RoutineItem routine={r} showSector={!sectorId} />
                     <button
                       onClick={() => confirm(`Excluir a rotina "${r.title}"?`) && actions.deleteRoutine(r.id)}
-                      className="absolute right-11 top-1/2 -translate-y-1/2 rounded p-1 text-muted opacity-0 hover:text-red-600 group-hover/item:opacity-100"
+                      className="absolute right-11 top-1/2 -translate-y-1/2 rounded p-1 text-muted opacity-0 hover:text-red-400 group-hover/item:opacity-100"
                       title="Excluir rotina"
                     >
                       <Trash2 size={14} />

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Home, MessageCircle, FileText, Repeat, ListChecks, ChevronRight, ChevronDown, Plus, LogOut, Menu, X,
-  LayoutList, Kanban, FolderKanban, Inbox, MoreHorizontal, Archive, Trash2, Megaphone, ArrowRightLeft,
+  LayoutList, Kanban, FolderKanban, Inbox, MoreHorizontal, Archive, Trash2, Megaphone, ArrowRightLeft, ArrowLeft, RotateCcw,
 } from "lucide-react";
 import { SpaceProvider, useSpace } from "./store";
 import { Avatar, Button, Modal, Field, inputCls, Tabs, Empty, Popover, MenuItem, SectorDot, cx } from "./ui";
@@ -14,6 +14,7 @@ import { RoutinesPage } from "./Routines";
 import { MinutesPage } from "./Minutes";
 import { ChatPage } from "./Chat";
 import { PALETTE, STATUSES } from "@/lib/space/model";
+import { Logo as BrandLogo } from "@/components/brand/Logo";
 
 export default function SpaceApp() {
   return (
@@ -71,9 +72,9 @@ function Shell() {
   if (status === "error")
     return (
       <div className="flex min-h-screen items-center justify-center bg-canvas p-6">
-        <div className="max-w-md rounded-2xl border border-line bg-white p-6 text-center">
+        <div className="max-w-md rounded-2xl border border-line bg-surface p-6 text-center">
           <Logo />
-          <p className="mt-4 font-semibold text-ink">Não foi possível carregar o space+</p>
+          <p className="mt-4 font-semibold text-ink">Não foi possível carregar o SpaceMais</p>
           <p className="mt-1 text-sm text-muted">{error}</p>
           <p className="mt-3 text-xs text-muted">Se for a primeira vez, confira se o arquivo supabase/space.sql foi executado no Supabase.</p>
         </div>
@@ -110,15 +111,15 @@ function Shell() {
     <div className="flex min-h-screen bg-canvas">
       <Sidebar route={route} navigate={navigate} open={mobileNav} onClose={() => setMobileNav(false)} onNewProject={(sectorId) => (setModalDefaults({ sector_id: sectorId }), setModal("project"))} onProfile={() => setModal("profile")} />
       <main className="min-w-0 flex-1">
-        <div className="sticky top-0 z-20 flex items-center gap-3 border-b border-line bg-white/90 px-4 py-2.5 backdrop-blur md:hidden">
+        <div className="sticky top-0 z-20 flex items-center gap-3 border-b border-line bg-surface/90 px-4 py-2.5 backdrop-blur md:hidden">
           <button onClick={() => setMobileNav(true)} className="rounded-md p-1 text-ink-2 hover:bg-hover">
             <Menu size={20} />
           </button>
           <Logo small />
         </div>
         {demo && (
-          <div className="bg-[#FFF4D6] px-4 py-1.5 text-center text-xs text-[#7A5200]">
-            Modo demonstração — os dados ficam só neste navegador. Bom para treinar a equipe.
+          <div className="bg-brand-soft px-4 py-1.5 text-center text-xs text-brand">
+            Demonstração interativa — explore à vontade. O que você criar fica só neste navegador.
           </div>
         )}
         <div className="px-4 py-6 md:px-8 md:py-8">
@@ -134,7 +135,7 @@ function Shell() {
       {modal === "profile" && <ProfileModal onClose={() => setModal(null)} />}
 
       {toast && (
-        <div className={cx("fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-xl px-4 py-2.5 text-sm font-medium text-white shadow-pop", toast.kind === "error" ? "bg-red-600" : "bg-ink")}>
+        <div className={cx("fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-xl px-4 py-2.5 text-sm font-medium shadow-pop", toast.kind === "error" ? "bg-red-600 text-white" : "border border-line bg-hover text-ink")}>
           {toast.message}
         </div>
       )}
@@ -162,19 +163,12 @@ function MinutesNew({ id, onOpenTask, navigate }) {
 }
 
 export function Logo({ small, className }) {
-  return (
-    <span className={cx("inline-flex items-center gap-2", className)}>
-      <span className={cx("flex items-center justify-center rounded-lg bg-brand font-black text-white", small ? "h-7 w-7 text-base" : "h-8 w-8 text-lg")}>+</span>
-      <span className={cx("font-bold tracking-tight text-ink", small ? "text-base" : "text-[17px]")}>
-        space<span className="text-brand">mais</span>
-      </span>
-    </span>
-  );
+  return <BrandLogo size={small ? 24 : 28} textClass={small ? "text-base" : "text-[19px]"} className={className} />;
 }
 
 // ---------------------------------------------------------------------------
 function Sidebar({ route, navigate, open, onClose, onNewProject, onProfile }) {
-  const { data, me, actions } = useSpace();
+  const { data, me, actions, demo } = useSpace();
   const meMember = data.members.find((m) => m.id === me?.id);
   const [expanded, setExpanded] = useState({});
   const mySector = meMember?.sector_id;
@@ -201,10 +195,10 @@ function Sidebar({ route, navigate, open, onClose, onNewProject, onProfile }) {
 
   return (
     <>
-      {open && <div className="fixed inset-0 z-40 bg-ink/30 md:hidden" onClick={onClose} />}
+      {open && <div className="fixed inset-0 z-40 bg-black/60 md:hidden" onClick={onClose} />}
       <nav
         className={cx(
-          "fixed inset-y-0 left-0 z-50 flex w-[256px] shrink-0 flex-col border-r border-line bg-white transition-transform md:sticky md:top-0 md:h-screen md:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-[256px] shrink-0 flex-col border-r border-line bg-surface transition-transform md:sticky md:top-0 md:h-screen md:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -247,7 +241,7 @@ function Sidebar({ route, navigate, open, onClose, onNewProject, onProfile }) {
                         <span className="truncate">{s.name}</span>
                         {s.id === mySector && <span className="text-[10px] font-semibold text-muted">(meu)</span>}
                       </button>
-                      <button onClick={() => onNewProject(s.id)} className="mr-1 rounded p-1 text-muted opacity-0 hover:bg-white group-hover:opacity-100" title="Novo projeto">
+                      <button onClick={() => onNewProject(s.id)} className="mr-1 rounded p-1 text-muted opacity-0 hover:bg-surface group-hover:opacity-100" title="Novo projeto">
                         <Plus size={14} />
                       </button>
                     </div>
@@ -278,9 +272,15 @@ function Sidebar({ route, navigate, open, onClose, onNewProject, onProfile }) {
         </div>
 
         <div className="border-t border-line p-2.5">
-          <a href="/marketing-os" className="mb-1 flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] text-ink-2 hover:bg-hover">
-            <Megaphone size={15} /> Marketing OS
-          </a>
+          {demo ? (
+            <a href="/" className="mb-1 flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] text-ink-2 hover:bg-hover">
+              <ArrowLeft size={15} /> Voltar ao site
+            </a>
+          ) : (
+            <a href="/marketing-os" className="mb-1 flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] text-ink-2 hover:bg-hover">
+              <Megaphone size={15} /> Marketing OS
+            </a>
+          )}
           <div className="flex items-center gap-2 rounded-lg px-1.5 py-1">
             <button onClick={onProfile} className="flex min-w-0 flex-1 items-center gap-2 rounded-lg p-1 text-left hover:bg-hover" title="Editar perfil">
               <Avatar member={meMember} size={30} />
@@ -289,8 +289,12 @@ function Sidebar({ route, navigate, open, onClose, onNewProject, onProfile }) {
                 <span className="block truncate text-xs text-muted">{data.sectors.find((s) => s.id === mySector)?.name || "Escolha seu setor"}</span>
               </span>
             </button>
-            <button onClick={actions.signOut} className="rounded-md p-1.5 text-muted hover:bg-hover" title="Sair">
-              <LogOut size={16} />
+            <button
+              onClick={() => (!demo || confirm("Restaurar os dados de exemplo da demonstração?")) && actions.signOut()}
+              className="rounded-md p-1.5 text-muted hover:bg-hover"
+              title={demo ? "Restaurar demonstração" : "Sair"}
+            >
+              {demo ? <RotateCcw size={16} /> : <LogOut size={16} />}
             </button>
           </div>
         </div>
@@ -361,7 +365,7 @@ function ProjectPage({ id, onOpenTask, navigate }) {
                   }
                 }}
               >
-                <span className="flex items-center gap-2 text-red-600">
+                <span className="flex items-center gap-2 text-red-400">
                   <Trash2 size={15} /> Excluir projeto
                 </span>
               </MenuItem>
@@ -457,7 +461,7 @@ function SectorPage({ id, onOpenTask, navigate, onNewProject }) {
               const pct = ts.length ? Math.round((done / ts.length) * 100) : 0;
               const assignees = [...new Set(ts.map((t) => t.assignee_id).filter(Boolean))].map((aid) => data.members.find((m) => m.id === aid)).filter(Boolean);
               return (
-                <button key={p.id} onClick={() => navigate({ view: "project", id: p.id })} className="rounded-xl border border-line bg-white p-4 text-left shadow-card transition hover:border-[#C9CEDA] hover:shadow-pop">
+                <button key={p.id} onClick={() => navigate({ view: "project", id: p.id })} className="rounded-xl border border-line bg-surface p-4 text-left shadow-card transition hover:border-line-strong hover:shadow-pop">
                   <div className="mb-3 h-1.5 w-10 rounded-full" style={{ background: p.color }} />
                   <p className="font-semibold text-ink">{p.name}</p>
                   <p className="mt-0.5 line-clamp-2 min-h-[40px] text-[13px] text-muted">{p.description || "Sem descrição"}</p>
@@ -473,7 +477,7 @@ function SectorPage({ id, onOpenTask, navigate, onNewProject }) {
                     </span>
                     <span className="flex -space-x-1">
                       {assignees.slice(0, 4).map((a) => (
-                        <span key={a.id} className="rounded-full ring-2 ring-white">
+                        <span key={a.id} className="rounded-full ring-2 ring-surface">
                           <Avatar member={a} size={20} />
                         </span>
                       ))}
@@ -503,7 +507,7 @@ function RequestsTab({ reqIn, reqOut, onOpenTask }) {
     const s = data.sectors.find((x) => x.id === other);
     const st = STATUSES.find((x) => x.id === t.status);
     return (
-      <button onClick={() => onOpenTask(t.id)} className="flex w-full items-center gap-3 border-b border-line px-4 py-2.5 text-left last:border-0 hover:bg-[#FAFBFC]">
+      <button onClick={() => onOpenTask(t.id)} className="flex w-full items-center gap-3 border-b border-line px-4 py-2.5 text-left last:border-0 hover:bg-hover/50">
         <span className={cx("flex-1 truncate text-sm", t.status === "done" && "text-muted line-through")}>{t.title}</span>
         <span className="flex items-center gap-1.5 text-xs text-ink-2">
           <SectorDot sector={s} size={7} /> {s?.name}
@@ -520,7 +524,7 @@ function RequestsTab({ reqIn, reqOut, onOpenTask }) {
         <h3 className="mb-2 flex items-center gap-2 text-sm font-bold text-ink">
           <Inbox size={16} /> Recebidos (outros setores pediram)
         </h3>
-        <div className="rounded-xl border border-line bg-white">
+        <div className="rounded-xl border border-line bg-surface">
           {reqIn.length ? reqIn.map((t) => <Row key={t.id} t={t} other={t.requested_by_sector_id} />) : <p className="p-4 text-sm text-muted">Nenhum pedido recebido.</p>}
         </div>
       </section>
@@ -528,7 +532,7 @@ function RequestsTab({ reqIn, reqOut, onOpenTask }) {
         <h3 className="mb-2 flex items-center gap-2 text-sm font-bold text-ink">
           <ArrowRightLeft size={16} /> Enviados (pedimos a outros setores)
         </h3>
-        <div className="rounded-xl border border-line bg-white">
+        <div className="rounded-xl border border-line bg-surface">
           {reqOut.length ? reqOut.map((t) => <Row key={t.id} t={t} other={t.sector_id} />) : <p className="p-4 text-sm text-muted">Nenhum pedido enviado.</p>}
         </div>
       </section>
@@ -595,7 +599,7 @@ function ProfileModal({ onClose }) {
   const [sector, setSector] = useState(meMember?.sector_id || "");
   const firstTime = !meMember?.sector_id;
   return (
-    <Modal title={firstTime ? "Bem-vindo(a) ao space+! 👋" : "Seu perfil"} onClose={onClose}>
+    <Modal title={firstTime ? "Bem-vindo(a) ao SpaceMais! 👋" : "Seu perfil"} onClose={onClose}>
       <form
         data-modal
         onSubmit={(e) => {

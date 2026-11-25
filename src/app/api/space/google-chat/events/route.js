@@ -5,7 +5,7 @@ import { verifyGoogleChatRequest, parseChatEvent } from "@/lib/space/googleChat"
 export const dynamic = "force-dynamic";
 
 // Endpoint do "Chat app" do Google Chat. Recebe as mensagens enviadas ao app
-// (menções em espaços ou DM) e grava no canal do space mais ligado àquele espaço.
+// (menções em espaços ou DM) e grava no canal do SpaceMais ligado àquele espaço.
 export async function POST(request) {
   try {
     await verifyGoogleChatRequest(request);
@@ -19,7 +19,7 @@ export async function POST(request) {
 
   if (event.type === "ADDED_TO_SPACE") {
     return NextResponse.json({
-      text: `Olá! Sou o space+. Peça a um administrador para ligar este espaço a um canal (ID: ${event.space?.name || "?"}).`,
+      text: `Olá! Sou o SpaceMais. Peça a um administrador para ligar este espaço a um canal (ID: ${event.space?.name || "?"}).`,
     });
   }
   if (event.type !== "MESSAGE" || !event.message) return NextResponse.json({});
@@ -36,7 +36,7 @@ export async function POST(request) {
     .maybeSingle();
 
   if (!integ) {
-    return NextResponse.json({ text: `Este espaço ainda não está ligado a um canal do space+. ID do espaço: ${spaceName}` });
+    return NextResponse.json({ text: `Este espaço ainda não está ligado a um canal do SpaceMais. ID do espaço: ${spaceName}` });
   }
 
   const sender = event.message.sender || event.user || {};

@@ -1,7 +1,7 @@
-// Constantes e regras de negócio do space mais (sem React).
+// Constantes e regras de negócio do SpaceMais (sem React).
 
 export const STATUSES = [
-  { id: "todo", label: "A fazer", color: "#A9AEBB" },
+  { id: "todo", label: "A fazer", color: "#6E6E68" },
   { id: "doing", label: "Em andamento", color: "#F2A100" },
   { id: "review", label: "Em revisão", color: "#7B3FF2" },
   { id: "done", label: "Concluído", color: "#00A86B" },
@@ -22,7 +22,7 @@ export const FREQUENCIES = [
 
 export const WEEKDAYS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
-export const PALETTE = ["#0038FF", "#00A86B", "#F2A100", "#7B3FF2", "#E23744", "#00A3BF", "#FF6B9D", "#5C6378"];
+export const PALETTE = ["#FF6A00", "#0A84FF", "#00A86B", "#F2B300", "#8B5CF6", "#E23744", "#00A3BF", "#FF6B9D"];
 
 export const statusOf = (id) => STATUSES.find((s) => s.id === id) || STATUSES[0];
 export const priorityOf = (id) => PRIORITIES.find((p) => p.id === id) || PRIORITIES[1];

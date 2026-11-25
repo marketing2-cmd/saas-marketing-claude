@@ -42,8 +42,8 @@ export function TaskDrawer({ taskId, onClose, onOpenMinute }) {
 
   return (
     <>
-      <div className="fixed inset-0 z-30 bg-ink/10" onClick={onClose} />
-      <aside className="fixed inset-y-0 right-0 z-40 flex w-full max-w-[560px] flex-col border-l border-line bg-white shadow-pop">
+      <div className="fixed inset-0 z-30 bg-black/40" onClick={onClose} />
+      <aside className="fixed inset-y-0 right-0 z-40 flex w-full max-w-[560px] flex-col border-l border-line bg-surface shadow-pop">
         <div className="flex items-center gap-2 border-b border-line px-5 py-3">
           <Button size="sm" variant={isDone ? "primary" : "outline"} onClick={() => set({ status: isDone ? "todo" : "done" })}>
             <CheckCircle2 size={15} /> {isDone ? "Concluída" : "Marcar como concluída"}
@@ -56,7 +56,7 @@ export function TaskDrawer({ taskId, onClose, onOpenMinute }) {
                 onClose();
               }
             }}
-            className="rounded-md p-1.5 text-muted hover:bg-red-50 hover:text-red-600"
+            className="rounded-md p-1.5 text-muted hover:bg-red-500/10 hover:text-red-400"
             title="Excluir"
           >
             <Trash2 size={17} />

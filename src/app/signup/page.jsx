@@ -74,7 +74,7 @@ export default function SignupPage() {
             <span className="font-black text-white">+</span>
           </div>
           <h1 className="text-lg font-bold text-[#0A0E1A]">Solicitar cadastro</h1>
-          <p className="text-sm text-[#8A8DA0]">space mais — Contattos+</p>
+          <p className="text-sm text-[#8A8DA0]">SpaceMais — Contattos+</p>
         </div>
 
         {error && <div className="mb-4 rounded-md bg-[#FBDEE1] px-3 py-2 text-sm text-[#E23744]">{error}</div>}

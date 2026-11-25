@@ -1,6 +1,6 @@
 "use client";
 
-// Camada de dados do space mais.
+// Camada de dados do SpaceMais.
 //
 // Dois "adaptadores" com a mesma interface:
 //   * supabase → produção: lê/grava direto nas tabelas sm_* com a publishable key

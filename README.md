@@ -1,4 +1,4 @@
-# space mais — Contattos+
+# SpaceMais — Contattos+
 
 Sistema interno de gestão da Contattos+: **rotina + projetos + atas + integração entre
 setores + chat** num lugar só. Inspirado no ClickUp (quadro), Asana (painel da tarefa),
@@ -19,7 +19,7 @@ conceitos, para facilitar a adoção pela equipe.
 O **Marketing OS** (sistema anterior, descrito mais abaixo) continua disponível em
 `/marketing-os`, com link no rodapé do menu lateral.
 
-## space mais — configuração
+## SpaceMais — configuração
 
 1. Rode `supabase/schema.sql` (se ainda não rodou) e depois **`supabase/space.sql`** no
    SQL Editor do Supabase. Ele cria as tabelas `sm_*`, as policies de RLS (usuários
@@ -53,16 +53,16 @@ Nunca ative em produção.
 
 A ponte é configurada **por canal**, por um admin, no botão *Google Chat* no topo do canal.
 
-**Enviar do space mais → Google Chat (webhook, 2 minutos):**
+**Enviar do SpaceMais → Google Chat (webhook, 2 minutos):**
 1. No espaço do Google Chat: nome do espaço → *Apps e integrações* → *Webhooks* →
    *Adicionar webhook*. Copie a URL.
-2. No space mais, em Chat → canal → *Google Chat*, cole a URL e um nome de exibição.
+2. No SpaceMais, em Chat → canal → *Google Chat*, cole a URL e um nome de exibição.
    Pronto: cada mensagem enviada no canal também aparece no espaço como
-   `*Nome* (space+): mensagem`.
+   `*Nome* (SpaceMais): mensagem`.
 
-**Receber do Google Chat → space mais (Chat app):**
+**Receber do Google Chat → SpaceMais (Chat app):**
 1. No Google Cloud Console (projeto da Contattos+), ative a **Google Chat API** e, em
-   *Configuração*, crie o app: nome *space mais*, "Funcionalidade: participar de espaços e
+   *Configuração*, crie o app: nome *SpaceMais*, "Funcionalidade: participar de espaços e
    conversas em grupo", *Configuração de conexão* = **URL do endpoint HTTP**:
    `https://SEU-DOMINIO/api/space/google-chat/events`.
 2. Em *Authentication audience*, escolha **Project number** e coloque esse número em
@@ -70,7 +70,7 @@ A ponte é configurada **por canal**, por um admin, no botão *Google Chat* no t
    o JWT assinado pelo Google em toda chamada — sem isso ela responde 401.
 3. Adicione o app ao espaço. Ele responde com o ID do espaço (`spaces/AAAA…`, também visível
    na URL do Google Chat depois de `/room/`). Cole esse ID no campo *ID do espaço* do canal.
-4. Mensagens que **mencionarem @space mais** no espaço aparecem no canal com o selo
+4. Mensagens que **mencionarem @SpaceMais** no espaço aparecem no canal com o selo
    "via Google Chat" (é uma limitação do Google: apps só recebem mensagens em que são
    mencionados ou DMs). Se o e-mail do remetente for de alguém cadastrado, o avatar é ligado à pessoa.
 
@@ -147,7 +147,7 @@ middleware.js                   # gate de páginas: login/aprovação/admin (ver
 src/
   app/
     layout.jsx                 # layout raiz + import do Tailwind
-    page.jsx                   # renderiza o space mais (<SpaceApp />)
+    page.jsx                   # renderiza o SpaceMais (<SpaceApp />)
     marketing-os/page.jsx      # renderiza <MarketingOS />
     globals.css
     login/page.jsx             # e-mail + senha

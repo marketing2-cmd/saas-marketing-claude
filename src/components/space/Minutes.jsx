@@ -82,7 +82,7 @@ function AutoTextarea({ value, onChange, placeholder, className }) {
     ref.current.style.height = "auto";
     ref.current.style.height = ref.current.scrollHeight + "px";
   }, [value]);
-  return <textarea ref={ref} rows={3} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className={cx("w-full resize-none overflow-hidden bg-transparent text-[15px] leading-relaxed text-ink outline-none placeholder:text-[#C3C7D2]", className)} />;
+  return <textarea ref={ref} rows={3} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className={cx("w-full resize-none overflow-hidden bg-transparent text-[15px] leading-relaxed text-ink outline-none placeholder:text-faint", className)} />;
 }
 
 function MinuteEditor({ minute, onBack, onOpenTask }) {
@@ -99,7 +99,7 @@ function MinuteEditor({ minute, onBack, onOpenTask }) {
   const actionsList = data.tasks.filter((t) => t.source_minute_id === minute.id).sort((a, b) => a.created_at.localeCompare(b.created_at));
 
   return (
-    <article className="rounded-2xl border border-line bg-white px-6 py-6 md:px-10 md:py-8">
+    <article className="rounded-2xl border border-line bg-surface px-6 py-6 md:px-10 md:py-8">
       <div className="mb-2 flex items-center gap-2">
         <button onClick={onBack} className="rounded-md p-1 text-muted hover:bg-hover md:hidden">
           <ArrowLeft size={18} />
@@ -108,7 +108,7 @@ function MinuteEditor({ minute, onBack, onOpenTask }) {
         <div className="flex-1" />
         <button
           onClick={() => confirm("Excluir esta ata? Os encaminhamentos continuam como tarefas.") && (actions.deleteMinute(minute.id), onBack())}
-          className="rounded-md p-1.5 text-muted hover:bg-red-50 hover:text-red-600"
+          className="rounded-md p-1.5 text-muted hover:bg-red-500/10 hover:text-red-400"
           title="Excluir ata"
         >
           <Trash2 size={16} />
@@ -118,7 +118,7 @@ function MinuteEditor({ minute, onBack, onOpenTask }) {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Título da reunião"
-        className="w-full bg-transparent text-[28px] font-bold leading-tight text-ink outline-none placeholder:text-[#C3C7D2]"
+        className="w-full bg-transparent text-[28px] font-bold leading-tight text-ink outline-none placeholder:text-faint"
       />
 
       <div className="mt-4 grid grid-cols-[110px_1fr] items-center gap-y-2 text-sm">
@@ -159,7 +159,7 @@ function MinuteEditor({ minute, onBack, onOpenTask }) {
       <AutoTextarea value={notes} onChange={setNotes} placeholder="O que foi conversado…" />
 
       <h3 className="mb-1 mt-6 text-[17px] font-bold text-ink">Decisões</h3>
-      <AutoTextarea value={decisions} onChange={setDecisions} placeholder="O que ficou decidido…" className="rounded-lg bg-[#FFF8E6] px-3 py-2" />
+      <AutoTextarea value={decisions} onChange={setDecisions} placeholder="O que ficou decidido…" className="rounded-lg bg-amber-400/10 px-3 py-2" />
 
       <h3 className="mb-1 mt-6 text-[17px] font-bold text-ink">Encaminhamentos</h3>
       <p className="mb-2 text-[13px] text-muted">Cada encaminhamento vira uma tarefa e aparece para o responsável.</p>
@@ -167,7 +167,7 @@ function MinuteEditor({ minute, onBack, onOpenTask }) {
         {actionsList.map((t) => (
           <div key={t.id} className="flex items-center gap-2.5 px-3 py-2">
             <button onClick={() => actions.updateTask(t.id, { status: t.status === "done" ? "todo" : "done" })}>
-              {t.status === "done" ? <CheckCircle2 size={18} className="text-[#00A86B]" /> : <Circle size={18} className="text-[#C3C7D2]" />}
+              {t.status === "done" ? <CheckCircle2 size={18} className="text-[#00A86B]" /> : <Circle size={18} className="text-faint" />}
             </button>
             <button onClick={() => onOpenTask?.(t.id)} className={cx("flex-1 truncate text-left text-sm hover:underline", t.status === "done" && "text-muted line-through")}>
               {t.title}

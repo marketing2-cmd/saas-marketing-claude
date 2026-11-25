@@ -23,7 +23,7 @@ export default function LoginPage() {
       setError(signInError.message === "Invalid login credentials" ? "E-mail ou senha incorretos." : signInError.message);
       return;
     }
-    router.push("/");
+    router.push("/app");
     router.refresh();
   }
 
@@ -34,7 +34,7 @@ export default function LoginPage() {
           <div className="mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#0038FF]">
             <span className="font-black text-white">+</span>
           </div>
-          <h1 className="text-lg font-bold text-[#0A0E1A]">Entrar no space mais</h1>
+          <h1 className="text-lg font-bold text-[#0A0E1A]">Entrar no SpaceMais</h1>
           <p className="text-sm text-[#8A8DA0]">Contattos+</p>
         </div>
 

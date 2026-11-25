@@ -50,7 +50,7 @@ export function ChatPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-140px)] min-h-[420px] overflow-hidden rounded-2xl border border-line bg-white">
+    <div className="flex h-[calc(100vh-140px)] min-h-[420px] overflow-hidden rounded-2xl border border-line bg-surface">
       <aside className="hidden w-[220px] shrink-0 border-r border-line bg-canvas p-2 sm:block">
         <p className="px-2 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-muted">Canais</p>
         {channels.map((c) => {
@@ -59,7 +59,7 @@ export function ChatPage() {
             <button
               key={c.id}
               onClick={() => setChannelId(c.id)}
-              className={cx("flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm", c.id === channelId ? "bg-white font-semibold text-ink shadow-card" : "text-ink-2 hover:bg-hover")}
+              className={cx("flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm", c.id === channelId ? "bg-surface font-semibold text-ink shadow-card" : "text-ink-2 hover:bg-hover")}
             >
               <Hash size={15} style={{ color: sector?.color || "#8A8DA0" }} />
               <span className="flex-1 truncate">{c.name}</span>
@@ -82,11 +82,11 @@ export function ChatPage() {
             <Hash size={17} className="text-muted" /> {channel?.name}
           </h2>
           {channel?.google_space_label ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#E6F6EC] px-2.5 py-0.5 text-xs font-semibold text-[#00803A]">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-400">
               <GoogleChatIcon size={12} /> Conectado: {channel.google_space_label}
             </span>
           ) : (
-            <span className="hidden text-xs text-muted md:inline">Só no space+</span>
+            <span className="hidden text-xs text-muted md:inline">Só no SpaceMais</span>
           )}
           <div className="flex-1" />
           {me?.isAdmin && channel && (
@@ -111,7 +111,7 @@ export function ChatPage() {
                     <span className="h-px flex-1 bg-line" /> {dayLabel(m.created_at)} <span className="h-px flex-1 bg-line" />
                   </div>
                 )}
-                <div className={cx("group flex gap-3 rounded-lg px-2 hover:bg-[#FAFBFC]", grouped ? "py-0.5" : "mt-2 py-1")}>
+                <div className={cx("group flex gap-3 rounded-lg px-2 hover:bg-hover/50", grouped ? "py-0.5" : "mt-2 py-1")}>
                   <div className="w-8 shrink-0">
                     {!grouped &&
                       (member ? (
@@ -128,7 +128,7 @@ export function ChatPage() {
                         <span className="text-sm font-semibold text-ink">{m.author_name || member?.name}</span>
                         <span className="text-[11px] text-muted">{formatTime(m.created_at)}</span>
                         {m.source === "google_chat" && (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-[#00803A]">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400">
                             <GoogleChatIcon size={11} /> via Google Chat
                           </span>
                         )}
@@ -204,7 +204,7 @@ function GoogleChatConfig({ channel, onClose }) {
             <b>1. Enviar daqui para o Google Chat:</b> no espaço do Google Chat, abra <i>Apps e integrações → Webhooks → Adicionar webhook</i> e cole a URL abaixo.
           </p>
           <p className="mt-1">
-            <b>2. Receber do Google Chat aqui:</b> adicione o app <i>space mais</i> ao espaço (configuração no README) e cole o ID do espaço — fica na URL do Google Chat, depois de <code>/room/</code> (ex.: <code>spaces/AAAAxyz</code>). As mensagens que mencionarem o app aparecem neste canal.
+            <b>2. Receber do Google Chat aqui:</b> adicione o app <i>SpaceMais</i> ao espaço (configuração no README) e cole o ID do espaço — fica na URL do Google Chat, depois de <code>/room/</code> (ex.: <code>spaces/AAAAxyz</code>). As mensagens que mencionarem o app aparecem neste canal.
           </p>
         </div>
         <Field label="Nome do espaço no Google Chat (aparece no topo do canal)">

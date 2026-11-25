@@ -16,7 +16,7 @@ function greeting() {
 
 function Card({ title, icon: Icon, count, action, children, className }) {
   return (
-    <section className={cx("rounded-2xl border border-line bg-white p-4", className)}>
+    <section className={cx("rounded-2xl border border-line bg-surface p-4", className)}>
       <header className="mb-2 flex items-center gap-2 px-1">
         {Icon && <Icon size={16} className="text-muted" />}
         <h2 className="text-[15px] font-bold text-ink">{title}</h2>
@@ -37,7 +37,7 @@ function MiniTask({ task, onOpen, showRequester }) {
   return (
     <div className="group flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 hover:bg-hover">
       <button onClick={() => actions.updateTask(task.id, { status: done ? "todo" : "done" })} title={done ? "Reabrir" : "Concluir"}>
-        {done ? <CheckCircle2 size={19} className="text-[#00A86B]" /> : <Circle size={19} className="text-[#C3C7D2] hover:text-[#00A86B]" />}
+        {done ? <CheckCircle2 size={19} className="text-[#00A86B]" /> : <Circle size={19} className="text-faint hover:text-[#00A86B]" />}
       </button>
       <button onClick={() => onOpen(task.id)} className="min-w-0 flex-1 text-left">
         <p className={cx("truncate text-sm text-ink", done && "text-muted line-through")}>{task.title || "Sem título"}</p>
@@ -90,11 +90,11 @@ export function HomePage({ onOpenTask, onNewTask, onRequest, onNewMinute, naviga
   const pendingCount = overdue.length + today.filter((t) => t.status !== "done").length + (myRoutines.length - routinesDone);
 
   const groups = [
-    { id: "overdue", label: "Atrasadas", items: overdue, tone: "text-red-600" },
-    { id: "today", label: "Hoje", items: today, tone: "text-amber-600" },
+    { id: "overdue", label: "Atrasadas", items: overdue, tone: "text-red-400" },
+    { id: "today", label: "Hoje", items: today, tone: "text-amber-400" },
     { id: "upcoming", label: "Próximos dias", items: upcoming.slice(0, 8), tone: "text-ink-2" },
     { id: "nodate", label: "Sem prazo", items: noDate, tone: "text-ink-2" },
-    { id: "done", label: "Concluídas hoje", items: doneToday, tone: "text-[#00803A]" },
+    { id: "done", label: "Concluídas hoje", items: doneToday, tone: "text-emerald-400" },
   ].filter((g) => g.items.length);
 
   return (
@@ -124,7 +124,7 @@ export function HomePage({ onOpenTask, onNewTask, onRequest, onNewMinute, naviga
       </div>
 
       {showWelcome && (
-        <div className="relative mb-6 rounded-2xl bg-gradient-to-r from-brand to-[#3F6BFF] p-5 text-white">
+        <div className="relative mb-6 rounded-2xl bg-gradient-to-r from-brand to-[#ff9a3c] p-5 text-white">
           <button
             onClick={() => {
               setShowWelcome(false);
@@ -132,12 +132,12 @@ export function HomePage({ onOpenTask, onNewTask, onRequest, onNewMinute, naviga
                 localStorage.setItem("space-mais-welcome-dismissed", "1");
               } catch {}
             }}
-            className="absolute right-3 top-3 rounded-md p-1 text-white/80 hover:bg-white/10"
+            className="absolute right-3 top-3 rounded-md p-1 text-white/80 hover:bg-surface/10"
             title="Fechar"
           >
             <X size={18} />
           </button>
-          <p className="text-lg font-bold">Bem-vindo(a) ao space+ 👋</p>
+          <p className="text-lg font-bold">Bem-vindo(a) ao SpaceMais 👋</p>
           <p className="mb-3 text-sm text-white/85">Tudo da Contattos+ num lugar só. Para começar, é só isso:</p>
           <div className="grid gap-3 text-sm md:grid-cols-4">
             {[
@@ -148,7 +148,7 @@ export function HomePage({ onOpenTask, onNewTask, onRequest, onNewMinute, naviga
             ].map(([n, t, d]) => (
               <div key={n} className="rounded-xl bg-white/10 p-3">
                 <p className="font-semibold">
-                  <span className="mr-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-brand">{n}</span>
+                  <span className="mr-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface text-xs font-bold text-brand">{n}</span>
                   {t}
                 </p>
                 <p className="mt-1 text-[13px] text-white/80">{d}</p>

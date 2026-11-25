@@ -2,13 +2,17 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 
 const PUBLIC_PATHS = ["/login", "/signup"];
+// Páginas abertas a todos, com ou sem login (landing page do produto).
+const OPEN_PATHS = ["/"];
 
 // Roda em toda navegação de página (não em /api — cada rota de API faz sua
 // própria checagem via src/lib/supabase/authGuard.js, que responde com JSON
 // em vez de redirecionar para uma página HTML).
 export async function middleware(request) {
-  // Modo demonstração do space mais: sem login, dados só no navegador.
+  // Modo demonstração do SpaceMais: sem login, dados só no navegador.
   if (process.env.NEXT_PUBLIC_SPACE_DEMO === "1") return NextResponse.next();
+
+  if (OPEN_PATHS.includes(request.nextUrl.pathname)) return NextResponse.next();
 
   let response = NextResponse.next({ request });
 
@@ -51,16 +55,16 @@ export async function middleware(request) {
   const isAdmin = profile?.role === "admin";
 
   if (isPublicPath) {
-    return redirectTo(request, isApproved || isAdmin ? "/" : "/pending");
+    return redirectTo(request, isApproved || isAdmin ? "/app" : "/pending");
   }
 
   if (pathname === "/pending") {
-    if (isApproved || isAdmin) return redirectTo(request, "/");
+    if (isApproved || isAdmin) return redirectTo(request, "/app");
     return response;
   }
 
   if (pathname.startsWith("/admin")) {
-    if (!isAdmin) return redirectTo(request, isApproved ? "/" : "/pending");
+    if (!isAdmin) return redirectTo(request, isApproved ? "/app" : "/pending");
     return response;
   }
 

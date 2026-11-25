@@ -2,14 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Identidade SpaceMais: laranja #ff6a00, grafite #1d1d1b, off-white #f6f6f6.
+   Sora nos títulos, Inter nos textos. */
 :root {
-  --font-sans: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --brand: 255 106 0;
+  --brand-dark: 230 92 0;
+  --canvas: 17 17 16;
+  --surface: 29 29 27;
+  --hover: 40 40 37;
+  --line: 48 48 45;
+  --line-strong: 72 72 68;
+  --ink: 246 246 246;
+  --ink-2: 200 200 195;
+  --muted: 140 140 134;
+  --faint: 92 92 88;
+  color-scheme: dark;
 }
 
 html,
 body {
-  background: #f7f8fa;
-  color: #0a0e1a;
-  font-family: var(--font-sans);
+  background: rgb(var(--canvas));
+  color: rgb(var(--ink));
+  font-family: Inter, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-display {
+  font-family: Sora, Inter, system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.6;
 }

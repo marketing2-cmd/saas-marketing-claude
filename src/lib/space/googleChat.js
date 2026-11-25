@@ -1,7 +1,7 @@
 // Integração com o Google Chat (somente servidor).
 //
-//  Envio (space mais → Google Chat): webhook de entrada do espaço do Google Chat.
-//  Recebimento (Google Chat → space mais): um "Chat app" configurado com
+//  Envio (SpaceMais → Google Chat): webhook de entrada do espaço do Google Chat.
+//  Recebimento (Google Chat → SpaceMais): um "Chat app" configurado com
 //  "HTTP endpoint" apontando para /api/space/google-chat/events. O Google assina
 //  cada chamada com um JWT (Authorization: Bearer …), verificado aqui.
 

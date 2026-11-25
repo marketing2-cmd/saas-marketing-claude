@@ -24,14 +24,14 @@ export function TaskList({ tasks, onOpen, newTaskDefaults, showSector = false })
             <button
               onClick={() => setCollapsed((c) => ({ ...c, [st.id]: !c[st.id] }))}
               className="mb-2 flex items-center gap-1.5 text-[15px] font-bold"
-              style={{ color: st.color === "#A9AEBB" ? "#5C6378" : st.color }}
+              style={{ color: st.id === "todo" ? "rgb(var(--ink-2))" : st.color }}
             >
               {isCollapsed ? <ChevronRight size={18} /> : <ChevronDown size={18} />}
               {st.label}
               <span className="ml-1 text-xs font-medium text-muted">{group.length} {group.length === 1 ? "tarefa" : "tarefas"}</span>
             </button>
             {!isCollapsed && (
-              <div className="overflow-x-auto rounded-lg border border-line bg-white" style={{ borderLeft: `4px solid ${st.color}` }}>
+              <div className="overflow-x-auto rounded-lg border border-line bg-surface" style={{ borderLeft: `4px solid ${st.color}` }}>
                 <table className="w-full min-w-[640px] border-collapse text-sm">
                   <thead>
                     <tr className="border-b border-line text-xs text-muted">
@@ -69,7 +69,7 @@ function TaskRow({ task, onOpen, showSector }) {
   const checklist = task.checklist || [];
   const sector = data.sectors.find((s) => s.id === task.sector_id);
   return (
-    <tr className="group border-b border-line hover:bg-[#FAFBFC]">
+    <tr className="group border-b border-line hover:bg-hover/50">
       <td className="cursor-pointer px-3 py-2" onClick={() => onOpen(task.id)}>
         <div className="flex items-center gap-2">
           <span className={cx("truncate text-ink", task.status === "done" && "text-muted line-through")}>{task.title || "Sem título"}</span>
@@ -178,7 +178,7 @@ function BoardCard({ task, onOpen, onDragStart, dragging }) {
       draggable
       onDragStart={onDragStart}
       onClick={() => onOpen(task.id)}
-      className={cx("cursor-pointer rounded-lg border border-line bg-white p-3 shadow-card transition hover:border-[#C9CEDA]", dragging && "opacity-40")}
+      className={cx("cursor-pointer rounded-lg border border-line bg-surface p-3 shadow-card transition hover:border-line-strong", dragging && "opacity-40")}
     >
       <p className={cx("text-sm font-medium text-ink", task.status === "done" && "text-muted line-through")}>{task.title || "Sem título"}</p>
       <div className="mt-2.5 flex items-center gap-2">
@@ -191,7 +191,7 @@ function BoardCard({ task, onOpen, onDragStart, dragging }) {
         )}
         <span className="ml-auto h-2 w-2 rounded-full" style={{ background: pr.color }} title={`Prioridade ${pr.label}`} />
       </div>
-      {overdue && <p className="mt-1.5 text-[11px] font-semibold text-red-600">Atrasada</p>}
+      {overdue && <p className="mt-1.5 text-[11px] font-semibold text-red-400">Atrasada</p>}
     </div>
   );
 }
