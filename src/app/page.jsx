@@ -1,9 +1,5 @@
-import MarketingOS from "@/components/MarketingOS";
+import SpaceApp from "@/components/space/SpaceApp";
 
 export default function Home() {
-  return (
-    <main style={{ padding: 24 }}>
-      <MarketingOS />
-    </main>
-  );
+  return <SpaceApp />;
 }

@@ -71,10 +71,10 @@ export default function SignupPage() {
       <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-xl border border-[#DDE0E6] bg-white p-8 shadow-sm">
         <div className="mb-6 text-center">
           <div className="mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#0038FF]">
-            <span className="font-bold text-white">M</span>
+            <span className="font-black text-white">+</span>
           </div>
           <h1 className="text-lg font-bold text-[#0A0E1A]">Solicitar cadastro</h1>
-          <p className="text-sm text-[#8A8DA0]">Marketing OS — Contattos+</p>
+          <p className="text-sm text-[#8A8DA0]">space mais — Contattos+</p>
         </div>
 
         {error && <div className="mb-4 rounded-md bg-[#FBDEE1] px-3 py-2 text-sm text-[#E23744]">{error}</div>}

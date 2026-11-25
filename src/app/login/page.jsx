@@ -32,9 +32,9 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-xl border border-[#DDE0E6] bg-white p-8 shadow-sm">
         <div className="mb-6 text-center">
           <div className="mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#0038FF]">
-            <span className="font-bold text-white">M</span>
+            <span className="font-black text-white">+</span>
           </div>
-          <h1 className="text-lg font-bold text-[#0A0E1A]">Entrar no Marketing OS</h1>
+          <h1 className="text-lg font-bold text-[#0A0E1A]">Entrar no space mais</h1>
           <p className="text-sm text-[#8A8DA0]">Contattos+</p>
         </div>
 

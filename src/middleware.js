@@ -7,6 +7,9 @@ const PUBLIC_PATHS = ["/login", "/signup"];
 // própria checagem via src/lib/supabase/authGuard.js, que responde com JSON
 // em vez de redirecionar para uma página HTML).
 export async function middleware(request) {
+  // Modo demonstração do space mais: sem login, dados só no navegador.
+  if (process.env.NEXT_PUBLIC_SPACE_DEMO === "1") return NextResponse.next();
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(

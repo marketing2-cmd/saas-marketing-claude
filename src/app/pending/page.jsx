@@ -19,7 +19,7 @@ export default function PendingPage() {
         <h1 className="mb-2 text-lg font-bold text-[#0A0E1A]">Cadastro em análise</h1>
         <p className="text-sm text-[#4A4E5C]">
           Sua conta ainda está aguardando aprovação do administrador. Você recebe acesso ao
-          Marketing OS automaticamente assim que ela for aprovada.
+          space mais automaticamente assim que ela for aprovada.
         </p>
         <button
           onClick={handleLogout}

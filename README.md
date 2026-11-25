@@ -1,4 +1,82 @@
-# Marketing OS — Contattos+
+# space mais — Contattos+
+
+Sistema interno de gestão da Contattos+: **rotina + projetos + atas + integração entre
+setores + chat** num lugar só. Inspirado no ClickUp (quadro), Asana (painel da tarefa),
+monday (lista com células coloridas) e Notion (atas como páginas) — mas com poucos
+conceitos, para facilitar a adoção pela equipe.
+
+| Onde | O que tem |
+| --- | --- |
+| **Início** | Saudação, tarefas do dia (atrasadas/hoje/próximas), rotina de hoje, pedidos recebidos pelo seu setor e pedidos que vocês fizeram. Botões: *Nova tarefa*, *Pedir a outro setor*, *Nova ata*. |
+| **Setores** | Marketing, Comercial, Financeiro, Operações, Pessoas/RH (editáveis no banco). Cada setor tem abas Projetos, Tarefas, Pedidos, Rotinas e Atas. |
+| **Projeto** | Visões **Lista** (agrupada por status) e **Quadro** (kanban com arrastar-e-soltar). Filtro "Só as minhas". |
+| **Tarefa** | Painel lateral: responsável, prazo, status, prioridade, setor, projeto, descrição, checklist e comentários. |
+| **Pedir a outro setor** | Cria uma tarefa no setor de destino marcada com o setor que pediu. Aparece no Início de quem é do setor e na aba Pedidos (recebidos/enviados). |
+| **Rotinas** | Atividades recorrentes (diária em dias úteis, semanal, mensal) com check por período e registro de quem fez e quando. |
+| **Atas** | Página por reunião: data, setor, participantes, pauta, decisões e **encaminhamentos — cada um vira tarefa**. |
+| **Chat** | Canais (#geral + um por setor) em tempo real, com ponte para espaços do **Google Chat**. |
+
+O **Marketing OS** (sistema anterior, descrito mais abaixo) continua disponível em
+`/marketing-os`, com link no rodapé do menu lateral.
+
+## space mais — configuração
+
+1. Rode `supabase/schema.sql` (se ainda não rodou) e depois **`supabase/space.sql`** no
+   SQL Editor do Supabase. Ele cria as tabelas `sm_*`, as policies de RLS (usuários
+   aprovados leem e escrevem tudo; o webhook do Google Chat só o servidor lê), liga o
+   Realtime e cadastra os setores e canais iniciais.
+2. Variáveis de ambiente: as mesmas do Marketing OS (seção *Configuração* abaixo) +
+   `GOOGLE_CHAT_AUDIENCE` se for receber mensagens do Google Chat.
+3. No primeiro acesso, cada pessoa informa nome e setor (dá para mudar depois clicando no
+   próprio nome, no rodapé do menu).
+
+**Modo demonstração** — para treinar a equipe ou testar sem banco:
+
+```bash
+NEXT_PUBLIC_SPACE_DEMO=1 npm run dev
+```
+
+Desliga o login e guarda tudo no `localStorage` do navegador, com dados de exemplo.
+Nunca ative em produção.
+
+### Como os dados funcionam
+
+- O navegador lê/grava direto nas tabelas `sm_*` com a *publishable key*; o RLS
+  (`private.is_approved()`) garante que só usuários aprovados acessam.
+- Toda alteração aparece para os outros na hora via **Supabase Realtime**.
+- Enviar mensagem no chat passa por `POST /api/space/chat/send` (servidor), que grava e
+  repassa ao Google Chat quando o canal estiver conectado.
+- Código: `src/components/space/*` (telas), `src/lib/space/data.js` (Supabase × demo),
+  `src/lib/space/model.js` (status, prioridades, regras de rotina e datas).
+
+### Conectar o chat ao Google Chat
+
+A ponte é configurada **por canal**, por um admin, no botão *Google Chat* no topo do canal.
+
+**Enviar do space mais → Google Chat (webhook, 2 minutos):**
+1. No espaço do Google Chat: nome do espaço → *Apps e integrações* → *Webhooks* →
+   *Adicionar webhook*. Copie a URL.
+2. No space mais, em Chat → canal → *Google Chat*, cole a URL e um nome de exibição.
+   Pronto: cada mensagem enviada no canal também aparece no espaço como
+   `*Nome* (space+): mensagem`.
+
+**Receber do Google Chat → space mais (Chat app):**
+1. No Google Cloud Console (projeto da Contattos+), ative a **Google Chat API** e, em
+   *Configuração*, crie o app: nome *space mais*, "Funcionalidade: participar de espaços e
+   conversas em grupo", *Configuração de conexão* = **URL do endpoint HTTP**:
+   `https://SEU-DOMINIO/api/space/google-chat/events`.
+2. Em *Authentication audience*, escolha **Project number** e coloque esse número em
+   `GOOGLE_CHAT_AUDIENCE` (ou escolha *HTTP endpoint URL* e coloque a URL). A rota verifica
+   o JWT assinado pelo Google em toda chamada — sem isso ela responde 401.
+3. Adicione o app ao espaço. Ele responde com o ID do espaço (`spaces/AAAA…`, também visível
+   na URL do Google Chat depois de `/room/`). Cole esse ID no campo *ID do espaço* do canal.
+4. Mensagens que **mencionarem @space mais** no espaço aparecem no canal com o selo
+   "via Google Chat" (é uma limitação do Google: apps só recebem mensagens em que são
+   mencionados ou DMs). Se o e-mail do remetente for de alguém cadastrado, o avatar é ligado à pessoa.
+
+---
+
+# Marketing OS — Contattos+ (disponível em `/marketing-os`)
 
 Port do componente React `marketing_os.jsx` (feito originalmente para o ambiente de
 artifacts do Claude.ai) para uma aplicação Next.js real, com Postgres/Supabase no lugar
@@ -69,7 +147,8 @@ middleware.js                   # gate de páginas: login/aprovação/admin (ver
 src/
   app/
     layout.jsx                 # layout raiz + import do Tailwind
-    page.jsx                   # renderiza <MarketingOS />
+    page.jsx                   # renderiza o space mais (<SpaceApp />)
+    marketing-os/page.jsx      # renderiza <MarketingOS />
     globals.css
     login/page.jsx             # e-mail + senha
     signup/page.jsx            # cria conta (fica pending) + dispara aviso ao admin

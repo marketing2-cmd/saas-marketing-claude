@@ -2,7 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --font-sans: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
 html,
 body {
-  background: #f5f6f3;
+  background: #f7f8fa;
+  color: #0a0e1a;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
